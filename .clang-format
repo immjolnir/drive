@@ -1,0 +1,28 @@
+# See https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+---
+Language:      Cpp
+BasedOnStyle:  Google
+PPIndentWidth: 1
+# The number of columns to use for indentation. i.e NamespaceIndentation
+IndentWidth: 4
+ColumnLimit: 120
+SortIncludes: CaseInsensitive
+IncludeBlocks: Preserve
+ConstructorInitializerIndentWidth: 2
+ContinuationIndentWidth: 2
+AccessModifierOffset: -2
+#InsertNewlineAtEOF: true
+NamespaceIndentation: All
+SeparateDefinitionBlocks: Always
+#SortUsingDeclarations: LexicographicNumeric
+# Precise control over the wrapping of braces.
+BreakBeforeBraces: Custom
+BraceWrapping:
+    AfterNamespace: true
+    AfterExternBlock: true
+
+
+
+# Force pointers/references to the type for C++.
+# See: https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rl-ptr
+DerivePointerAlignment: false
