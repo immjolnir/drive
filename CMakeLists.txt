@@ -40,9 +40,23 @@ include_directories(${GLOG_INCLUDE_DIRS})
 message(STATUS "GLOG_INCLUDE_DIRS: ${GLOG_INCLUDE_DIRS}")
 message(STATUS "GLOG_LIBRARIES: ${GLOG_LIBRARIES}")
 
+# OpenCV
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+link_directories(${OpenCV_LIB_DIR})
+message(STATUS "OpenCV_LIB_DIR: ${OpenCV_LIB_DIR}")
+
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+endif()
+
 if(ARCHETYPE_DEVELOPMENT_BUILD)
     set(CMAKE_BUILD_TYPE Debug)
 endif(ARCHETYPE_DEVELOPMENT_BUILD)
+
+include(${CMAKE_FILES}/CompilerWarnings.cmake)
+# set_cxx_compiler_warnings()
+message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 include(${CMAKE_FILES}/utility.cmake)
 

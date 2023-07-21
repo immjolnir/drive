@@ -5,6 +5,7 @@ function(add_example src)
     get_filename_component(example ${src} NAME_WLE)
     message(STATUS "Creating example ${example}")
     add_executable(${example} ${src})
+    # set_target_warnings(${example})
     target_include_directories(${example} BEFORE
         PUBLIC
             ${CMAKE_SOURCE_DIR}/modules
@@ -13,6 +14,7 @@ function(add_example src)
     set(additional_libs ${ARGN})
     target_link_libraries(${example}
         ${additional_libs}
+        ${OpenCV_LIBS}
     )
 endfunction()
 
@@ -21,6 +23,7 @@ function(add_testcase unittest_file)
     get_filename_component(testcase ${unittest_file} NAME_WLE)
     message(STATUS "Creating unittest ${testcase}")
     add_executable(${testcase} ${unittest_file})
+    # set_target_warnings(${testcase})
     # target_compile_features(${testcase} PUBLIC cxx_std_17)
     target_include_directories(${testcase} BEFORE
         PUBLIC
