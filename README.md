@@ -3,6 +3,10 @@
 > Create the project from the template project [modern-cpp-template](https://github.com/filipdutescu/modern-cpp-template).
 
 
+
+## mlap(Machine Learning Algorithm Principle and Programming Practice)
+- See https://blog.51cto.com/u_14122493/5751515
+
 ## VOT(Visual Object Tracking (VOT) challenge)
 
 

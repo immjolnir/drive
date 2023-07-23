@@ -1,4 +1,4 @@
-list(APPEND MODULES project vot)
+list(APPEND MODULES project vot mlap)
 
 foreach(m ${MODULES})
     add_subdirectory(${m})
