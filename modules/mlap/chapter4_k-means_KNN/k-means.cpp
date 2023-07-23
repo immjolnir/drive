@@ -1,176 +1,164 @@
-// k-means.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌĞòµÄÈë¿Úµã¡£
+// k-means.cpp : å®šä¹‰æ§åˆ¶å°åº”ç”¨ç¨‹åºçš„å…¥å£ç‚¹ã€‚
 //
-
-#include "stdafx.h"
-#include "opencv.hpp"
 #include <iostream>
+#include <opencv2/opencv.hpp>
+
 using namespace cv;
 using namespace std;
 
-//#define EXAMPLE1
+// #define EXAMPLE1
 
-int main()
-{
-	Mat img = imread("girl.jpg", 1);
-	Mat samples = img.reshape(0, img.cols*img.rows); // Í¼Ïñ×ª»»³ÉsampleCountĞĞ*3Í¨µÀµÄ¾ØÕó
-	printf("image  : h = %d, w = %d, c = %d\n", img.rows, img.cols, img.channels());
-	
-	//×ª»»ÎªCV_32FC3¸¡µãĞÍ
-	samples.convertTo(samples, CV_32FC3); // or CV_32F works (too)
-	printf("samples: h = %d, w = %d, c = %d\n", samples.rows, samples.cols, samples.channels());
+int main(int argc, char* argv[]) {
+    string girl(argv[1]);
+    Mat img = imread(girl, 1);
 
-	//define criteria, number of clusters(K) 
-	TermCriteria criteria = TermCriteria(TermCriteria::EPS + TermCriteria::COUNT, 10, 1.0);//ÖÕÖ¹Ìõ¼ş
-	int K = 4;   // ¾ÛÀàÀà±ğÊı:4,8,16
-	Mat labels;  // ¾ÛÀà½á¹ûË÷Òı¾ØÕó	
-	Mat centers; // ¾ÛÀàÖĞĞÄ
-	
-	// Ö´ĞĞkmeans()
-	double compactness = kmeans(samples, K, labels, criteria, 3, KMEANS_PP_CENTERS, centers);
+    Mat samples = img.reshape(0, img.cols * img.rows);  // å›¾åƒè½¬æ¢æˆsampleCountè¡Œ*3é€šé“çš„çŸ©é˜µ
+    printf("image  : h = %d, w = %d, c = %d\n", img.rows, img.cols, img.channels());
 
-	// ½«¾ÛÀàÖĞĞÄ×ªÎªintĞÍ
-	centers.convertTo(centers, CV_8UC3);
-	// °´ÕÕ¾ÛÀà½á¹û±êÇ©labels£¬¶ÔsamplesÖØĞÂ·ÖÅäBGRÖµ
-	samples.convertTo(samples, CV_8UC3);
-	cout << endl << "--- centers ---" << endl;
-	cout << centers.at<Vec3b>(0, 0) << endl;
-	cout << centers.at<Vec3b>(1, 0) << endl;
-	cout << centers.at<Vec3b>(2, 0) << endl;
-	cout << centers.at<Vec3b>(3, 0) << endl;
+    // è½¬æ¢ä¸ºCV_32FC3æµ®ç‚¹å‹
+    samples.convertTo(samples, CV_32FC3);  // or CV_32F works (too)
+    printf("samples: h = %d, w = %d, c = %d\n", samples.rows, samples.cols, samples.channels());
 
-	cout << endl << "--- samples original ---" << endl;
-	cout << samples.at<Vec3b>(1, 0) << endl; // 8U ÀàĞÍµÄ RGB ²ÊÉ«Í¼ÏñÊ¹ÓÃ <Vec3b>·ÃÎÊMatÏñËØÖµ
-	cout << samples.at<Vec3b>(100, 0) << endl;
-	cout << samples.at<Vec3b>(1000, 0) << endl;
+    // define criteria, number of clusters(K)
+    TermCriteria criteria = TermCriteria(TermCriteria::EPS + TermCriteria::COUNT, 10, 1.0);  // ç»ˆæ­¢æ¡ä»¶
+    int K = 4;                                                                               // èšç±»ç±»åˆ«æ•°:4,8,16
+    Mat labels;                                                                              // èšç±»ç»“æœç´¢å¼•çŸ©é˜µ
+    Mat centers;                                                                             // èšç±»ä¸­å¿ƒ
 
-	cout << endl << "--- label ---" << endl;
-	cout << labels.at<int>(1) << endl; // 8U ÀàĞÍµÄ RGB ²ÊÉ«Í¼ÏñÊ¹ÓÃ <Vec3b>·ÃÎÊMatÏñËØÖµ
-	cout << labels.at<int>(100) << endl;
-	cout << labels.at<int>(1000) << endl;
+    // æ‰§è¡Œkmeans()
+    double compactness = kmeans(samples, K, labels, criteria, 3, KMEANS_PP_CENTERS, centers);
 
-	// °´label±êÇ©ÖØĞÂÎªsamples¸³Öµ£¬ÊµÏÖÉ«²ÊÑ¹Ëõ
-	for (int i = 0; i < labels.rows; i++)
-	{
-		int cluster = labels.at<int>(i);
-		// Vec3bÎªOpenCVÖĞCV_8UC3ÀàĞÍµÄRGB²ÊÉ«Í¼ÏñÊı¾İÀàĞÍ
-		samples.at<Vec3b>(i, 0) = centers.at<Vec3b>(cluster, 0);
-	}
-	
-	cout << endl << "--- samples cluttered ---" << endl;
-	cout << samples.at<Vec3b>(1, 0) << endl;
-	cout << samples.at<Vec3b>(100, 0) << endl;
-	cout << samples.at<Vec3b>(1000, 0) << endl;
+    // å°†èšç±»ä¸­å¿ƒè½¬ä¸ºintå‹
+    centers.convertTo(centers, CV_8UC3);
+    // æŒ‰ç…§èšç±»ç»“æœæ ‡ç­¾labelsï¼Œå¯¹samplesé‡æ–°åˆ†é…BGRå€¼
+    samples.convertTo(samples, CV_8UC3);
+    cout << endl << "--- centers ---" << endl;
+    cout << centers.at<Vec3b>(0, 0) << endl;
+    cout << centers.at<Vec3b>(1, 0) << endl;
+    cout << centers.at<Vec3b>(2, 0) << endl;
+    cout << centers.at<Vec3b>(3, 0) << endl;
 
-	// 4.Êä³ö/ÏÔÊ¾¾ÛÀà½á¹û
-	// ½«samples×ª»Øimg³ß´ç
-	Mat img_out = samples.reshape(0, img.rows); // Í¼Ïñ×ª»»³ÉsampleCountĞĞ*3Í¨µÀµÄ¾ØÕó
-	cout << "Compactness: " << compactness << endl;
-	imshow("image", img);
-	imshow("clusters", img_out);
-	// ±£´æÍ¼Ïñ
-	stringstream ss;
-	ss << K;
-	string str = ss.str();
-	string image_save_name = str + "_cluter.jpg";
-	imwrite(image_save_name, img_out);
-	waitKey();
-	return 0;
+    cout << endl << "--- samples original ---" << endl;
+    cout << samples.at<Vec3b>(1, 0) << endl;  // 8U ç±»å‹çš„ RGB å½©è‰²å›¾åƒä½¿ç”¨ <Vec3b>è®¿é—®Matåƒç´ å€¼
+    cout << samples.at<Vec3b>(100, 0) << endl;
+    cout << samples.at<Vec3b>(1000, 0) << endl;
+
+    cout << endl << "--- label ---" << endl;
+    cout << labels.at<int>(1) << endl;  // 8U ç±»å‹çš„ RGB å½©è‰²å›¾åƒä½¿ç”¨ <Vec3b>è®¿é—®Matåƒç´ å€¼
+    cout << labels.at<int>(100) << endl;
+    cout << labels.at<int>(1000) << endl;
+
+    // æŒ‰labelæ ‡ç­¾é‡æ–°ä¸ºsamplesèµ‹å€¼ï¼Œå®ç°è‰²å½©å‹ç¼©
+    for (int i = 0; i < labels.rows; i++) {
+        int cluster = labels.at<int>(i);
+        // Vec3bä¸ºOpenCVä¸­CV_8UC3ç±»å‹çš„RGBå½©è‰²å›¾åƒæ•°æ®ç±»å‹
+        samples.at<Vec3b>(i, 0) = centers.at<Vec3b>(cluster, 0);
+    }
+
+    cout << endl << "--- samples cluttered ---" << endl;
+    cout << samples.at<Vec3b>(1, 0) << endl;
+    cout << samples.at<Vec3b>(100, 0) << endl;
+    cout << samples.at<Vec3b>(1000, 0) << endl;
+
+    // 4.è¾“å‡º/æ˜¾ç¤ºèšç±»ç»“æœ
+    // å°†samplesè½¬å›imgå°ºå¯¸
+    Mat img_out = samples.reshape(0, img.rows);  // å›¾åƒè½¬æ¢æˆsampleCountè¡Œ*3é€šé“çš„çŸ©é˜µ
+    cout << "Compactness: " << compactness << endl;
+    imshow("image", img);
+    imshow("clusters", img_out);
+
+    // ä¿å­˜å›¾åƒ
+    stringstream ss;
+    ss << K;
+    string str = ss.str();
+    string image_save_name = str + "_cluter.jpg";
+    imwrite(image_save_name, img_out);
+
+    waitKey();
+    return 0;
 }
 
-
-
 #ifdef EXAMPLE1
-int main()
-{
-	// 1. ³õÊ¼»¯²ÎÊı
-	const int MAX_CLUSTERS = 5; // ×î´óÀà±ğÊı
-	Scalar colorTab[] =
-	{
-		Scalar(0, 0, 255),
-		Scalar(0,255,0),
-		Scalar(255,100,100),
-		Scalar(255,0,255),
-		Scalar(0,255,255)
-	};
-	Mat img(500, 500, CV_8UC3); // ĞÂ½¨»­²¼
-	img = Scalar::all(255);     // ½«»­²¼ÉèÖÃÎª°×É«
-	RNG rng(12345);  //Ëæ»úÊı²úÉúÆ÷
-	// Ö÷Ñ­»·
-	for (;;)
-	{
-		// ³õÊ¼»¯Àà±ğÊı
-		int k, clusterCount = rng.uniform(2, MAX_CLUSTERS + 1); // ÔÚ[2, MAX_CLUSTERS + 1)Çø¼ä£¬Ëæ»úÉú³ÉÒ»¸öÕûÊı
-		// ³õÊ¼»¯Ñù±¾Êı
-		int i, sampleCount = rng.uniform(1, 1001); // ÔÚ[1, 1001)Çø¼ä£¬Ëæ»úÉú³ÉÒ»¸öÕûÊı
-		Mat points(sampleCount, 1, CV_32FC2); //  ÊäÈëÑù±¾¾ØÕó£ºsampleCountĞĞ*1ÁĞ£¬¸¡µãĞÍ£¬2Í¨µÀ
-		Mat labels; // ¾ÛÀà½á¹ûË÷Òı¾ØÕó
-		clusterCount = MIN(clusterCount, sampleCount);  // ¾ÛÀàÀà±ğÊı<Ñù±¾Êı
-		std::vector<Point2f> centers;
-		cout << points.at<float>(0,0) << endl;
-		cout << points.at<float>(10,0) << endl;
-		cout << "---1---" << endl;
-		// 2. Ëæ»úÉú³ÉÊäÈëÑù±¾
-		/* generate random sample from multigaussian distribution */
-		for (k = 0; k < clusterCount; k++)
-		{
-			Point center;
-			center.x = rng.uniform(0, img.cols);
-			center.y = rng.uniform(0, img.rows);
-			// ¶ÔÑù±¾pointsÖ¸¶¨ĞĞ½øĞĞ¸³Öµ
-			Mat pointChunk = points.rowRange(k*sampleCount / clusterCount,
-				k == clusterCount - 1 ? sampleCount :
-				(k + 1)*sampleCount / clusterCount);
-			cout << points.at<float>(0, 0) << endl;
-			cout << points.at<float>(10, 0) << endl;
-			cout << "---2---" << endl;
-			// rng.fillº¯Êı£¬»áÒÔcenterµãÎªÖĞĞÄ£¬²úÉú¸ßË¹·Ö²¼µÄËæ»úµã(Î»ÖÃµã£©£¬²¢°ÑÎ»ÖÃµã±£´æÔÚ¾ØÕópointChunkÖĞ¡£
-			rng.fill(pointChunk, RNG::NORMAL, Scalar(center.x, center.y), Scalar(img.cols*0.05, img.rows*0.05));
-		}
-		//´òÂÒpointsÖĞµÄÖµ£¬
-		//µÚ¶ş¸ö²ÎÊı±íÊ¾Ëæ»ú½»»»ÔªËØµÄÊıÁ¿µÄËõ·ÅÒò×Ó£¬
-		//×ÜµÄ½»»»´ÎÊıdst.rows*dst.cols*iterFactor£¬
-		//µÚÈı¸ö²ÎÊıÊÇ¸öËæ»ú·¢ÉúÆ÷£¬¾ö¶¨Ñ¡ÄÇÁ½¸öÔªËØ½»»»¡£
-		cout << points.at<float>(0, 0) << endl;
-		cout << points.at<float>(10, 0) << endl;
-		cout <<"---3---" << endl;
-		randShuffle(points, 1, &rng);
-		cout << points.at<float>(0, 0) << endl;
-		cout << points.at<float>(10, 0) << endl;
-		cout << "---4---" << endl;
-		
-		// 3. Ö´ĞĞk-means()Ëã·¨
-		// ÊäÈë£ºpointsÎªÊäÈëÑù±¾¾ØÕó£¬Ã¿Ò»ĞĞÎªÒ»¸öÑù±¾
-		// ÊäÈë£ºclusterCountÎªÀà±ğÊı
-		// Êä³ö£ºlabelsÊÇÒ»¸öÒ»Î¬¾ØÕó£¬ÆäsizeºÍpointsÒ»Ñù£¬´æ´¢Ã¿¸öÊäÈëÑù±¾Ö´ĞĞkmeansËã·¨ºóµÄÀà±êÇ©£¬ÖµÎª0µ½clusterCount-1
-		// ÊäÈë£ºTermCriteria()µü´úÖÕÖ¹Ìõ¼ş£º
-		//		TermCriteria::COUNT£ºµ±µü´ú´ïµ½×î´óµü´ú´ÎÊıÊ±ÖÕÖ¹£¬²ÎÊıÎªint max_Count=10
-		//		TermCriteria::EPS£ºµ±µü´ú´ïµ½ÆÚÍû¾«¶ÈÊ±ÖÕÖ¹£¬²ÎÊıÎªdouble epsilon=1.0
-		// Êä³ö£ºcentersÖĞ´æ·ÅµÄÊÇkmeansËã·¨½áÊøºóÃ¿¸öÀà±ğµÄÖĞĞÄÎ»ÖÃ
-		// ·µ»ØÖµ£ºcompactness¾ÛÀàÍê³ÉºóµÄÀà±ğ½ô´ÕĞÔ¶ÈÁ¿Öµ
-		double compactness = kmeans(points, clusterCount, labels,
-			TermCriteria(TermCriteria::EPS + TermCriteria::COUNT, 10, 1.0),
-			3, KMEANS_PP_CENTERS, centers);
+int main() {
+    // 1. åˆå§‹åŒ–å‚æ•°
+    const int MAX_CLUSTERS = 5;  // æœ€å¤§ç±»åˆ«æ•°
+    Scalar colorTab[] = {Scalar(0, 0, 255), Scalar(0, 255, 0), Scalar(255, 100, 100), Scalar(255, 0, 255),
+                         Scalar(0, 255, 255)};
+    Mat img(500, 500, CV_8UC3);  // æ–°å»ºç”»å¸ƒ
+    img = Scalar::all(255);      // å°†ç”»å¸ƒè®¾ç½®ä¸ºç™½è‰²
+    RNG rng(12345);              // éšæœºæ•°äº§ç”Ÿå™¨
+    // ä¸»å¾ªç¯
+    for (;;) {
+        // åˆå§‹åŒ–ç±»åˆ«æ•°
+        int k, clusterCount = rng.uniform(2, MAX_CLUSTERS + 1);  // åœ¨[2, MAX_CLUSTERS + 1)åŒºé—´ï¼Œéšæœºç”Ÿæˆä¸€ä¸ªæ•´æ•°
+        // åˆå§‹åŒ–æ ·æœ¬æ•°
+        int i, sampleCount = rng.uniform(1, 1001);  // åœ¨[1, 1001)åŒºé—´ï¼Œéšæœºç”Ÿæˆä¸€ä¸ªæ•´æ•°
+        Mat points(sampleCount, 1, CV_32FC2);       //  è¾“å…¥æ ·æœ¬çŸ©é˜µï¼šsampleCountè¡Œ*1åˆ—ï¼Œæµ®ç‚¹å‹ï¼Œ2é€šé“
+        Mat labels;                                 // èšç±»ç»“æœç´¢å¼•çŸ©é˜µ
+        clusterCount = MIN(clusterCount, sampleCount);  // èšç±»ç±»åˆ«æ•°<æ ·æœ¬æ•°
+        std::vector<Point2f> centers;
+        cout << points.at<float>(0, 0) << endl;
+        cout << points.at<float>(10, 0) << endl;
+        cout << "---1---" << endl;
+        // 2. éšæœºç”Ÿæˆè¾“å…¥æ ·æœ¬
+        /* generate random sample from multigaussian distribution */
+        for (k = 0; k < clusterCount; k++) {
+            Point center;
+            center.x = rng.uniform(0, img.cols);
+            center.y = rng.uniform(0, img.rows);
+            // å¯¹æ ·æœ¬pointsæŒ‡å®šè¡Œè¿›è¡Œèµ‹å€¼
+            Mat pointChunk =
+              points.rowRange(k * sampleCount / clusterCount,
+                              k == clusterCount - 1 ? sampleCount : (k + 1) * sampleCount / clusterCount);
+            cout << points.at<float>(0, 0) << endl;
+            cout << points.at<float>(10, 0) << endl;
+            cout << "---2---" << endl;
+            // rng.fillå‡½æ•°ï¼Œä¼šä»¥centerç‚¹ä¸ºä¸­å¿ƒï¼Œäº§ç”Ÿé«˜æ–¯åˆ†å¸ƒçš„éšæœºç‚¹(ä½ç½®ç‚¹ï¼‰ï¼Œå¹¶æŠŠä½ç½®ç‚¹ä¿å­˜åœ¨çŸ©é˜µpointChunkä¸­ã€‚
+            rng.fill(pointChunk, RNG::NORMAL, Scalar(center.x, center.y), Scalar(img.cols * 0.05, img.rows * 0.05));
+        }
+        // æ‰“ä¹±pointsä¸­çš„å€¼ï¼Œ
+        // ç¬¬äºŒä¸ªå‚æ•°è¡¨ç¤ºéšæœºäº¤æ¢å…ƒç´ çš„æ•°é‡çš„ç¼©æ”¾å› å­ï¼Œ
+        // æ€»çš„äº¤æ¢æ¬¡æ•°dst.rows*dst.cols*iterFactorï¼Œ
+        // ç¬¬ä¸‰ä¸ªå‚æ•°æ˜¯ä¸ªéšæœºå‘ç”Ÿå™¨ï¼Œå†³å®šé€‰é‚£ä¸¤ä¸ªå…ƒç´ äº¤æ¢ã€‚
+        cout << points.at<float>(0, 0) << endl;
+        cout << points.at<float>(10, 0) << endl;
+        cout << "---3---" << endl;
+        randShuffle(points, 1, &rng);
+        cout << points.at<float>(0, 0) << endl;
+        cout << points.at<float>(10, 0) << endl;
+        cout << "---4---" << endl;
 
-		// 4.»æÖÆ¾ÛÀà½á¹û
-		for (i = 0; i < sampleCount; i++)
-		{
-			int clusterIdx = labels.at<int>(i);
-			Point ipt = points.at<Point2f>(i);
-			circle(img, ipt, 2, colorTab[clusterIdx], FILLED, LINE_AA);
-		}
-		for (i = 0; i < (int)centers.size(); ++i)
-		{
-			Point2f c = centers[i];
-			circle(img, c, 40, colorTab[i], 1, LINE_AA);
-		}
-		// 5.Êä³ö/ÏÔÊ¾¾ÛÀà½á¹û
-		cout << "Compactness: " << compactness << endl;
-		imshow("clusters", img);
-		char key = (char)waitKey();
-		if (key == 27 || key == 'q' || key == 'Q') // 'ESC'
-			break;
-	}
-	return 0;
+        // 3. æ‰§è¡Œk-means()ç®—æ³•
+        // è¾“å…¥ï¼špointsä¸ºè¾“å…¥æ ·æœ¬çŸ©é˜µï¼Œæ¯ä¸€è¡Œä¸ºä¸€ä¸ªæ ·æœ¬
+        // è¾“å…¥ï¼šclusterCountä¸ºç±»åˆ«æ•°
+        // è¾“å‡ºï¼šlabelsæ˜¯ä¸€ä¸ªä¸€ç»´çŸ©é˜µï¼Œå…¶sizeå’Œpointsä¸€æ ·ï¼Œå­˜å‚¨æ¯ä¸ªè¾“å…¥æ ·æœ¬æ‰§è¡Œkmeansç®—æ³•åçš„ç±»æ ‡ç­¾ï¼Œå€¼ä¸º0åˆ°clusterCount-1
+        // è¾“å…¥ï¼šTermCriteria()è¿­ä»£ç»ˆæ­¢æ¡ä»¶ï¼š
+        //		TermCriteria::COUNTï¼šå½“è¿­ä»£è¾¾åˆ°æœ€å¤§è¿­ä»£æ¬¡æ•°æ—¶ç»ˆæ­¢ï¼Œå‚æ•°ä¸ºint max_Count=10
+        //		TermCriteria::EPSï¼šå½“è¿­ä»£è¾¾åˆ°æœŸæœ›ç²¾åº¦æ—¶ç»ˆæ­¢ï¼Œå‚æ•°ä¸ºdouble epsilon=1.0
+        // è¾“å‡ºï¼šcentersä¸­å­˜æ”¾çš„æ˜¯kmeansç®—æ³•ç»“æŸåæ¯ä¸ªç±»åˆ«çš„ä¸­å¿ƒä½ç½®
+        // è¿”å›å€¼ï¼šcompactnessèšç±»å®Œæˆåçš„ç±»åˆ«ç´§å‡‘æ€§åº¦é‡å€¼
+        double compactness =
+          kmeans(points, clusterCount, labels, TermCriteria(TermCriteria::EPS + TermCriteria::COUNT, 10, 1.0), 3,
+                 KMEANS_PP_CENTERS, centers);
+
+        // 4.ç»˜åˆ¶èšç±»ç»“æœ
+        for (i = 0; i < sampleCount; i++) {
+            int clusterIdx = labels.at<int>(i);
+            Point ipt = points.at<Point2f>(i);
+            circle(img, ipt, 2, colorTab[clusterIdx], FILLED, LINE_AA);
+        }
+        for (i = 0; i < (int)centers.size(); ++i) {
+            Point2f c = centers[i];
+            circle(img, c, 40, colorTab[i], 1, LINE_AA);
+        }
+        // 5.è¾“å‡º/æ˜¾ç¤ºèšç±»ç»“æœ
+        cout << "Compactness: " << compactness << endl;
+        imshow("clusters", img);
+        char key = (char)waitKey();
+        if (key == 27 || key == 'q' || key == 'Q')  // 'ESC'
+            break;
+    }
+    return 0;
 }
 
 #endif

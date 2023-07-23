@@ -1,4 +1,4 @@
-// KNN.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌĞòµÄÈë¿Úµã¡£
+// KNN.cpp : å®šä¹‰æ§åˆ¶å°åº”ç”¨ç¨‹åºçš„å…¥å£ç‚¹ã€‚
 //
 
 #include "stdafx.h"
@@ -12,48 +12,48 @@ using namespace std;
 //#define CLASSIFIER
 #define REGRESSION
 
-// Éú³ÉÑµÁ·¼¯Óë²âÊÔ¼¯µÄº¯Êı
+// ç”Ÿæˆè®­ç»ƒé›†ä¸æµ‹è¯•é›†çš„å‡½æ•°
 void generateDataSet(Mat &img, Mat &trainData, Mat &testData, Mat &trainLabel, Mat &testLabel, int train_rows=4);
 
 #ifdef CLASSIFIER
 int main()
 {
-	// 1.¶ÁÈ¡Ô­Ê¼Êı¾İ
-	Mat img = imread("digits.png", 1); // Ê¹ÓÃÍ¼Æ¬¸ñÊ½µÄMNISTÊı¾İ¼¯£¨²¿·Ö£©
+	// 1.è¯»å–åŸå§‹æ•°æ®
+	Mat img = imread("digits.png", 1); // ä½¿ç”¨å›¾ç‰‡æ ¼å¼çš„MNISTæ•°æ®é›†ï¼ˆéƒ¨åˆ†ï¼‰
 	cvtColor(img, img, CV_BGR2GRAY);
 	
-	// 2.ÖÆ×÷ÑµÁ·¼¯
-	// ÉèÖÃÑµÁ·¼¯¡¢²âÊÔ¼¯´óĞ¡
+	// 2.åˆ¶ä½œè®­ç»ƒé›†
+	// è®¾ç½®è®­ç»ƒé›†ã€æµ‹è¯•é›†å¤§å°
 	int train_sample_count = 4000;
 	int test_sample_count = 1000;
-	int train_rows = 4; //  Ã¿ÀàÓÃÓÚÑµÁ·µÄĞĞÊı£¬4000/10Àà/100(Ñù±¾/ĞĞ)=4
-	Mat trainData, testData; // ÉêÃ÷ÑµÁ·¼¯Óë²âÊÔ¼¯
-	Mat trainLabel(train_sample_count, 1, CV_32FC1); // ÉêÃ÷ÑµÁ·¼¯±êÇ©
-	Mat testLabel(test_sample_count, 1, CV_32FC1);   // ÉêÃ÷²âÊÔ¼¯±êÇ©
-	// Éú³ÉÑµÁ·¼¯¡¢²âÊÔ¼¯Óë±êÇ©
+	int train_rows = 4; //  æ¯ç±»ç”¨äºè®­ç»ƒçš„è¡Œæ•°ï¼Œ4000/10ç±»/100(æ ·æœ¬/è¡Œ)=4
+	Mat trainData, testData; // ç”³æ˜è®­ç»ƒé›†ä¸æµ‹è¯•é›†
+	Mat trainLabel(train_sample_count, 1, CV_32FC1); // ç”³æ˜è®­ç»ƒé›†æ ‡ç­¾
+	Mat testLabel(test_sample_count, 1, CV_32FC1);   // ç”³æ˜æµ‹è¯•é›†æ ‡ç­¾
+	// ç”Ÿæˆè®­ç»ƒé›†ã€æµ‹è¯•é›†ä¸æ ‡ç­¾
 	generateDataSet(img, trainData, testData, trainLabel, testLabel/*, train_rows*/);
 
-	// 3.´´½¨²¢³õÊ¼»¯KNNÄ£ĞÍ
-	cv::Ptr<cv::ml::KNearest> knn = cv::ml::KNearest::create(); // ´´½¨knnÄ£ĞÍ
-	int K = 5; // ¿¼²ìµÄ×îÁÚ½üÑù±¾¸öÊı
+	// 3.åˆ›å»ºå¹¶åˆå§‹åŒ–KNNæ¨¡å‹
+	cv::Ptr<cv::ml::KNearest> knn = cv::ml::KNearest::create(); // åˆ›å»ºknnæ¨¡å‹
+	int K = 5; // è€ƒå¯Ÿçš„æœ€é‚»è¿‘æ ·æœ¬ä¸ªæ•°
 	knn->setDefaultK(K);
-	knn->setIsClassifier(true); // ÓÃÓÚ·ÖÀà
+	knn->setIsClassifier(true); // ç”¨äºåˆ†ç±»
 	knn->setAlgorithmType(cv::ml::KNearest::BRUTE_FORCE);
 
-	// 4.ÑµÁ·
-	printf("¿ªÊ¼ÑµÁ·...\n");
+	// 4.è®­ç»ƒ
+	printf("å¼€å§‹è®­ç»ƒ...\n");
 	//printf("trainData : rows, cols = %d, %d\n", trainData.rows, trainData.cols);
 	//printf("trainLabel: rows, cols = %d, %d\n", trainLabel.rows, trainLabel.cols);
 	knn->train(trainData, cv::ml::ROW_SAMPLE, trainLabel);
-	printf("ÑµÁ·Íê³É\n\n");
+	printf("è®­ç»ƒå®Œæˆ\n\n");
 
-	// 5.²âÊÔ
-	printf("¿ªÊ¼²âÊÔ...\n");
+	// 5.æµ‹è¯•
+	printf("å¼€å§‹æµ‹è¯•...\n");
 	Mat result;
 	knn->findNearest(testData, K, result);
 	//printf("test samples = %d\n", testData.rows);
 	//printf("result rows  = %d\n", result.rows);
-	// ¾«¶È
+	// ç²¾åº¦
 	int count = 0;
 	for (int i = 0; i < test_sample_count; i++)
 	{
@@ -65,10 +65,10 @@ int main()
 			count++;			
 		}
 		else
-			printf("label: %d, predict: %d ¡Á\n", actual, predict);
+			printf("label: %d, predict: %d Ã—\n", actual, predict);
 	}
-	printf("²âÊÔÍê³É\n");
-	// Êä³ö½á¹û
+	printf("æµ‹è¯•å®Œæˆ\n");
+	// è¾“å‡ºç»“æœ
 	double accuracy = double(count) / double(test_sample_count);
 	printf("K = %d\n", K);
 	printf("accuracy = %.4f\n", accuracy);
@@ -80,42 +80,42 @@ int main()
 #ifdef REGRESSION
 int main()
 {
-	// 1.¶ÁÈ¡Ô­Ê¼Êı¾İ
+	// 1.è¯»å–åŸå§‹æ•°æ®
 	Mat img = imread("digits.png", 1);
 	cvtColor(img, img, CV_BGR2GRAY);
 
-	// 2.ÖÆ×÷ÑµÁ·¼¯
-	// ÉèÖÃÑµÁ·¼¯¡¢²âÊÔ¼¯´óĞ¡
+	// 2.åˆ¶ä½œè®­ç»ƒé›†
+	// è®¾ç½®è®­ç»ƒé›†ã€æµ‹è¯•é›†å¤§å°
 	int train_sample_count = 4000;
 	int test_sample_count = 1000;
-	int train_rows = 4; //  Ã¿ÀàÓÃÓÚÑµÁ·µÄĞĞÊı£¬4000/10Àà/100(Ñù±¾/ĞĞ)=4
-	Mat trainData, testData; // ÉêÃ÷ÑµÁ·¼¯Óë²âÊÔ¼¯
-	Mat trainLabel(train_sample_count, 1, CV_32FC1); // ÉêÃ÷ÑµÁ·¼¯±êÇ©
-	Mat testLabel(test_sample_count, 1, CV_32FC1);   // ÉêÃ÷²âÊÔ¼¯±êÇ©
-													 // Éú³ÉÑµÁ·¼¯¡¢²âÊÔ¼¯Óë±êÇ©
+	int train_rows = 4; //  æ¯ç±»ç”¨äºè®­ç»ƒçš„è¡Œæ•°ï¼Œ4000/10ç±»/100(æ ·æœ¬/è¡Œ)=4
+	Mat trainData, testData; // ç”³æ˜è®­ç»ƒé›†ä¸æµ‹è¯•é›†
+	Mat trainLabel(train_sample_count, 1, CV_32FC1); // ç”³æ˜è®­ç»ƒé›†æ ‡ç­¾
+	Mat testLabel(test_sample_count, 1, CV_32FC1);   // ç”³æ˜æµ‹è¯•é›†æ ‡ç­¾
+													 // ç”Ÿæˆè®­ç»ƒé›†ã€æµ‹è¯•é›†ä¸æ ‡ç­¾
 	generateDataSet(img, trainData, testData, trainLabel, testLabel/*, train_rows*/);
 
-	// 3.´´½¨²¢³õÊ¼»¯KNNÄ£ĞÍ
-	cv::Ptr<cv::ml::KNearest> knn = cv::ml::KNearest::create(); // ´´½¨knnÄ£ĞÍ
-	int K = 5; // ¿¼²ìµÄ×îÁÚ½üÑù±¾¸öÊı
+	// 3.åˆ›å»ºå¹¶åˆå§‹åŒ–KNNæ¨¡å‹
+	cv::Ptr<cv::ml::KNearest> knn = cv::ml::KNearest::create(); // åˆ›å»ºknnæ¨¡å‹
+	int K = 5; // è€ƒå¯Ÿçš„æœ€é‚»è¿‘æ ·æœ¬ä¸ªæ•°
 	knn->setDefaultK(K);
-	knn->setIsClassifier(false); // ÓÃÓÚ»Ø¹é
+	knn->setIsClassifier(false); // ç”¨äºå›å½’
 	knn->setAlgorithmType(cv::ml::KNearest::BRUTE_FORCE);
 
-	// 4.ÑµÁ·
-	printf("¿ªÊ¼ÑµÁ·...\n");
+	// 4.è®­ç»ƒ
+	printf("å¼€å§‹è®­ç»ƒ...\n");
 	//printf("trainData : rows, cols = %d, %d\n", trainData.rows, trainData.cols);
 	//printf("trainLabel: rows, cols = %d, %d\n", trainLabel.rows, trainLabel.cols);
 	knn->train(trainData, cv::ml::ROW_SAMPLE, trainLabel);
-	printf("ÑµÁ·Íê³É\n\n");
+	printf("è®­ç»ƒå®Œæˆ\n\n");
 
-	// 5.²âÊÔ
-	printf("¿ªÊ¼²âÊÔ...\n");
+	// 5.æµ‹è¯•
+	printf("å¼€å§‹æµ‹è¯•...\n");
 	Mat result;
 	knn->findNearest(testData, K, result);
 	//printf("test samples = %d\n", testData.rows);
 	//printf("result rows  = %d\n", result.rows);
-	// ¾«¶È
+	// ç²¾åº¦
 	int t = 0;
 	int f = 0;
 	for (int i = 0; i < test_sample_count; i++)
@@ -129,12 +129,12 @@ int main()
 		}
 		else
 		{
-			printf("label: %d, predict: %d ¡Á\n", actual, predict);
+			printf("label: %d, predict: %d Ã—\n", actual, predict);
 			f++;
 		}			
 	}
-	printf("²âÊÔÍê³É\n");
-	// Êä³ö½á¹û
+	printf("æµ‹è¯•å®Œæˆ\n");
+	// è¾“å‡ºç»“æœ
 	float accuracy = (t * 1.0) / (t + f);
 	printf("K = %d\n", K);
 	printf("accuracy = %.4f\n", accuracy);
@@ -143,30 +143,30 @@ int main()
 }
 #endif
 
-/** @Éú³ÉÄ£ĞÍµÄÑµÁ·¼¯Óë²âÊÔ¼¯
-	²ÎÊı1£ºimg       £¬ÊäÈë£¬»Ò¶ÈÍ¼Ïñ£¬ÓÉ¹Ì¶¨³ß´çĞ¡Í¼Æ´½Ó³ÉµÄ´óÍ¼£¬²»Í¬Àà±ğµÄĞ¡Í¼ÏñÒÀ´ÎÅÅÁĞ
-	²ÎÊı2£ºtrainData £¬Êä³ö£¬ÑµÁ·¼¯£¬Î¬¶ÈÎª£ºÑµÁ·Ñù±¾Êı * µ¥¸öÑù±¾ÌØÕ÷Êı£¬CV_32FC3ÀàĞÍ
-	²ÎÊı3£ºtestData  £¬Êä³ö£¬²âÊÔ¼¯£¬Î¬¶ÈÎª£º²âÊÔÑù±¾Êı * µ¥¸öÑù±¾ÌØÕ÷Êı£¬CV_32FC3ÀàĞÍ
-	²ÎÊı4£ºtrainLabel£¬Êä³ö£¬ÑµÁ·¼¯±êÇ©£¬Î¬¶ÈÎª£ºÑµÁ·Ñù±¾Êı * 1£¬CV_32FC1ÀàĞÍ
-	²ÎÊı4£ºtestLabel £¬Êä³ö£¬²âÊÔ¼¯±êÇ©£¬Î¬¶ÈÎª£º²âÊÔÑù±¾Êı * 1£¬CV_32FC1ÀàĞÍ
-	²ÎÊı5£ºtrain_rows£¬ÊäÈë£¬ÓÃÓÚÑµÁ·µÄÑù±¾ËùÕ¼ĞĞÊı£¬Ä¬ÈÏ4ĞĞÓÃÓÚÑµÁ·£¬1ĞĞÓÃÓÚ²âÊÔ
+/** @ç”Ÿæˆæ¨¡å‹çš„è®­ç»ƒé›†ä¸æµ‹è¯•é›†
+	å‚æ•°1ï¼šimg       ï¼Œè¾“å…¥ï¼Œç°åº¦å›¾åƒï¼Œç”±å›ºå®šå°ºå¯¸å°å›¾æ‹¼æ¥æˆçš„å¤§å›¾ï¼Œä¸åŒç±»åˆ«çš„å°å›¾åƒä¾æ¬¡æ’åˆ—
+	å‚æ•°2ï¼štrainData ï¼Œè¾“å‡ºï¼Œè®­ç»ƒé›†ï¼Œç»´åº¦ä¸ºï¼šè®­ç»ƒæ ·æœ¬æ•° * å•ä¸ªæ ·æœ¬ç‰¹å¾æ•°ï¼ŒCV_32FC3ç±»å‹
+	å‚æ•°3ï¼štestData  ï¼Œè¾“å‡ºï¼Œæµ‹è¯•é›†ï¼Œç»´åº¦ä¸ºï¼šæµ‹è¯•æ ·æœ¬æ•° * å•ä¸ªæ ·æœ¬ç‰¹å¾æ•°ï¼ŒCV_32FC3ç±»å‹
+	å‚æ•°4ï¼štrainLabelï¼Œè¾“å‡ºï¼Œè®­ç»ƒé›†æ ‡ç­¾ï¼Œç»´åº¦ä¸ºï¼šè®­ç»ƒæ ·æœ¬æ•° * 1ï¼ŒCV_32FC1ç±»å‹
+	å‚æ•°4ï¼štestLabel ï¼Œè¾“å‡ºï¼Œæµ‹è¯•é›†æ ‡ç­¾ï¼Œç»´åº¦ä¸ºï¼šæµ‹è¯•æ ·æœ¬æ•° * 1ï¼ŒCV_32FC1ç±»å‹
+	å‚æ•°5ï¼štrain_rowsï¼Œè¾“å…¥ï¼Œç”¨äºè®­ç»ƒçš„æ ·æœ¬æ‰€å è¡Œæ•°ï¼Œé»˜è®¤4è¡Œç”¨äºè®­ç»ƒï¼Œ1è¡Œç”¨äºæµ‹è¯•
 */
 void generateDataSet(Mat &img, Mat &trainData, Mat &testData, Mat &trainLabel, Mat &testLabel, int train_rows)
 {
-	// ³õÊ¼»¯Í¼ÏñÖĞÇĞÆ¬Í¼ÓëÆäËû²ÎÊı
-	int width_slice = 20;  // µ¥¸öÊı×ÖÇĞÆ¬Í¼ÏñµÄ¿í¶È
-	int height_slice = 20; // µ¥¸öÊı×ÖÇĞÆ¬Í¼ÏñµÄ¸ß¶È
-	int row_sample = 100;  // Ã¿ĞĞÑù±¾Êı100·ùĞ¡Í¼
-	int col_sample =  50;  // Ã¿ÁĞÑù±¾Êı50·ùĞ¡Í¼
-	int row_single_number = 5; // µ¥¸öÊı×ÖÕ¼5ĞĞ
-	int test_rows = row_single_number - train_rows; // ²âÊÔÑù±¾ËùÕ¼ĞĞÊı
+	// åˆå§‹åŒ–å›¾åƒä¸­åˆ‡ç‰‡å›¾ä¸å…¶ä»–å‚æ•°
+	int width_slice = 20;  // å•ä¸ªæ•°å­—åˆ‡ç‰‡å›¾åƒçš„å®½åº¦
+	int height_slice = 20; // å•ä¸ªæ•°å­—åˆ‡ç‰‡å›¾åƒçš„é«˜åº¦
+	int row_sample = 100;  // æ¯è¡Œæ ·æœ¬æ•°100å¹…å°å›¾
+	int col_sample =  50;  // æ¯åˆ—æ ·æœ¬æ•°50å¹…å°å›¾
+	int row_single_number = 5; // å•ä¸ªæ•°å­—å 5è¡Œ
+	int test_rows = row_single_number - train_rows; // æµ‹è¯•æ ·æœ¬æ‰€å è¡Œæ•°
 
-	Mat trainMat(train_rows * 20 *10, img.cols, CV_8UC1); // ´æ·ÅËùÓĞÑµÁ·Í¼Æ¬
+	Mat trainMat(train_rows * 20 *10, img.cols, CV_8UC1); // å­˜æ”¾æ‰€æœ‰è®­ç»ƒå›¾ç‰‡
 	trainMat = Scalar::all(0);
-	Mat testMat(test_rows * 20 * 10, img.cols, CV_8UC1);  // ´æ·ÅËùÓĞ²âÊÔÍ¼Æ¬
+	Mat testMat(test_rows * 20 * 10, img.cols, CV_8UC1);  // å­˜æ”¾æ‰€æœ‰æµ‹è¯•å›¾ç‰‡
 	testMat = Scalar::all(0);
 
-	// Éú³É²âÊÔ¡¢ÑµÁ·´óÍ¼
+	// ç”Ÿæˆæµ‹è¯•ã€è®­ç»ƒå¤§å›¾
 	for (int i = 1; i <= 10 ; i++)
 	{
 		Mat tempTrainMat = img.rowRange((i - 1) * row_single_number * 20, (i * row_single_number - 1) * 20).clone();
@@ -181,59 +181,59 @@ void generateDataSet(Mat &img, Mat &trainData, Mat &testData, Mat &trainLabel, M
 		// test
 		cv::Mat roi_test = testMat(Rect(0, (i - 1) * test_rows * 20, tempTestMat.cols, tempTestMat.rows));
 		Mat mask_test(roi_test.rows, roi_test.cols, roi_test.depth(), Scalar(1));
-		// ÌáÈ¡µÄÑµÁ·²âÊÔĞĞ·Ö±ğ¸´ÖÆµ½ÑµÁ·Í¼Óë²âÊÔÍ¼ÖĞ
+		// æå–çš„è®­ç»ƒæµ‹è¯•è¡Œåˆ†åˆ«å¤åˆ¶åˆ°è®­ç»ƒå›¾ä¸æµ‹è¯•å›¾ä¸­
 		tempTrainMat.copyTo(roi_train, mask_train);
 		tempTestMat.copyTo(roi_test, mask_test);
-		//ÏÔÊ¾Ğ§¹ûÍ¼
+		//æ˜¾ç¤ºæ•ˆæœå›¾
 		imshow("trainMat", trainMat);
 		imshow("tesetMat", testMat);
 		cv::waitKey(10);
 	}
-	// ´æ´óÍ¼
+	// å­˜å¤§å›¾
 	imwrite("trainMat.jpg", trainMat);
 	imwrite("testMat.jpg", testMat);
 
 
-	// Éú³ÉÑµÁ·¡¢²âÊÔÊı¾İ
-	printf("¿ªÊ¼Éú³ÉÑµÁ·¡¢²âÊÔÊı¾İ...\n");
+	// ç”Ÿæˆè®­ç»ƒã€æµ‹è¯•æ•°æ®
+	printf("å¼€å§‹ç”Ÿæˆè®­ç»ƒã€æµ‹è¯•æ•°æ®...\n");
 	Rect roi;
-	for (int i = 1; i <= col_sample; i++) // 50ĞĞ£º1-50ĞĞÊı×ÖÍ¼Ïñ
+	for (int i = 1; i <= col_sample; i++) // 50è¡Œï¼š1-50è¡Œæ•°å­—å›¾åƒ
 	{
-		//printf("µÚ%dĞĞ: \n", i);
-		for (int j = 1; j <= row_sample; j++) // 100ÁĞ£º1-100ÁĞÊı×ÖÍ¼Ïñ
+		//printf("ç¬¬%dè¡Œ: \n", i);
+		for (int j = 1; j <= row_sample; j++) // 100åˆ—ï¼š1-100åˆ—æ•°å­—å›¾åƒ
 		{
-			// µÚĞĞÎªÑµÁ·¼¯
-			Mat temp_single_num; // ¶ÁÈ¡Ò»¸öÊı×ÖÍ¼Ïñ
-			// ¹Ø¼ü²½Öè£ºµ±Ç°ÇĞÆ¬Êı×ÖµÄÎ»ÖÃÇøÓò
+			// ç¬¬è¡Œä¸ºè®­ç»ƒé›†
+			Mat temp_single_num; // è¯»å–ä¸€ä¸ªæ•°å­—å›¾åƒ
+			// å…³é”®æ­¥éª¤ï¼šå½“å‰åˆ‡ç‰‡æ•°å­—çš„ä½ç½®åŒºåŸŸ
 			roi = Rect((j-1)*width_slice, (i-1)*height_slice, width_slice, height_slice); 
-			temp_single_num = img(roi).clone(); // ×¢Òâ´Ë´¦ĞèÒªÊ¹ÓÃÉî¿½±´.clone()£¬ºóÃæ²ÅÄÜ¸Ä±äÇĞÆ¬Í¼µÄĞÎ×´£¬·ñÔòroiÄÚ´æÇøÓò²»Á¬Ğø
+			temp_single_num = img(roi).clone(); // æ³¨æ„æ­¤å¤„éœ€è¦ä½¿ç”¨æ·±æ‹·è´.clone()ï¼Œåé¢æ‰èƒ½æ”¹å˜åˆ‡ç‰‡å›¾çš„å½¢çŠ¶ï¼Œå¦åˆ™roiå†…å­˜åŒºåŸŸä¸è¿ç»­
 			//imshow("slice", temp_single_num);
 			//waitKey(1);
 			if (i % 5 != 0) 
 			//{
-				// ÆğÊ¼ĞĞ¼ÇÎª1-4,6-9,11-14...46-49ĞĞÎª²âÊÔ¼¯
-				// ½«µ¥¸öÊı×ÖÇĞÆ¬À­³ÉÏòÁ¿Á¬Ğø·ÅÈëMatÈİÆ÷ÖĞ
+				// èµ·å§‹è¡Œè®°ä¸º1-4,6-9,11-14...46-49è¡Œä¸ºæµ‹è¯•é›†
+				// å°†å•ä¸ªæ•°å­—åˆ‡ç‰‡æ‹‰æˆå‘é‡è¿ç»­æ”¾å…¥Matå®¹å™¨ä¸­
 				trainData.push_back(temp_single_num.reshape(0, 1)); 
 			//}
 			else
-			//{	// ÆğÊ¼ĞĞ¼ÇÎª1£¬µÚ5,10,15...50ĞĞÎª²âÊÔ¼¯
+			//{	// èµ·å§‹è¡Œè®°ä¸º1ï¼Œç¬¬5,10,15...50è¡Œä¸ºæµ‹è¯•é›†
 				testData.push_back(temp_single_num.reshape(0, 1));  
 			//}	
 		}
 	}
 	trainData.convertTo(trainData, CV_32FC1);
 	testData.convertTo(testData, CV_32FC1);
-	printf("ÑµÁ·¡¢²âÊÔÊı¾İÒÑÉú³É\n\n");
+	printf("è®­ç»ƒã€æµ‹è¯•æ•°æ®å·²ç”Ÿæˆ\n\n");
 
-	// Éú³É±êÇ©
-	printf("¿ªÊ¼Éú³É±êÇ©Êı¾İ...\n");
+	// ç”Ÿæˆæ ‡ç­¾
+	printf("å¼€å§‹ç”Ÿæˆæ ‡ç­¾æ•°æ®...\n");
 	for (int i = 1; i <= 10; i++)
 	{		
 		// train label
-		Mat tmep_label_train = Mat::ones(train_rows * row_sample, 1, CV_32FC1); // ÁÙÊ±´æ·Åµ±Ç°±êÇ©µÄ¾ØÕó
-		tmep_label_train = tmep_label_train * (i - 1); // ±êÇ©´Ó0¿ªÊ¼
+		Mat tmep_label_train = Mat::ones(train_rows * row_sample, 1, CV_32FC1); // ä¸´æ—¶å­˜æ”¾å½“å‰æ ‡ç­¾çš„çŸ©é˜µ
+		tmep_label_train = tmep_label_train * (i - 1); // æ ‡ç­¾ä»0å¼€å§‹
 		Mat temp = trainLabel.rowRange((i - 1)* train_rows * row_sample, i * train_rows * row_sample);
-		tmep_label_train.copyTo(temp); // ½«ÁÙÊ±±êÇ©¸´ÖÆµ½trainLabel¶ÔÓ¦ÇøÓò£¬ÒòÎªÇ³¿½±´£¬¸Ä±ätemp¼´¸Ä±ätrainLabel
+		tmep_label_train.copyTo(temp); // å°†ä¸´æ—¶æ ‡ç­¾å¤åˆ¶åˆ°trainLabelå¯¹åº”åŒºåŸŸï¼Œå› ä¸ºæµ…æ‹·è´ï¼Œæ”¹å˜tempå³æ”¹å˜trainLabel
 
 		// test label
 		Mat tmep_label_test = Mat::ones(test_rows * row_sample, 1, CV_32FC1);
@@ -241,7 +241,7 @@ void generateDataSet(Mat &img, Mat &trainData, Mat &testData, Mat &trainLabel, M
 		temp = testLabel.rowRange((i - 1)* test_rows * row_sample, i * test_rows * row_sample);
 		tmep_label_test.copyTo(temp);
 	}
-	printf("±êÇ©Êı¾İÒÑÉú³É\n\n");
+	printf("æ ‡ç­¾æ•°æ®å·²ç”Ÿæˆ\n\n");
 	//printf("trainLabel(1,400,401,800,801,4000) = %f, %f, %f, %f, %f, %f\n", trainLabel.at<float>(0), trainLabel.at<float>(399), trainLabel.at<float>(400), trainLabel.at<float>(799), trainLabel.at<float>(800), trainLabel.at<float>(3999));
 	//printf("testLabel (1,100,101,200,201,1000) = %f, %f, %f, %f, %f, %f\n", testLabel.at<float>(0), testLabel.at<float>(99), testLabel.at<float>(100), testLabel.at<float>(199), testLabel.at<float>(200), testLabel.at<float>(999));
 	//cv::waitKey();

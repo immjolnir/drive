@@ -7,6 +7,13 @@
 ## mlap(Machine Learning Algorithm Principle and Programming Practice)
 - See https://blog.51cto.com/u_14122493/5751515
 
+- file: ISO-8859 to UTF-8
+```
+$ file k-means.cpp
+$ iconv -f GB2312 -t UTF-8 -o k-means.cpp k-means.cpp
+```
+
+
 ## VOT(Visual Object Tracking (VOT) challenge)
 
 

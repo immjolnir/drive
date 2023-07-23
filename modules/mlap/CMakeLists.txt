@@ -1,39 +1,32 @@
 project(mlap CXX)
 
-#
-#add_library(${PROJECT_NAME} STATIC)
-#
-## Policy CMP0076 is not set: target_sources() command converts relative paths to absolute.
-## Run "cmake --help-policy CMP0076" for policy details.
-## Use the cmake_policy command to set the policy and suppress this warning.
-#set(SOURCES_DIR ${CATCH_DIR}/modules/project)
-#
-#target_sources(${PROJECT_NAME}
-#    PUBLIC
-#        ${SOURCES_DIR}/employee.h
-#    PRIVATE
-#        ${SOURCES_DIR}/employee.cpp
-#)
-#
-#target_include_directories(${PROJECT_NAME} BEFORE
-#    PUBLIC
-#        ${CMAKE_SOURCE_DIR}
-#        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-#)
-#
-#
-## Adds unit tests, and if enabled, cmake project tests.
-#if (ARCHETYPE_BUILD_TESTING)
-#    message(STATUS "Adding tests under ${PROJECT_NAME}Tests...")
-#
-#    set(TEST_SOURCES
-#        test_employee.cpp
-#        test_gmock.cpp
-#        test_mocking_free_function.cpp
-#    )
-#
-#    foreach(file ${TEST_SOURCES})
-#        add_testcase(${file})
-#    endforeach()
-#endif()
+set(SOURCES_DIR ${CATCH_DIR}/modules/${PROJECT_NAME})
+
+set(chapter1
+    ${SOURCES_DIR}/chapter1/cv_Mat_1.cpp
+    ${SOURCES_DIR}/chapter1/cv_Mat_2.cpp
+    ${SOURCES_DIR}/chapter1/cv_Point.cpp
+    ${SOURCES_DIR}/chapter1/cv_Rect.cpp
+    ${SOURCES_DIR}/chapter1/cv_RotateRect.cpp
+    ${SOURCES_DIR}/chapter1/cv_Vector.cpp
+)
+
+set(chapter2
+    ${SOURCES_DIR}/chapter2/2-1.cpp
+    ${SOURCES_DIR}/chapter2/2-2.cpp
+)
+
+set(chapter4
+    ${SOURCES_DIR}/chapter4_k-means_KNN/k-means.cpp
+)
+
+set(ALL_FILES
+    ${chapter1}
+    ${chapter2}
+    ${chapter4}
+)
+
+foreach(file ${ALL_FILES})
+    add_example(${file})
+endforeach()
 
