@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(modern_cpp_archetype CXX)
+project(drive CXX)
 
 option(ARCHETYPE_DEVELOPMENT_BUILD "Build tests, enable warnings, enable Werror, etc" OFF)
 option(ENABLE_DOXYGEN "Generating documentation from annotated C++ sources" OFF)
@@ -23,11 +23,14 @@ message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 
 
 
-string(REGEX REPLACE "(.*/)([a-zA-Z0-9_ ]+)(\.cpp)" "\\2" test_name test_employee.cpp)
-message(STATUS ">>> ${test_name}") # test_employee.cpp
-
-string(REGEX REPLACE "([a-zA-Z0-9_ ]+)(\.cpp)" "\\1" test_name test_employee.cpp)
+string(REGEX REPLACE "(.*/)([a-zA-Z0-9_ ]+)(\.cpp)" "\\2" test_name "fake-dir/test_employee.cpp")
 message(STATUS ">>> ${test_name}") # test_employee
+
+string(REGEX REPLACE "([a-zA-Z0-9_ ]+)(\.cpp)" "\\1" test_name "test_employee.cpp")
+message(STATUS ">>> ${test_name}") # test_employee
+
+string(REGEX REPLACE "([a-zA-Z0-9_ ]+)(\.cpp)" "\\1" test_name "fake_dir/test_employee.cpp")
+message(STATUS ">>> ${test_name}") # fake_dir/test_employee
 
 # GFlags
 find_package(Gflags REQUIRED)
@@ -59,6 +62,8 @@ include(${CMAKE_FILES}/CompilerWarnings.cmake)
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 include(${CMAKE_FILES}/utility.cmake)
+
+add_header()
 
 # Basic paths
 set(CATCH_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -126,3 +131,5 @@ add_subdirectory(modules)
 if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
+
+add_footer()

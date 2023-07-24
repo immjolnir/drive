@@ -1,24 +1,22 @@
 project(mlap CXX)
 
-set(SOURCES_DIR ${CATCH_DIR}/modules/${PROJECT_NAME})
-
 set(chapter1
-    ${SOURCES_DIR}/chapter1/cv_Mat_1.cpp
-    ${SOURCES_DIR}/chapter1/cv_Mat_2.cpp
-    ${SOURCES_DIR}/chapter1/cv_Point.cpp
-    ${SOURCES_DIR}/chapter1/cv_Rect.cpp
-    ${SOURCES_DIR}/chapter1/cv_RotateRect.cpp
-    ${SOURCES_DIR}/chapter1/cv_Vector.cpp
+    chapter1/cv_Mat_1.cpp
+    chapter1/cv_Mat_2.cpp
+    chapter1/cv_Point.cpp
+    chapter1/cv_Rect.cpp
+    chapter1/cv_RotateRect.cpp
+    chapter1/cv_Vector.cpp
 )
 
 set(chapter2
-    ${SOURCES_DIR}/chapter2/2-1.cpp
-    ${SOURCES_DIR}/chapter2/2-2.cpp
+    chapter2/2-1.cpp
+    chapter2/2-2.cpp
 )
 
 set(chapter4
-    ${SOURCES_DIR}/chapter4_k-means_KNN/k-means.cpp
-    ${SOURCES_DIR}/chapter4_k-means_KNN/KNN.cpp
+    chapter4_k-means_KNN/k-means.cpp
+    chapter4_k-means_KNN/KNN.cpp
 )
 
 set(ALL_FILES

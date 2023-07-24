@@ -1,8 +1,39 @@
 # utility.cmake
 
+macro(add_header)
+  message(STATUS "========== START ${PROJECT_NAME} ==========")
+  message(STATUS "  PROJECT_NAME: ${PROJECT_NAME}")
+  message(STATUS "  PROJECT_BINARY_DIR: ${PROJECT_BINARY_DIR}")
+  message(STATUS "  PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
+
+  message(STATUS "  CMAKE_PROJECT_NAME: ${CMAKE_PROJECT_NAME}")
+  message(STATUS "  CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}")
+  message(STATUS "  CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
+  message(STATUS "  CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
+  message(STATUS "  CMAKE_CURRENT_LIST_FILE: ${CMAKE_CURRENT_LIST_FILE}")
+
+
+  message(STATUS "  CMAKE_ARCHIVE_OUTPUT_DIRECTORY: ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
+  message(STATUS "  CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
+  message(STATUS "  CMAKE_INSTALL_RPATH: ${CMAKE_INSTALL_RPATH}")
+  message(STATUS "  CMAKE_LIBRARY_OUTPUT_DIRECTORY: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+
+  message(STATUS "  CMAKE_RUNTIME_OUTPUT_DIRECTORY: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+  message(STATUS "  RUNTIME_OUTPUT_DIRECTORY: ${RUNTIME_OUTPUT_DIRECTORY}")
+
+  message(STATUS "  CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
+  message(STATUS "========================================")
+endmacro()
+
+macro(add_footer)
+  message(STATUS "========== END ${PROJECT_NAME} ==========")
+endmacro()
+
 function(add_example src)
     # https://cmake.org/cmake/help/latest/command/get_filename_component.html
     get_filename_component(example ${src} NAME_WLE)
+    get_filename_component(output_dir ${src} DIRECTORY)
+    # string(REGEX REPLACE "([a-zA-Z0-9_ ]+)(\.cpp)" "\\1" example "${src}")
     message(STATUS "Creating example ${example}")
     add_executable(${example} ${src})
     # set_target_warnings(${example})
@@ -16,6 +47,8 @@ function(add_example src)
         ${additional_libs}
         ${OpenCV_LIBS}
     )
+    # https://blog.csdn.net/MacKendy/article/details/122549819
+    set_target_properties(${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${output_dir}")
 endfunction()
 
 # Add unit tests
