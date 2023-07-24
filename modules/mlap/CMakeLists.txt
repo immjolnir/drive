@@ -18,6 +18,7 @@ set(chapter2
 
 set(chapter4
     ${SOURCES_DIR}/chapter4_k-means_KNN/k-means.cpp
+    ${SOURCES_DIR}/chapter4_k-means_KNN/KNN.cpp
 )
 
 set(ALL_FILES

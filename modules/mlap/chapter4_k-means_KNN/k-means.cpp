@@ -6,8 +6,9 @@
 using namespace cv;
 using namespace std;
 
-// #define EXAMPLE1
+#define EXAMPLE1
 
+#ifndef EXAMPLE1
 int main(int argc, char* argv[]) {
     string girl(argv[1]);
     Mat img = imread(girl, 1);
@@ -78,12 +79,13 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-#ifdef EXAMPLE1
+#else
 int main() {
     // 1. 初始化参数
     const int MAX_CLUSTERS = 5;  // 最大类别数
     Scalar colorTab[] = {Scalar(0, 0, 255), Scalar(0, 255, 0), Scalar(255, 100, 100), Scalar(255, 0, 255),
                          Scalar(0, 255, 255)};
+
     Mat img(500, 500, CV_8UC3);  // 新建画布
     img = Scalar::all(255);      // 将画布设置为白色
     RNG rng(12345);              // 随机数产生器
@@ -91,6 +93,7 @@ int main() {
     for (;;) {
         // 初始化类别数
         int k, clusterCount = rng.uniform(2, MAX_CLUSTERS + 1);  // 在[2, MAX_CLUSTERS + 1)区间，随机生成一个整数
+
         // 初始化样本数
         int i, sampleCount = rng.uniform(1, 1001);  // 在[1, 1001)区间，随机生成一个整数
         Mat points(sampleCount, 1, CV_32FC2);       //  输入样本矩阵：sampleCount行*1列，浮点型，2通道
@@ -160,5 +163,4 @@ int main() {
     }
     return 0;
 }
-
 #endif
