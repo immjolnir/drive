@@ -9,5 +9,9 @@ set(ALL_FILES
 )
 
 foreach(file ${ALL_FILES})
-    add_example(${file} demo_project)
+    add_example(${file} 
+        demo_project
+        ${GFLAGS_LIBRARIES}
+        ${GLOG_LIBRARIES}
+    )
 endforeach()
