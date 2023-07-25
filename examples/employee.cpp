@@ -1,11 +1,11 @@
 #include "project/employee.h"
+#include "common/component_entry.h"
 
 #include <gflags/gflags.h>
 #include <glog/logging.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/noncopyable.hpp>
 #include <boost/system/error_code.hpp>
 
 #include <iostream>
@@ -69,52 +69,10 @@ bool file_validator_no_empty(const char* flagname, const std::string& path) {
 
 DEFINE_validator(bag_file, &file_validator_no_empty);
 
-// Entrypoint for simple cli (non-ros) using programs.
-class Cli : private boost::noncopyable {
-  public:
-    Cli(const std::string& component_name) : _component_name(component_name) {}
-
-    int run(int argc, char** argv);
-
-    virtual ~Cli() = default;
-
-  private:
-    std::string _component_name;
-};
-
-static void dump_flags() {
-    std::vector<google::CommandLineFlagInfo> flags;
-    google::GetAllFlags(&flags);
-
-    std::map<std::string, std::vector<google::CommandLineFlagInfo>> flags_by_file;
-    for (auto& flag : flags) {
-        flags_by_file[flag.filename].emplace_back(flag);
-    }
-
-    for (auto& entry : flags_by_file) {
-        std::sort(entry.second.begin(), entry.second.end(), [](auto&& a, auto&& b) { return a.name < b.name; });
-    }
-    std::cout << "Flags: \n";
-    for (auto& entry : flags_by_file) {
-        std::cout << entry.first << ":" << std::endl;
-        for (auto& flag : entry.second) {
-            std::cout << "\t" << flag.name << "=" << flag.current_value << "(type:" << flag.type
-                      << ", default=" << flag.default_value << ")" << std::endl;
-        }
-    }
-}
-
 // $ ./examples/employee --bag_file Makefile
 int main(int argc, char* argv[]) {
-    // https://rpg.ifi.uzh.ch/docs/glog.html
-    // Initialize Google's logging library.
-    google::InitGoogleLogging(argv[0]);
-    google::InstallFailureSignalHandler();
-
-    // Initialize Google's flag library
-    google::ParseCommandLineFlags(&argc, &argv, true);
-
-    dump_flags();
+    ComponentEntry entry(argv[0]);
+    entry.run(argc, argv);
 
     Employee sample(1, "Joe", "Blow");
     std::cout << sample << std::endl;

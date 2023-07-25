@@ -9,7 +9,8 @@ set(ALL_FILES
 )
 
 foreach(file ${ALL_FILES})
-    add_example(${file} 
+    add_example(${file}
+        common
         demo_project
         ${GFLAGS_LIBRARIES}
         ${GLOG_LIBRARIES}
