@@ -1,5 +1,7 @@
 project(mlap CXX)
 
+add_header()
+
 set(chapter1
     chapter1/cv_Mat_1.cpp
     chapter1/cv_Mat_2.cpp
@@ -25,7 +27,15 @@ set(ALL_FILES
     ${chapter4}
 )
 
+set(RESOURCES
+    images
+    Datasets
+)
+add_resource_tunnel(${RESOURCES})
+
 foreach(file ${ALL_FILES})
     add_example(${file})
 endforeach()
+
+add_footer()
 

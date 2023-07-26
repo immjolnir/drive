@@ -29,6 +29,50 @@ macro(add_footer)
   message(STATUS "========== END ${PROJECT_NAME} ==========")
 endmacro()
 
+# https://github.com/Kitware/CMake/blob/master/Modules/ExternalData.cmake
+function(_ExternalData_random var)
+  string(RANDOM LENGTH 6 random)
+  set("${var}" "${random}" PARENT_SCOPE)
+endfunction()
+
+# https://cmake.org/cmake/help/latest/command/file.html
+function(add_resource_tunnel)
+
+    # file(RELATIVE_PATH images_path ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/images)
+
+    set(resources ${ARGN})
+    foreach(obj ${resources})
+        # https://cmake.org/cmake/help/latest/command/if.html#is-absolute
+        if(NOT IS_ABSOLUTE ${obj})
+            set(src ${PROJECT_SOURCE_DIR}/${obj})
+            set(dst ${PROJECT_BINARY_DIR}/${obj})
+        else()
+            get_filename_component(ObjName ${obj} NAME)
+            set(src ${obj})
+            set(dst ${PROJECT_BINARY_DIR}/${ObjName})
+        endif()
+
+        # https://cmake.org/cmake/help/latest/command/if.html#exists
+        if(NOT EXISTS ${src})
+            message(FATAL_ERROR "${src} dosen't exist!")
+        endif()
+
+        # https://cmake.org/cmake/help/latest/command/file.html#relative-path
+        file(RELATIVE_PATH relative_path_to_src ${PROJECT_BINARY_DIR} ${src})
+        message(STATUS "<<< relative path=${relative_path_to_src}")
+
+        _ExternalData_random(random)
+        set(tmp "${dst}.tmp${random}")
+        file(CREATE_LINK ${relative_path_to_src} ${tmp} RESULT returncode SYMBOLIC)
+        if(returncode)
+            file(REMOVE "${tmp}")
+            message(FATAL_ERROR "Failed to create:\n  \"${tmp}\"\nfrom:\n  \"${obj}\"\nwith error:\n  ${returncode}")
+        endif()
+        # Atomically create/replace the real destination.
+        file(RENAME "${tmp}" "${dst}")
+    endforeach()
+endfunction()
+
 function(add_example src)
     # https://cmake.org/cmake/help/latest/command/get_filename_component.html
     get_filename_component(example ${src} NAME_WLE)
@@ -47,6 +91,7 @@ function(add_example src)
         ${additional_libs}
         ${OpenCV_LIBS}
     )
+
     # https://blog.csdn.net/MacKendy/article/details/122549819
     set_target_properties(${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${output_dir}")
 endfunction()
@@ -55,7 +100,7 @@ endfunction()
 function(add_testcase unittest_file)
     get_filename_component(testcase ${unittest_file} NAME_WLE)
     message(STATUS "Creating unittest ${testcase}")
-    add_executable(${testcase} ${unittest_file})
+    add_executable(${testcase} EXCLUDE_FROM_ALL ${unittest_file})
     # set_target_warnings(${testcase})
     # target_compile_features(${testcase} PUBLIC cxx_std_17)
     target_include_directories(${testcase} BEFORE
