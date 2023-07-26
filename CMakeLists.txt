@@ -43,6 +43,23 @@ include_directories(${GLOG_INCLUDE_DIRS})
 message(STATUS "GLOG_INCLUDE_DIRS: ${GLOG_INCLUDE_DIRS}")
 message(STATUS "GLOG_LIBRARIES: ${GLOG_LIBRARIES}")
 
+# GTest
+# https://cmake.org/cmake/help/latest/module/FindGTest.html
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS})
+message(STATUS "GTEST_LIBRARIES: ${GTEST_LIBRARIES}")
+message(STATUS "GTEST_MAIN_LIBRARIES: ${GTEST_MAIN_LIBRARIES}")
+# GTest::gtest;GTest::gtest_main
+message(STATUS "GTEST_BOTH_LIBRARIES: ${GTEST_BOTH_LIBRARIES}")
+
+# GMock
+find_package(GMock REQUIRED)
+include_directories(${GMOCK_INCLUDE_DIRS})
+message(STATUS "GMOCK_LIBRARIES: ${GMOCK_LIBRARIES}")
+message(STATUS "GMOCK_MAIN_LIBRARIES: ${GMOCK_MAIN_LIBRARIES}")
+# /usr/lib/x86_64-linux-gnu/libgmock.a;/usr/lib/x86_64-linux-gnu/libgmock_main.a
+message(STATUS "GMOCK_BOTH_LIBRARIES: ${GMOCK_BOTH_LIBRARIES}")
+
 # OpenCV
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
@@ -68,24 +85,8 @@ add_header()
 # Basic paths
 set(CATCH_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
+
 if(ARCHETYPE_BUILD_TESTING)
-    # GTest
-    # https://cmake.org/cmake/help/latest/module/FindGTest.html
-    find_package(GTest REQUIRED)
-    include_directories(${GTEST_INCLUDE_DIRS})
-    message(STATUS "GTEST_LIBRARIES: ${GTEST_LIBRARIES}")
-    message(STATUS "GTEST_MAIN_LIBRARIES: ${GTEST_MAIN_LIBRARIES}")
-    # GTest::gtest;GTest::gtest_main
-    message(STATUS "GTEST_BOTH_LIBRARIES: ${GTEST_BOTH_LIBRARIES}")
-
-    # GMock
-    find_package(GMock REQUIRED)
-    include_directories(${GMOCK_INCLUDE_DIRS})
-    message(STATUS "GMOCK_LIBRARIES: ${GMOCK_LIBRARIES}")
-    message(STATUS "GMOCK_MAIN_LIBRARIES: ${GMOCK_MAIN_LIBRARIES}")
-    # /usr/lib/x86_64-linux-gnu/libgmock.a;/usr/lib/x86_64-linux-gnu/libgmock_main.a
-    message(STATUS "GMOCK_BOTH_LIBRARIES: ${GMOCK_BOTH_LIBRARIES}")
-
     # Build the unit test binary, and add all of the unit tests.
     include(CTest)
 

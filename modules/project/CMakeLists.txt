@@ -1,8 +1,6 @@
 project(demo_project CXX)
 
-message(STATUS "CMAKE_PROJECT_NAME = ${CMAKE_PROJECT_NAME}")
-message(STATUS "PROJECT_NAME = ${PROJECT_NAME}")
-
+add_header()
 add_library(${PROJECT_NAME} STATIC)
 
 # Policy CMP0076 is not set: target_sources() command converts relative paths to absolute. 
@@ -38,4 +36,4 @@ if (ARCHETYPE_BUILD_TESTING)
         add_testcase(${file})
     endforeach()
 endif()
-
+add_footer()
