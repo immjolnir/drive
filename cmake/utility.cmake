@@ -9,8 +9,10 @@ macro(add_header)
   message(STATUS "  CMAKE_PROJECT_NAME: ${CMAKE_PROJECT_NAME}")
   message(STATUS "  CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}")
   message(STATUS "  CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
-  message(STATUS "  CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
+
   message(STATUS "  CMAKE_CURRENT_LIST_FILE: ${CMAKE_CURRENT_LIST_FILE}")
+  message(STATUS "  CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
+  message(STATUS "  CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 
 
   message(STATUS "  CMAKE_ARCHIVE_OUTPUT_DIRECTORY: ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
@@ -83,7 +85,7 @@ function(add_example src)
     # set_target_warnings(${example})
     target_include_directories(${example} BEFORE
         PUBLIC
-            ${CMAKE_SOURCE_DIR}/modules
+            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/modules>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     )
     set(additional_libs ${ARGN})
@@ -105,7 +107,7 @@ function(add_testcase unittest_file)
     # target_compile_features(${testcase} PUBLIC cxx_std_17)
     target_include_directories(${testcase} BEFORE
         PUBLIC
-            ${CMAKE_SOURCE_DIR}/modules
+            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/modules>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     )
     set(additional_libs ${ARGN})
