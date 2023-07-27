@@ -3,8 +3,13 @@ project(basis CXX)
 add_header()
 
 set(STRING_FILES
+    # Sequence Containers
+    raw_array.cpp
+    array.cpp
+    vector.cpp
     string.cpp
     sstream.cpp
+
 )
 
 set(ALL_FILES
