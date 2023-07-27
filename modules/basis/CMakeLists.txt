@@ -3,6 +3,7 @@ project(basis CXX)
 add_header()
 
 set(STRING_FILES
+    string.cpp
     sstream.cpp
 )
 
