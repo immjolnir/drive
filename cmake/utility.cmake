@@ -93,6 +93,7 @@ function(add_example src)
         ${additional_libs}
         ${OpenCV_LIBS}
         ${Boost_LIBRARIES}
+        ${YAML_CPP_LIBRARIES}
     )
 
     # https://blog.csdn.net/MacKendy/article/details/122549819

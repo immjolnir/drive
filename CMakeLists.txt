@@ -67,6 +67,10 @@ include_directories(${Boost_INCLUDE_DIRS})
 message(STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}")
 message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
 
+# yaml-cpp is a YAML parser and emitter in C++ matching the YAML 1.2 spec.
+find_package(yaml-cpp REQUIRED)
+message(STATUS "YAML_CPP_LIBRARIES = ${YAML_CPP_LIBRARIES}")
+
 # OpenCV
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})

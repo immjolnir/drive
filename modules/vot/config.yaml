@@ -1,0 +1,12 @@
+# visual_tracker_benchmark Dataset 
+# http://cvlab.hanyang.ac.kr/tracker_benchmark/datasets.html
+
+location: /work/data/Visual-Tracker-Benchmark/TB-50/
+
+sequences:
+  - name: Bolt
+    image_folder: "img"
+    filename_pattern: "{:04}.jpg"
+    groundtruth_rect: "groundtruth_rect.txt"
+
+  - name: Car1

@@ -12,3 +12,9 @@
 - https://github.com/freeplane/freeplane
 
 - https://github.com/windingwind/zotero-better-notes
+
+## cvs-loader
+- https://github.com/ben-strasser/fast-cpp-csv-parser
+
+## serializer
+- https://github.com/goblinhack/c-plus-plus-serializer
