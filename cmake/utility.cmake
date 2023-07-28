@@ -92,6 +92,7 @@ function(add_example src)
     target_link_libraries(${example}
         ${additional_libs}
         ${OpenCV_LIBS}
+        ${Boost_LIBRARIES}
     )
 
     # https://blog.csdn.net/MacKendy/article/details/122549819

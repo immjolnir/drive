@@ -10,6 +10,8 @@ set(STRING_FILES
     string.cpp
     sstream.cpp
 
+    # Serialize/Deserialize
+    serialize_unserialize.cpp
 )
 
 set(ALL_FILES
