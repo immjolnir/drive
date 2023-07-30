@@ -31,7 +31,7 @@ TEST(vector, stringify) {
 TEST(vector, sort_vector) {
     std::vector<int> arr = {1, 5, 7, 2, 4};
     std::sort(arr.begin(), arr.end());
-    EXPECT_EQ(std::vector({1, 2, 4, 5, 7}), arr);
+    EXPECT_EQ(std::vector<int>({1, 2, 4, 5, 7}), arr);
 }
 
 TEST(vector, sort_empty_vector) {

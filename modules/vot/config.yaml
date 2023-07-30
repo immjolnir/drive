@@ -6,7 +6,10 @@ location: /work/data/Visual-Tracker-Benchmark/TB-50/
 sequences:
   - name: Bolt
     image_folder: "img"
-    filename_pattern: "{:04}.jpg"
+    image_filename_pattern: "{:04}.jpg"
     groundtruth_rect: "groundtruth_rect.txt"
 
   - name: Car1
+    image_folder: "img"
+    image_filename_pattern: "{:04}.jpg"
+    groundtruth_rect: "groundtruth_rect.txt"

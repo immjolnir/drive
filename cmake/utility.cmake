@@ -39,9 +39,7 @@ endfunction()
 
 # https://cmake.org/cmake/help/latest/command/file.html
 function(add_resource_tunnel)
-
     # file(RELATIVE_PATH images_path ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/images)
-
     set(resources ${ARGN})
     foreach(obj ${resources})
         # https://cmake.org/cmake/help/latest/command/if.html#is-absolute
@@ -90,10 +88,11 @@ function(add_example src)
     )
     set(additional_libs ${ARGN})
     target_link_libraries(${example}
-        ${additional_libs}
         ${OpenCV_LIBS}
         ${Boost_LIBRARIES}
+        ${GLOG_LIBRARIES}
         ${YAML_CPP_LIBRARIES}
+        ${additional_libs}
     )
 
     # https://blog.csdn.net/MacKendy/article/details/122549819
@@ -104,7 +103,7 @@ endfunction()
 function(add_testcase unittest_file)
     get_filename_component(testcase ${unittest_file} NAME_WLE)
     message(STATUS "Creating unittest ${testcase}")
-    add_executable(${testcase} EXCLUDE_FROM_ALL ${unittest_file})
+    add_executable(${testcase} ${unittest_file})
     # set_target_warnings(${testcase})
     # target_compile_features(${testcase} PUBLIC cxx_std_17)
     target_include_directories(${testcase} BEFORE
@@ -115,6 +114,9 @@ function(add_testcase unittest_file)
     set(additional_libs ${ARGN})
     target_link_libraries(${testcase}
         ${PROJECT_NAME}
+        # ${Boost_LIBRARIES}
+        ${YAML_CPP_LIBRARIES}
+        ${GLOG_LIBRARIES}
         ${GTEST_BOTH_LIBRARIES}
         ${GMOCK_BOTH_LIBRARIES}
         ${additional_libs}

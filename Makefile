@@ -27,5 +27,8 @@ docs:
 
 .PHONY: examples
 examples:
-	cmake -Bbuild -DARCHETYPE_DEVELOPMENT_BUILD=ON -DBUILD_EXAMPLES=ON
+	cmake -Bbuild -D ARCHETYPE_DEVELOPMENT_BUILD=ON -D BUILD_EXAMPLES=ON -D ARCHETYPE_BUILD_TESTING=ON
 	cmake --build build --config Release
+
+docker:
+	docker run -it -v /Users/zhishan/iwork/immjolnir/:/iwork mjolnir/opencv

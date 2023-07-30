@@ -83,19 +83,19 @@ class SandmanMocked : public Sandman {
 };
 
 TEST(SandmanTest, TestMockFoo) {
-    SandmanMocked example = SandmanMocked();
+    SandmanMocked example;
     EXPECT_CALL(example, foo(2)).Times(1);
     example.foo(2);
 }
 
 TEST(SandmanTest, TestMockBar) {
-    SandmanMocked example = SandmanMocked();
+    SandmanMocked example;
     EXPECT_CALL(example, bar()).Times(1).WillOnce(::testing::Return(10));
     EXPECT_EQ(example.bar(), 10);
 }
 
 TEST(SandmanTest, TestMockAdd) {
-    SandmanMocked example = SandmanMocked();
+    SandmanMocked example;
     EXPECT_CALL(example, add(1, 1)).Times(1).WillOnce(::testing::Return(2));
     EXPECT_EQ(example.add(1, 1), 2);
 

@@ -1,6 +1,6 @@
 list(APPEND MODULES
     basis # C++ Programming Basis
-    common project learnopencv vot mlap)
+    common demo_project learnopencv vot mlap)
 
 foreach(m ${MODULES})
     add_subdirectory(${m})

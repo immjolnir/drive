@@ -6,7 +6,7 @@ add_library(${PROJECT_NAME} STATIC)
 # Policy CMP0076 is not set: target_sources() command converts relative paths to absolute. 
 # Run "cmake --help-policy CMP0076" for policy details. 
 # Use the cmake_policy command to set the policy and suppress this warning.
-set(SOURCES_DIR ${CATCH_DIR}/modules/project)
+set(SOURCES_DIR ${CATCH_DIR}/modules/${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}
     PUBLIC
@@ -20,7 +20,6 @@ target_include_directories(${PROJECT_NAME} BEFORE
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
-
 
 # Adds unit tests, and if enabled, cmake project tests.
 if (ARCHETYPE_BUILD_TESTING)
