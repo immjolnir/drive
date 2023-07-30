@@ -28,6 +28,7 @@ namespace vot
             const YAML::Node& node = *it;
             Sequence instance;
             instance.name = node["name"].as<std::string>();
+            instance.location = location;
             instance.image_folder = node["image_folder"].as<std::string>();
             instance.image_filename_pattern = node["image_filename_pattern"].as<std::string>();
             instance.groundtruth_rect = node["groundtruth_rect"].as<std::string>();

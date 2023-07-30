@@ -14,6 +14,7 @@ test:
 		-DARCHETYPE_ENABLE_COVERAGE=ON
 	make -C build
 	make -C build test
+	# ctest --rerun-failed --output-on-failure
 
 .PHONY: coverage
 coverage: test
