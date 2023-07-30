@@ -19,7 +19,7 @@ SET(DATA_FILES
 )
 SET(ALLF_FILES
     ${CONFIG_FILES}
-    # ${DATA_FILES}
+    ${DATA_FILES}
 )
 
 add_library(${PROJECT_NAME} STATIC)
@@ -42,6 +42,7 @@ if (ARCHETYPE_BUILD_TESTING)
 
     set(TEST_SOURCES
         test_config.cpp
+        test_data.cpp
     )
     foreach(file ${TEST_SOURCES})
         add_testcase(${file})

@@ -5,10 +5,12 @@ namespace vot
     // Internal class: Impl
     class Loader::Impl {
       public:
-        bool load(const config::Sequence& sequence_config, std::vector<FramePtr>& frames) { return false; }
+        bool load(const Sequence& sequence_config, std::vector<FramePtr>& frames) { return false; }
     };
 
-    bool Loader::load(const config::Sequence& sequence_config) {
+    Loader::Loader() { _impl = std::make_unique<Impl>(); }
+    Loader::~Loader() {}
+    bool Loader::load(const Sequence& sequence_config) {
         if (_impl) {
             return _impl->load(sequence_config, _frames);
         }
