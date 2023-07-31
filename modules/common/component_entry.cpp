@@ -41,4 +41,6 @@ int ComponentEntry::run(int argc, char** argv) {
     google::ParseCommandLineFlags(&argc, &argv, true);
 
     dump_flags();
+
+    return 0;
 }

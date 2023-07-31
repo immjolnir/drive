@@ -16,7 +16,8 @@ TEST(vot, load_vot_data) {
     EXPECT_TRUE(ret.second);
     auto sequence = ret.first;
     EXPECT_EQ("Bolt", sequence.name);
-    EXPECT_EQ("/work/data/Visual-Tracker-Benchmark/TB-50/", sequence.location);
+    EXPECT_EQ("TB-50", sequence.location);
+    // EXPECT_EQ("/work/data/Visual-Tracker-Benchmark/TB-50/", sequence.location);
     EXPECT_EQ("img", sequence.image_folder);
     EXPECT_EQ("{:04}.jpg", sequence.image_filename_pattern);
     EXPECT_EQ("groundtruth_rect.txt", sequence.groundtruth_rect);

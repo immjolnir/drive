@@ -5,17 +5,16 @@
 
 namespace vot
 {
-    struct Sequence {
-        std::string name;
-        std::string location;
-        std::string image_folder;
-        std::string image_filename_pattern;
-        std::string groundtruth_rect;
-        friend std::ostream& operator<<(std::ostream& out, const Sequence& seq);
-    };
-
     class Config {
       public:
+        struct Sequence {
+            std::string name;
+            std::string location;
+            std::string image_folder;
+            std::string image_filename_pattern;
+            std::string groundtruth_rect;
+            friend std::ostream& operator<<(std::ostream& out, const Sequence& seq);
+        };
         bool load(const std::string& file);
 
         /**

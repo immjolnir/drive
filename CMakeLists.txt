@@ -114,8 +114,13 @@ if(BUILD_TESTING)
     # include(GoogleTest)
     # gtest_add_tests(TARGET t)
     # gtest_discover_tests(t)
+
+    # Fix for such log:
+    # Output from these tests are in: /iwork/drive/build/modules/vot/Testing/Temporary/LastTest.log
+    # Use "--rerun-failed --output-on-failure" to re-run the failed cases verbosely.
     list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
     # For quickly debugging, run `ctest --rerun-failed` or `CTEST_OUTPUT_ON_FAILURE=1 ctest` under the test folder.
+
 
     if(ARCHETYPE_ENABLE_COVERAGE)
         message(STATUS "Code coverage is enabled and provided with GCC.")

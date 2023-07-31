@@ -32,9 +32,18 @@ target_include_directories(${PROJECT_NAME} BEFORE
        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
+target_link_libraries(${PROJECT_NAME}
+    ${OpenCV_LIBS}
+    ${Boost_LIBRARIES}
+    ${GLOG_LIBRARIES}
+    ${YAML_CPP_LIBRARIES}
+)
 
-add_resource_tunnel(config.yaml)
+add_resource_tunnel(config.yaml TB-50)
 add_example(data_loader.cpp)
+add_example(vot_main.cpp
+    ${PROJECT_NAME}
+    common)
 
 # Adds unit tests, and if enabled, cmake project tests.
 if (ARCHETYPE_BUILD_TESTING)

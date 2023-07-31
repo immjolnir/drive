@@ -1,7 +1,7 @@
 #pragma once
 
 #include "config.h"
-#include "frame.h"
+#include "vot.h"
 
 #include <memory>
 #include <string>
@@ -21,7 +21,7 @@ namespace vot
 
         ~Loader();
 
-        bool load(const Sequence& sequence_config);
+        bool load(const Config::Sequence& sequence_config);
 
         std::vector<FramePtr> frames() const { return _frames; }
 
