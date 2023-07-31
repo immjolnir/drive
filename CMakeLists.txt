@@ -1,11 +1,13 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.22)
 project(drive CXX)
 
 option(ARCHETYPE_DEVELOPMENT_BUILD "Build tests, enable warnings, enable Werror, etc" OFF)
 option(ENABLE_DOXYGEN "Generating documentation from annotated C++ sources" OFF)
 
 include(CMakeDependentOption)
-cmake_dependent_option(ARCHETYPE_BUILD_TESTING "Build the SelfTest project" ON "ARCHETYPE_DEVELOPMENT_BUILD" OFF)
+# BUILD_TESTING is an builtin environment variable.
+# https://cmake.org/cmake/help/latest/command/add_test.html
+cmake_dependent_option(BUILD_TESTING "Build the SelfTest project" ON "ARCHETYPE_DEVELOPMENT_BUILD" OFF)
 cmake_dependent_option(BUILD_EXAMPLES "Build code examples" OFF "ARCHETYPE_DEVELOPMENT_BUILD" OFF)
 cmake_dependent_option(ARCHETYPE_ENABLE_COVERAGE "Generate coverage for codecov.io" OFF "ARCHETYPE_DEVELOPMENT_BUILD" OFF)
 cmake_dependent_option(ARCHETYPE_ENABLE_WERROR "Enables Werror during build" ON "ARCHETYPE_DEVELOPMENT_BUILD" OFF)
@@ -99,9 +101,21 @@ add_header()
 set(CATCH_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 
-if(ARCHETYPE_BUILD_TESTING)
+if(BUILD_TESTING)
     # Build the unit test binary, and add all of the unit tests.
+    # https://cmake.org/cmake/help/latest/manual/ctest.1.html
+    # Why not work?
+    # set(CTEST_OUTPUT_ON_FAILURE ON)
+    # set(CTEST_PROGRESS_OUTPUT ON)
+    # set(CTEST_PARALLEL_LEVEL 5)
+    # set(CTEST_BUILD_COMMAND "ctest --rerun-failed --output-on-failure")
     include(CTest)
+    # https://www.yii666.com/blog/448821.html
+    # include(GoogleTest)
+    # gtest_add_tests(TARGET t)
+    # gtest_discover_tests(t)
+    list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
+    # For quickly debugging, run `ctest --rerun-failed` or `CTEST_OUTPUT_ON_FAILURE=1 ctest` under the test folder.
 
     if(ARCHETYPE_ENABLE_COVERAGE)
         message(STATUS "Code coverage is enabled and provided with GCC.")
@@ -123,9 +137,11 @@ if(ARCHETYPE_BUILD_TESTING)
             COMMAND bash ${CMAKE_SOURCE_DIR}/do_coverage.sh
         )
     endif()
-
-    enable_testing()
-endif(ARCHETYPE_BUILD_TESTING)
+    # https://cmake.org/cmake/help/latest/command/enable_testing.html
+    # This command is automatically invoked when the CTest module is included, except if the BUILD_TESTING option is turned off.
+    # The CTest module invokes enable_testing automatically unless BUILD_TESTING is set to OFF.
+    # enable_testing()
+endif(BUILD_TESTING)
 
 if(ENABLE_DOXYGEN)
     set(DOXYGEN_CALLER_GRAPH YES)
@@ -138,6 +154,10 @@ if(ENABLE_DOXYGEN)
     message(STAUS "Doxygen has been setup and documentation is now available.")
 endif()
 ############################### END of Basic Setting ###############################
+set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
+include(CPack)
+
 
 # We need to bring-in the variables defined there to this scope
 add_subdirectory(modules)

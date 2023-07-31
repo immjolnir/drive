@@ -17,6 +17,7 @@ namespace vot
     class Config {
       public:
         bool load(const std::string& file);
+
         /**
          * @param second: configuration loading status. true: Success.
          */
