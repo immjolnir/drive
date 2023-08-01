@@ -128,3 +128,7 @@ Add the lines into `/etc/docker/daemon.json` to setup a log rotation.
 ```
 
 
+## Can't initialize GTK backend in function 'cvInitSystem'
+
+- Solution : `ssh -Y user@wherever`
+  - `-Y`: Enables trusted X11 forwarding. Trusted X11 forwardings are not subjected to the X11 SECURITY extension controls.

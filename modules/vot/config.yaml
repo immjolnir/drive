@@ -1,8 +1,8 @@
 # visual_tracker_benchmark Dataset 
 # http://cvlab.hanyang.ac.kr/tracker_benchmark/datasets.html
 
-# location: /work/data/Visual-Tracker-Benchmark/TB-50/
-location: TB-50
+location: /work/data/Visual-Tracker-Benchmark/TB-50/
+#location: TB-50
 
 sequences:
   - name: Bolt

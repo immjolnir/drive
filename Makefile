@@ -1,4 +1,6 @@
 
+WORKING_DIR :=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+
 default:
 	echo "NO such target"
 
@@ -31,5 +33,13 @@ examples:
 	cmake -Bbuild -D ARCHETYPE_DEVELOPMENT_BUILD=ON -D BUILD_EXAMPLES=ON -D ARCHETYPE_BUILD_TESTING=ON
 	cmake --build build --config Release
 
+.PHONY: docker
 docker:
-	docker run -it -v /Users/zhishan/iwork/immjolnir/:/iwork mjolnir/opencv
+	export export DISPLAY=:0
+
+	docker run --ipc=host --network host \
+		-i -t --privileged \
+		-v $(WORKING_DIR):/iwork \
+		-v /work/data/Visual-Tracker-Benchmark/TB-50/:/work/data/Visual-Tracker-Benchmark/TB-50/ \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		mjolnir/opencv

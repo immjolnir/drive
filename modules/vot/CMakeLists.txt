@@ -39,7 +39,9 @@ target_link_libraries(${PROJECT_NAME}
     ${YAML_CPP_LIBRARIES}
 )
 
-add_resource_tunnel(config.yaml TB-50)
+add_resource_tunnel(config.yaml 
+	#TB-50
+)
 add_example(data_loader.cpp)
 add_example(vot_main.cpp
     ${PROJECT_NAME}

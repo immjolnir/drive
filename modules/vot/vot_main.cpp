@@ -6,7 +6,7 @@
 
 using namespace vot;
 
-DEFINE_string(conf, "conf.yaml", "vot sequences conf");
+DEFINE_string(conf, "config.yaml", "vot sequences conf");
 DEFINE_string(sequence, "Bolt", "the name of a sequence data.");
 
 class VOTProgram : public ComponentEntry {

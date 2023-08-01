@@ -75,6 +75,10 @@ message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
 find_package(yaml-cpp REQUIRED)
 message(STATUS "YAML_CPP_LIBRARIES = ${YAML_CPP_LIBRARIES}")
 
+# fmt
+# https://github.com/fmtlib/fmt/blob/master/test/find-package-test/CMakeLists.txt
+find_package(FMT REQUIRED)
+
 # OpenCV
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
