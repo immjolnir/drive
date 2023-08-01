@@ -45,3 +45,37 @@ Options:
 
 - `mtime`：修改时间（modifytime），指的是文件内容最后被修改的时间，修改动作可以使echo重定向、vi等等；
 
+# What is a Package Manager in Linux? How Does it Work?
+
+```
+  echo "  use latest boost"; \
+  add-apt-repository ppa:mhier/libboost-latest; \
+  apt-get update && apt-get install -y --no-install-recommends libboost1.81-all-dev; \
+  add-apt-repository --remove ppa:mhier/libboost-latest; \
+```
+
+- https://askubuntu.com/questions/307/how-can-ppas-be-removed
+
+```
+Usage: apt-add-repository <sourceline>
+
+apt-add-repository is a script for adding apt sources.list entries.
+It can be used to add any repository and also provides a shorthand
+syntax for adding a Launchpad PPA (Personal Package Archive)
+repository.
+
+<sourceline> - The apt repository source line to add. This is one of:
+  a complete apt line in quotes,
+  a repo url and areas in quotes (areas defaults to 'main')
+  a PPA shortcut.
+  a distro component
+
+  Examples:
+    apt-add-repository 'deb http://myserver/path/to/repo stable myrepo'
+    apt-add-repository 'http://myserver/path/to/repo myrepo'
+    apt-add-repository 'https://packages.medibuntu.org free non-free'
+    apt-add-repository http://extras.ubuntu.com/ubuntu
+    apt-add-repository ppa:user/repository
+    apt-add-repository ppa:user/distro/repository
+    apt-add-repository multiverse
+```
