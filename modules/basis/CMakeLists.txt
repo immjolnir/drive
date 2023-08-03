@@ -17,8 +17,15 @@ set(STRING_FILES
     yaml_cpp.cpp
 )
 
+set(HAS_MAIN_FILES
+    variadic_template.cpp
+    variadic_template_v1.cpp
+    filewriter_main.cpp
+)
+
 set(ALL_FILES
     ${STRING_FILES}
+    ${HAS_MAIN_FILES}
 )
 
 set(RESOURCES

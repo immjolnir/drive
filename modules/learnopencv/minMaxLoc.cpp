@@ -56,6 +56,16 @@ int main(void) {
 
     {
         // 利用枚举法赋值示例
+        /* How it is implemented?
+            /usr/include/opencv4/opencv2/core/mat.inl.hpp:2997
+
+        2996	template<typename _Tp, typename T2> static inline
+        2997	MatCommaInitializer_<_Tp> operator << (const Mat_<_Tp>& m, T2 val)
+        2998	{
+        2999	    MatCommaInitializer_<_Tp> commaInitializer((Mat_<_Tp>*)&m);
+        3000	    return (commaInitializer, val);
+        3001	}
+        */
         cv::Mat m = (cv::Mat_<int>(2, 4) << 1, 2, 3, 4, 5, 6, 7, 8);
         // cv::Mat b = (cv::Mat_<double>(2, 3) << 1.0, 2.1, 3.2, 4.0, 5.1, 6.2);
         std::cout << "rows=" << m.rows << ", cols=" << m.cols << ", data=" << m << std::endl;

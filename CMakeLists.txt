@@ -94,7 +94,7 @@ endif(ARCHETYPE_DEVELOPMENT_BUILD)
 
 include(${CMAKE_FILES}/CompilerWarnings.cmake)
 # set_cxx_compiler_warnings()
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 include(${CMAKE_FILES}/utility.cmake)
