@@ -13,6 +13,10 @@ set(STRING_FILES
     # Serialize/Deserialize
     serialize_unserialize.cpp
 
+    # C++ Specifiers
+    const_specifier_removed.cpp
+    casting_type.cpp
+
     # YAML-cpp
     yaml_cpp.cpp
 )
