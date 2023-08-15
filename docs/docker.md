@@ -135,3 +135,33 @@ Add the lines into `/etc/docker/daemon.json` to setup a log rotation.
 
 - Solution : `ssh -Y user@wherever`
   - `-Y`: Enables trusted X11 forwarding. Trusted X11 forwardings are not subjected to the X11 SECURITY extension controls.
+
+## Remove images
+
+```
+$ docker images
+REPOSITORY                              TAG                               IMAGE ID       CREATED        SIZE
+stammerer                               1.2.0                             1eb764078442   5 months ago   9.3GB
+stammerer                               1.2.0                             1eb764078442   5 months ago   9.3GB
+
+$ docker rmi stammerer
+Untagged: stammerer:latest
+
+$ docker rmi stammerer
+Error: No such image: stammerer
+
+$ docker rmi 1eb764078442
+Untagged: stammerer:1.2.0
+Deleted: sha256:1eb76407844223656b4fb09f66d383b331ad427ed99f275603fa11a839e9d6e7
+```
+
+## Save Container
+```
+$ docker ps
+
+container id ...
+b8a238692945
+
+$ docker commit b8a238692945 mjolnir/opencv:latest
+```
+
