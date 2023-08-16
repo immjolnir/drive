@@ -157,6 +157,10 @@ class Color:
         return (204, 102, 153)
 
     @property
+    def salmon(self):
+        return (114, 128, 250)
+
+    @property
     def not_set(self):
         return (-1, -1, -1)
 

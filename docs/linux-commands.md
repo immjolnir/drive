@@ -2,6 +2,27 @@ Linux Commands
 
 # find
 
+## Find empty file/directory
+
+- Find all empty files: `find  /path/to/dest -type f -empty`
+
+- Find all empty directories: `find  /path/to/dest -type d -empty`
+
+- Find Empty File And Delete Them: `find  /path/to/dest -type f -empty -delete`
+
+- Find Empty File Owned By A User Called vivek: 
+  - `find  /path/to/dest -type f -empty -user vivek`
+  - `find  /path/to/dest -type f -empty -user vivek -delete`
+
+```
+/usr/bin/ld.gold: error: CMakeFiles/drive_benchmark_messages.dir/src/tsv_data.cpp.o: file is empty
+collect2: error: ld returned 1 exit status
+```
+Finally, 
+```
+find  . -name *.o -type f -empty  -exec rm {} \;
+```
+
 ## find查找指定时间内修改过的文件或目录
 
 find命令的格式
