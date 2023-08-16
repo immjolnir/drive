@@ -4,6 +4,13 @@ project(drive CXX)
 option(ARCHETYPE_DEVELOPMENT_BUILD "Build tests, enable warnings, enable Werror, etc" OFF)
 option(ENABLE_DOXYGEN "Generating documentation from annotated C++ sources" OFF)
 
+# The building is awful and scared. the projects are disabled by default.
+option(ENABLE_MODULE_BASIS "C++ Programming Basic Skips" OFF)
+option(ENABLE_MODULE_EXPLORING "Exploring C++ New Boundary" OFF)
+option(ENABLE_MODULE_LEARN_OPENCV "Learning OpenCV" OFF)
+option(ENABLE_MODULE_VOT "vot" OFF)
+option(ENABLE_MODULE_MLAP "mlap" OFF)
+
 include(CMakeDependentOption)
 # BUILD_TESTING is an builtin environment variable.
 # https://cmake.org/cmake/help/latest/command/add_test.html

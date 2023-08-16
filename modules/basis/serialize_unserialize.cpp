@@ -48,6 +48,11 @@ TEST(old_cpp_ways, human_readable_text) {
 }
 
 // ================ Solution 2  ======================
+#include <boost/version.hpp>
+
+// https://www.boost.org/doc/libs/1_83_0/boost/version.hpp
+#if BOOST_VERSION >= 107500
+
 #include <boost/pfr.hpp>
 
 struct some_person {
@@ -87,6 +92,7 @@ TEST(boost, fpr) {
     // std::cin >> boost::pfr::io(val);
     // std::cout << boost::pfr::io(val) << '\n';
 }
+#endif
 
 // ================ Solution 3  ======================
 /*
@@ -97,6 +103,7 @@ TEST(boost, fpr) {
 // xml_iarchive.hpp
 
 #include <boost/archive/text_oarchive.hpp>
+
 // binary_oarchive.hpp
 // xml_oarchive.hpp
 // #include <boost/serialization/string.hpp>

@@ -9,6 +9,11 @@ cleanup:
 	rm -rf build
 	mkdir build
 
+basis: 
+	cmake -B build -S . -D ENABLE_MODULE_BASIS=ON -D BUILD_TESTING=ON -D DEVELOPMENT_BUILD=ON 
+	make -C build
+	make -C build test
+
 test:
 	cmake -B build -S . \
 		-DARCHETYPE_DEVELOPMENT_BUILD=ON \

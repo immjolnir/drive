@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(internal_compiler_error CXX)
+project(fwd_fix0v1 CXX)
 
 # Create library
 add_library(${PROJECT_NAME} STATIC
@@ -11,22 +11,22 @@ target_include_directories(${PROJECT_NAME} BEFORE
        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
-add_library(myclass_size STATIC
+add_library(${PROJECT_NAME}_myclass_size STATIC
     src/myclass_size.cpp
 )
-target_include_directories(myclass_size BEFORE
+target_include_directories(${PROJECT_NAME}_myclass_size BEFORE
    PUBLIC
        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
 ## Create main entry
-add_executable(main src/main.cpp)
-target_include_directories(main BEFORE
+add_executable(${PROJECT_NAME}_main src/main.cpp)
+target_include_directories(${PROJECT_NAME}_main BEFORE
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
-target_link_libraries(main
+target_link_libraries(${PROJECT_NAME}_main
     ${PROJECT_NAME}
 )

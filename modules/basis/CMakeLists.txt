@@ -25,6 +25,7 @@ set(HAS_MAIN_FILES
     variadic_template.cpp
     variadic_template_v1.cpp
     filewriter_main.cpp
+    float-issue-precision.cpp
 )
 
 set(ALL_FILES

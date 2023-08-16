@@ -1,11 +1,3 @@
-# The building is awful and scared. the projects are disabled by default.
-
-option(ENABLE_MODULE_BASIS "C++ Programming Basic Skips" OFF)
-option(ENABLE_MODULE_EXPLORING "Exploring C++ New Boundary" OFF)
-option(ENABLE_MODULE_LEARN_OPENCV "Learning OpenCV" OFF)
-option(ENABLE_MODULE_VOT "vot" OFF)
-option(ENABLE_MODULE_MLAP "mlap" OFF)
-
 list(APPEND MODULES common demo_project)
 
 foreach(m ${MODULES})
@@ -14,6 +6,8 @@ endforeach()
 
 if(ENABLE_MODULE_BASIS)
     add_subdirectory(basis)
+    add_subdirectory(forward_declaration/fix0v1)
+    add_subdirectory(forward_declaration/issuecase)
 endif()
 
 if(ENABLE_MODULE_EXPLORING)
