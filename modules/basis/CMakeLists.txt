@@ -17,6 +17,9 @@ set(STRING_FILES
     const_specifier_removed.cpp
     casting_type.cpp
 
+    # io
+    iomanip.cpp
+
     # YAML-cpp
     yaml_cpp.cpp
 )
