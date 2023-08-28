@@ -7,8 +7,11 @@ set(STRING_FILES
     raw_array.cpp
     array.cpp
     vector.cpp
-    string.cpp
     sstream.cpp
+
+    # String
+    string.cpp
+    string_split.cpp
 
     # Serialize/Deserialize
     serialize_unserialize.cpp

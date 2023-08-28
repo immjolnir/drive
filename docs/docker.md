@@ -36,6 +36,8 @@ Server:
 
 ## [Docker ERROR: Error processing tar file(exit status 1): unexpected EOF](https://stackoverflow.com/questions/42784396/docker-error-error-processing-tar-fileexit-status-1-unexpected-eof)
 
+> sudo chown -R zhishan:zhishan /var/lib/docker
+
 There is an built in command to remove unused images (Version 1.13+):
 ```
 docker image prune
@@ -155,6 +157,12 @@ Untagged: stammerer:1.2.0
 Deleted: sha256:1eb76407844223656b4fb09f66d383b331ad427ed99f275603fa11a839e9d6e7
 ```
 
+## Alias a docker image
+```
+docker tag stammerer:latest stammerer:myversion
+```
+So the image stammerer will not be removed if either `stammerer:latest` or `stammerer:myversion` exists.
+
 ## Save Container
 ```
 $ docker ps
@@ -164,4 +172,28 @@ b8a238692945
 
 $ docker commit b8a238692945 mjolnir/opencv:latest
 ```
+
+
+## Why /var/run/docker.sock permissions are changed every time I log out? How can I forbid it?
+- https://askubuntu.com/questions/1194205/why-var-run-docker-sock-permissions-are-changed-every-time-i-log-out-how-can-i
+
+- https://segmentfault.com/a/1190000039426040
+
+- https://www.escapelife.site/posts/43a2bb9b.html
+
+- https://cloud.tencent.com/developer/article/2146377?areaSource=&traceId=
+
+- https://slions.github.io/2021/07/12/%E7%90%86%E8%A7%A3%E5%AD%98%E5%82%A8%E9%A9%B1%E5%8A%A8overlay2/
+
+
+sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker
+
+You can change the group ownership permanently by editing /etc/systemd/system/sockets.target.wants/docker.socket.
+
+Set the right group at line
+
+SocketGroup=docker
+Then run systemctl daemon-reload and reboot
 
