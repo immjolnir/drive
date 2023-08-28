@@ -25,6 +25,9 @@ set(STRING_FILES
 
     # YAML-cpp
     yaml_cpp.cpp
+
+    # File/Path/Directory
+    path.cpp
 )
 
 set(HAS_MAIN_FILES
