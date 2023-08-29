@@ -40,24 +40,24 @@ TEST(sstream, remove_last_character) {
     // ss.resize(ss.size() - 1);
     ss << "Hello123";
     // Expected, Actual
-    ASSERT_EQ("Hello123", ss.str());
+    EXPECT_EQ("Hello123", ss.str());
 
     ss << "\b";
-    ASSERT_EQ("Hello123\b", ss.str());
+    EXPECT_EQ("Hello123\b", ss.str());
 
     ss << "a";
     // 在 console 上的效果是: Hello123a. 只能作用在 console 上，如果用在 string， 会被当作一个字符.
-    ASSERT_EQ("Hello123\ba", ss.str());
+    EXPECT_EQ("Hello123\ba", ss.str());
 
     // https://stackoverflow.com/questions/4546021/remove-char-from-stringstream-and-append-some-data
     ss.seekp(-1, std::ios_base::end);
     ss << "x";
-    ASSERT_EQ("Hello123\bx", ss.str());
+    EXPECT_EQ("Hello123\bx", ss.str());
 
     ss.seekp(-1, std::ios_base::end);
     ss << '\0';  // null character
     string after = ss.str();
-    ASSERT_EQ("Hello123\b", after);
+    EXPECT_EQ("Hello123\b", after);
 }
 
 TEST(sstream, remove_last_character_with_null_character) {
@@ -69,5 +69,5 @@ TEST(sstream, remove_last_character_with_null_character) {
 
     string after;
     ss >> after;
-    ASSERT_EQ("Hello12", after); // 这个还在sstream里，只是在console里没有而已。
+    EXPECT_EQ("Hello12", after); // 这个还在sstream里，只是在console里没有而已。
 }

@@ -1,5 +1,34 @@
 # Docker
 
+- Show docker disk usage
+```
+$ docker system  df
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          6         2         62.23GB   30.98GB (49%)
+Containers      3         2         279.2kB   0B (0%)
+Local Volumes   0         0         0B        0B
+Build Cache     0         0         0B        0B
+```
+
+- show docker dist usage(-v)
+```
+$ docker system  df -v
+Images space usage:
+
+REPOSITORY                              TAG              IMAGE ID       CREATED        SIZE      SHARED SIZE   UNIQUE SIZE   CONTAINERS
+tutorials/workdir                       latest           0945a16d62b9   21 hours ago   78.21MB   77.81MB       400.5kB       0
+mjolnir/opencv                          latest           7f5f4020cff2   5 days ago     3.65GB    1.716GB       1.934GB       2
+mjolnir/base                            latest           73802e1686fd   5 days ago     1.716GB   1.716GB       0B            0
+ubuntu                                  jammy-20230308   08d22c0ceb15   5 months ago   77.81MB   77.81MB       0B            0
+```
+
+SHARED SIZE is the amount of space that an image shares with another one (i.e. their common data)
+
+UNIQUE SIZE is the amount of space that is only used by a given image
+
+SIZE is the virtual size of the image, it is the sum of SHARED SIZE and UNIQUE SIZE
+
+
 # Issues
 
 - docker info

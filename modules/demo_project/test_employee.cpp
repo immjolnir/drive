@@ -6,9 +6,9 @@ using namespace std;
 
 TEST(Employee_Constructor, AllValidArgs_ReturnSuccess) {
     Employee sample(1, "Joe", "Blow");
-    ASSERT_EQ(1, sample.getId());
-    ASSERT_EQ("Joe", sample.getFirstName());
-    ASSERT_EQ("Blow", sample.getLastName());
+    EXPECT_EQ(1, sample.getId());
+    EXPECT_EQ("Joe", sample.getFirstName());
+    EXPECT_EQ("Blow", sample.getLastName());
 }
 
 TEST(Employee_Constructor, IdIsZero_ThrowInvalidArgument) {
@@ -16,6 +16,6 @@ TEST(Employee_Constructor, IdIsZero_ThrowInvalidArgument) {
         Employee sample(0, "Joe", "Blow");
         FAIL();
     } catch (invalid_argument& err) {
-        ASSERT_STREQ("id must be greater than zero.", err.what());
+        EXPECT_STREQ("id must be greater than zero.", err.what());
     }
 }

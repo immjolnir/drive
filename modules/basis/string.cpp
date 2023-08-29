@@ -11,7 +11,7 @@ TEST(string, remove_last_character_with_pop_back) {
 
     string str("world1");
     str.pop_back();
-    ASSERT_EQ("world", str);
+    EXPECT_EQ("world", str);
 }
 
 TEST(string, remove_last_character_with_substr) {
@@ -34,7 +34,7 @@ TEST(string, remove_last_character_with_substr) {
      */
     string str("world1");
     str = str.substr(0, str.size() - 1);  // return a new string
-    ASSERT_EQ("world", str);
+    EXPECT_EQ("world", str);
 }
 
 /**
@@ -64,7 +64,7 @@ TEST(string, remove_last_character_with_resize) {
     */
     // clang-format on
     str.resize(str.size() - 1);
-    ASSERT_EQ("world", str);
+    EXPECT_EQ("world", str);
 }
 
 /*
@@ -123,7 +123,7 @@ _GLIBCXX20_CONSTEXPR typename char_traits<_CharT>::char_type* char_traits<_CharT
 TEST(string, remove_last_character_with_erase) {
     string str("world1");
     str.erase(str.size() - 1);  // 虽然是insplace, 但还是涉及到了重新copy
-    ASSERT_EQ("world", str);
+    EXPECT_EQ("world", str);
 }
 
 /*
@@ -145,15 +145,15 @@ actually at the second-last place
 TEST(string, remove_last_character_with_null_character) {
     string str("world1");
     str[str.size() - 1] = '\0';
-    ASSERT_EQ("world", str);  // Actual: "World\o" 这是因为没有修改size的原因， string 跟 raw char array 还是有差别的。
+    EXPECT_EQ("world", str);  // Actual: "World\o" 这是因为没有修改size的原因， string 跟 raw char array 还是有差别的。
 }
 
 TEST(char_array, remove_last_character_with_0) {
     // char arr[256] = {'\0'};
     // memset， memcpy
     char arr[] = {'w', 'o', 'r', 'l', 'd', '1'};
-    ASSERT_EQ(6, strlen(arr));
+    EXPECT_EQ(6, strlen(arr));
 
     arr[5] = '\0';  // empty the last element.
-    ASSERT_EQ(5, strlen(arr));
+    EXPECT_EQ(5, strlen(arr));
 }

@@ -72,15 +72,15 @@ TEST(string_split, strtok) {
         p = strtok(NULL, "\t");
     }
 
-    ASSERT_EQ(3, strs.size());
+    EXPECT_EQ(3, strs.size());
 
     for (std::vector<std::string>::iterator it = strs.begin(); it != strs.end(); ++it) {
         std::cout << *it << std::endl;
     }
 
-    ASSERT_EQ("test", strs[0]);
-    ASSERT_EQ("test1", strs[1]);
-    ASSERT_EQ("test2", strs[2]);
+    EXPECT_EQ("test", strs[0]);
+    EXPECT_EQ("test1", strs[1]);
+    EXPECT_EQ("test2", strs[2]);
 }
 
 // Create custom split() function.
@@ -102,10 +102,10 @@ TEST(string_split, custom_split) {
     std::vector<std::string> strs;
     customSplit(line, '\t', strs);
 
-    ASSERT_EQ(3, strs.size());
-    ASSERT_EQ("test", strs[0]);
-    ASSERT_EQ("test1", strs[1]);
-    ASSERT_EQ("test2", strs[2]);
+    EXPECT_EQ(3, strs.size());
+    EXPECT_EQ("test", strs[0]);
+    EXPECT_EQ("test1", strs[1]);
+    EXPECT_EQ("test2", strs[2]);
 }
 
 TEST(string_split, stringstream_getline) {
@@ -122,10 +122,10 @@ TEST(string_split, stringstream_getline) {
         strs.push_back(item);
     }
 
-    ASSERT_EQ(3, strs.size());
-    ASSERT_EQ("test", strs[0]);
-    ASSERT_EQ("test1", strs[1]);
-    ASSERT_EQ("test2", strs[2]);
+    EXPECT_EQ(3, strs.size());
+    EXPECT_EQ("test", strs[0]);
+    EXPECT_EQ("test1", strs[1]);
+    EXPECT_EQ("test2", strs[2]);
 }
 
 void find_str(std::string s, const std::string& del, std::vector<std::string>& res) {
@@ -148,10 +148,10 @@ TEST(string_split, find_stbstr_erase) {
     */
     std::vector<std::string> strs;
     find_str(line, "\t", strs);
-    ASSERT_EQ(3, strs.size());
-    ASSERT_EQ("test", strs[0]);
-    ASSERT_EQ("test1", strs[1]);
-    ASSERT_EQ("test2", strs[2]);
+    EXPECT_EQ(3, strs.size());
+    EXPECT_EQ("test", strs[0]);
+    EXPECT_EQ("test1", strs[1]);
+    EXPECT_EQ("test2", strs[2]);
 }
 
 TEST(string_split, boost_alg_split) {
@@ -159,15 +159,15 @@ TEST(string_split, boost_alg_split) {
     std::vector<std::string> strs;
     boost::split(strs, line, boost::is_any_of("\t"));
 
-    ASSERT_EQ(3, strs.size());
+    EXPECT_EQ(3, strs.size());
 
     for (std::vector<std::string>::iterator it = strs.begin(); it != strs.end(); ++it) {
         std::cout << *it << std::endl;
     }
 
-    ASSERT_EQ("test", strs[0]);
-    ASSERT_EQ("test1", strs[1]);
-    ASSERT_EQ("test2", strs[2]);
+    EXPECT_EQ("test", strs[0]);
+    EXPECT_EQ("test1", strs[1]);
+    EXPECT_EQ("test2", strs[2]);
 }
 
 TEST(string_split, boost_alg_split_regex) {
@@ -175,13 +175,13 @@ TEST(string_split, boost_alg_split_regex) {
     std::vector<std::string> strs;
     boost::algorithm::split_regex(strs, line, boost::regex("\t"));
 
-    ASSERT_EQ(3, strs.size());
+    EXPECT_EQ(3, strs.size());
 
     for (std::vector<std::string>::iterator it = strs.begin(); it != strs.end(); ++it) {
         std::cout << *it << std::endl;
     }
 
-    ASSERT_EQ("test", strs[0]);
-    ASSERT_EQ("test1", strs[1]);
-    ASSERT_EQ("test2", strs[2]);
+    EXPECT_EQ("test", strs[0]);
+    EXPECT_EQ("test1", strs[1]);
+    EXPECT_EQ("test2", strs[2]);
 }
