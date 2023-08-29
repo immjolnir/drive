@@ -17,7 +17,7 @@ set(STRING_FILES
     serialize_unserialize.cpp
 
     # C++ Specifiers
-    const_specifier_removed.cpp
+    qualifiers.cpp
     casting_type.cpp
 
     # io
