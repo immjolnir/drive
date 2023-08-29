@@ -58,3 +58,12 @@ Understanding these nuances not only helps in accurate data representation but a
   - `#include <opencv2/imgproc/types_c.h>`
 
 
+
+# opencv中Size与Rect的宽高顺序
+
+opencv中关于Rect和Size的宽高顺序折磨了我很久，略作记录。
+
+Size_(_Tp _width, _Tp _height)Size是先宽后高，这一点如果不记得可以随时查看Size定义来确认；
+Rect_(_Tp _x, _Tp _y, _Tp _width, _Tp _height)在opencv中x方向指的都是水平方向；y方向指的都是y方向，这一点在各处都是一样的。其实对于Size也是按照先x后y的顺序的。
+matrix.at<char>(row, col)数组的访问当然还是按照先行后列的方式，这跟存储方式有关，不要搞混。
+
