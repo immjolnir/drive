@@ -9,6 +9,11 @@ cleanup:
 	rm -rf build
 	mkdir build
 
+opencv:
+	cmake -B build -S . -D ENABLE_MODULE_LEARN_OPENCV=ON -D BUILD_TESTING=ON -D DEVELOPMENT_BUILD=ON 
+	make -C build
+	make -C build test
+
 basis: 
 	cmake -B build -S . -D ENABLE_MODULE_BASIS=ON -D BUILD_TESTING=ON -D DEVELOPMENT_BUILD=ON 
 	make -C build
