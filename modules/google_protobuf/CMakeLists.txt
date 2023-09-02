@@ -65,11 +65,24 @@ target_link_libraries(${PROJECT_NAME}
     ${PROTOBUF_LIBRARIES}
 )
 
-# add_executable(test_addressbook
-#     test_addressbook.cpp
-# )
+add_executable(pb_example
+    pb_example.cpp
+)
 
-# target_link_libraries(test_addressbook
-#     ${PROJECT_NAME}
-#     ${Protobuf_LIBRARIES}
-# )
+target_link_libraries(pb_example
+    ${PROJECT_NAME}
+    ${Protobuf_LIBRARIES}
+)
+
+set(ALL_FILES
+    test_addressbook.cpp
+    test_timestamp.cpp
+)
+
+# On the basis of Gtest, creating the cases.
+foreach(file ${ALL_FILES})
+    add_example(${file} 
+        ${PROJECT_NAME}
+        ${GTEST_BOTH_LIBRARIES}
+    )
+endforeach()
