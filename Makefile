@@ -9,6 +9,10 @@ cleanup:
 	rm -rf build
 	mkdir build
 
+pb:
+	cmake -B build -S . -D ENABLE_PROTOBUFF=ON -D DEVELOPMENT_BUILD=ON 
+	make -C build
+
 opencv:
 	cmake -B build -S . -D ENABLE_MODULE_LEARN_OPENCV=ON -D BUILD_TESTING=ON -D DEVELOPMENT_BUILD=ON 
 	make -C build

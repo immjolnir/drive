@@ -43,6 +43,9 @@ TEST(boost_filesystem, iterate_path) {
     // Iterating over components of a path
     path p{"/tmp/a/b/c.txt"};
 
+    EXPECT_EQ(path("c"), p.stem());  // 不用先获取 filename(), 也可以直接拿到它的stem
+    EXPECT_EQ(path(".txt"), p.extension());
+
     /*
     "/"
     "tmp"

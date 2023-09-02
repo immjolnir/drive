@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.20)
 project(drive CXX)
 
 option(ARCHETYPE_DEVELOPMENT_BUILD "Build tests, enable warnings, enable Werror, etc" OFF)
@@ -10,6 +10,7 @@ option(ENABLE_MODULE_EXPLORING "Exploring C++ New Boundary" OFF)
 option(ENABLE_MODULE_LEARN_OPENCV "Learning OpenCV" OFF)
 option(ENABLE_MODULE_VOT "vot" OFF)
 option(ENABLE_MODULE_MLAP "mlap" OFF)
+option(ENABLE_PROTOBUFF "Google Protobuffer" OFF)
 
 include(CMakeDependentOption)
 # BUILD_TESTING is an builtin environment variable.
@@ -100,6 +101,10 @@ if(ARCHETYPE_DEVELOPMENT_BUILD)
 endif(ARCHETYPE_DEVELOPMENT_BUILD)
 
 include(${CMAKE_FILES}/CompilerWarnings.cmake)
+# These options should ideally be consistent across C++ repos.
+#set(CMAKE_CXX_STANDARD 14)
+#set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 # set_cxx_compiler_warnings()
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")

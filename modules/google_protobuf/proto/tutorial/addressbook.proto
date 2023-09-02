@@ -1,0 +1,41 @@
+// 
+// https://github.com/Kitware/CMake/blob/master/Modules/FindProtobuf.cmake
+// https://github.com/protocolbuffers/protobuf/blob/main/examples/addressbook.proto
+// https://protobuf.dev/getting-started/cpptutorial/
+// The .proto file starts with a package declaration, which helps to prevent naming conflicts between different projects. 
+// In C++, your generated classes will be placed in a namespace matching the package name.
+//
+
+syntax = "proto2";
+package proto.tutorial;
+
+// https://stackoverflow.com/questions/69535429/what-is-the-relationship-between-proto-package-and-actual-directory-structure
+// addressbook.pb.h:36:10: fatal error: proto/common/timestamp.pb.h: No such file or directory
+//   36 | #include "proto/common/timestamp.pb.h"
+import "proto/common/timestamp.proto";
+
+message Person {
+  optional string name = 1;
+  optional int32 id = 2;  // Unique ID number for this person.
+  optional string email = 3;
+
+  enum PhoneType {
+    MOBILE = 0;
+    HOME = 1;
+    WORK = 2;
+  }
+
+  message PhoneNumber {
+    optional string number = 1;
+    optional PhoneType type = 2;
+  }
+
+  repeated PhoneNumber phones = 4;
+
+  optional proto.common.Timestamp last_updated = 5;
+}
+
+// Our address book file is just one of these.
+message AddressBook {
+  repeated Person people = 1;
+}

@@ -26,3 +26,6 @@ if(ENABLE_MODULE_MLAP)
     add_subdirectory(mlap)
 endif()
 
+if (ENABLE_PROTOBUFF)
+    add_subdirectory(google_protobuf)
+endif()
