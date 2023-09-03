@@ -21,6 +21,9 @@ TEST(Addressbook, write_and_read) {
     proto::tutorial::AddressBook address_book;
     address_book.mutable_people()->Add(std::move(person));
 
-    // EXPECT_EQ(1, timestamp.seconds());
-    // EXPECT_EQ(2, timestamp.nanos());
+    EXPECT_EQ(1, address_book.people_size());
+    EXPECT_EQ("Scott", address_book.people(0).name());
+    EXPECT_EQ(1, address_book.people(0).id());
+    EXPECT_EQ("scott@gmail.com", address_book.people(0).email());
+    EXPECT_EQ(2, address_book.people(0).phones_size());
 }
