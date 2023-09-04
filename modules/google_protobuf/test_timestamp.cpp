@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include <google/protobuf/text_format.h>
+#include <google/protobuf/util/json_util.h>
 
 TEST(Timestamp, write_and_read) {
     proto::common::Timestamp timestamp;
@@ -67,4 +68,44 @@ TEST(Timestamp, binary_write) {
         EXPECT_EQ(1, timestamp.seconds());
         EXPECT_EQ(2, timestamp.nanos());
     }
+}
+
+TEST(Timestamp, message_to_json_string) {
+    proto::common::Timestamp timestamp;
+    timestamp.set_seconds(1);
+    timestamp.set_nanos(2);
+
+    std::string actual;  // binary format
+    google::protobuf::util::JsonOptions json_options;
+    json_options.add_whitespace = true;
+    /* Status src/google/protobuf/stubs/status.h
+     Converts from protobuf message to JSON. This is a simple wrapper of BinaryToJsonString().
+     It will use the DescriptorPool of the passed-in message to resolve Any types.
+
+    LIBPROTOBUF_EXPORT util::Status MessageToJsonString(const Message& message,
+                                   string* output,
+                                   const JsonOptions& options);
+    */
+    EXPECT_TRUE(google::protobuf::util::MessageToJsonString(timestamp, &actual, json_options).ok());
+    EXPECT_EQ("{\n \"seconds\": \"1\",\n \"nanos\": 2\n}\n", actual);
+}
+
+TEST(Timestamp, json_string_to_message) {
+    std::string text = R"(
+        {
+           "seconds": 1,
+           "nanos": 2
+        }
+    )";
+    proto::common::Timestamp timestamp;
+    /*
+    Converts from JSON to protobuf message. This is a simple wrapper of JsonStringToBinary().
+    It will use the DescriptorPool of the passed-in message to resolve Any types.
+    LIBPROTOBUF_EXPORT util::Status JsonStringToMessage(const string& input,
+                                   Message* message,
+                                   const JsonParseOptions& options);
+    */
+    EXPECT_TRUE(google::protobuf::util::JsonStringToMessage(text, &timestamp).ok());
+    EXPECT_EQ(1, timestamp.seconds());
+    EXPECT_EQ(2, timestamp.nanos());
 }
