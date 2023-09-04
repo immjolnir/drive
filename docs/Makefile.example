@@ -1,0 +1,13 @@
+
+# $@ evaluates to all.cpp
+# $< evaluates to library.cpp
+# $^ evaluates to library.cpp main.cpp
+# $* evaluates to all
+# 
+# Touch empty files: library.cpp main.cpp firstly.
+
+all.cpp: library.cpp main.cpp
+	@ echo $@
+	@ echo $<
+	@ echo $^
+	@ echo $*
