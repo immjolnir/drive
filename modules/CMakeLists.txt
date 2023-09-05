@@ -29,3 +29,7 @@ endif()
 if (ENABLE_PROTOBUFF)
     add_subdirectory(google_protobuf)
 endif()
+
+if (ENABLE_3D)
+    add_subdirectory(3d)
+endif()

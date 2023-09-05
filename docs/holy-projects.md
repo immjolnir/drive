@@ -89,3 +89,12 @@ An old-school online service conceived for performing vocabulary tests, Vocabtes
 
 Online Quiz Creator from QuizWorks helps you create fun-to-play quizzes with advanced features, styling options, and statistics. Online Quiz Creator integrates several gamification elements, social features, and learning principles.
 
+- [backward-cpp](https://github.com/bombela/backward-cpp)
+  - libdw1 provides a library that provides access to DWARF debug information stored inside ELF files.
+  - [DWARF](https://dwarfstd.org/)
+    - DWARF is a debugging information file format used by many compilers and debuggers to support source level debugging. It addresses the requirements of a number of procedural languages, such as C, C++, and Fortran, and is designed to be extensible to other languages. DWARF is architecture independent and applicable to any processor or operating system. It is widely used on Unix, Linux and other operating systems, as well as in stand-alone environments.
+  - https://blog.tartanllama.xyz/writing-a-linux-debugger-elf-dwarf/
+  - https://github.com/mhx/dwarfs
+  - https://sourceware.org/elfutils/
+  
+

@@ -9,6 +9,10 @@ cleanup:
 	rm -rf build
 	mkdir build
 
+3d:
+	cmake -B build -S . -D ENABLE_3D=ON
+	make -C build
+
 pb:
 	cmake -B build -S . -D ENABLE_PROTOBUFF=ON -D DEVELOPMENT_BUILD=ON 
 	make -C build
