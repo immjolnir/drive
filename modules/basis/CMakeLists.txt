@@ -12,6 +12,7 @@ set(STRING_FILES
     # String
     string.cpp
     string_split.cpp
+    string_size_length_capacity.cpp
 
     # Serialize/Deserialize
     serialize_unserialize.cpp

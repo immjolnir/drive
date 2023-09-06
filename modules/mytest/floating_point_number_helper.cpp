@@ -84,7 +84,7 @@ namespace mytesting
         const char* const end = start + str.length();
 
         std::string result;
-        result.reserve(static_cast<size_t>(2 * (end - start)));
+        result.reserve(static_cast<size_t>(2 * (end - start))); // 这里为什么要乘以2?
         for (const char* ch = start; ch != end; ++ch) {
             if (*ch == '\0') {
                 result += "\\0";  // Replaces NUL with "\\0";
