@@ -18,6 +18,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 set(PROTO_FILES
     proto/common/timestamp.proto
     proto/tutorial/addressbook.proto
+    proto/tutorial/obstacle.proto
 )
 
 # https://github.com/protocolbuffers/protobuf/issues/1743
@@ -76,6 +77,7 @@ target_link_libraries(pb_example
 
 set(ALL_FILES
     test_addressbook.cpp
+    test_obstacle.cpp
     test_timestamp.cpp
 )
 

@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package proto.tutorial;
+
+import "proto/common/timestamp.proto";
+
+message Quaternion {
+    double qw = 1;
+    double qx = 2;
+    double qy = 3;
+    double qz = 4;
+}
+
+message CalibrationRefine {
+    string sensor_name = 1;
+    Quaternion rotation = 2;
+}
+
+message Motion { // World frame
+    double x = 1;
+    double y = 2;
+    double z = 3;
+    double yaw = 4;
+    double vx = 5;
+    double vy = 6;
+}
+
+message Obstacle {
+    int32 id = 1;
+
+    // position of objects in image coordinates
+    float image_cx = 2;
+    float image_cy = 3;
+    float box_width = 4;
+    float box_height = 5;
+
+    Motion motion = 6;
+
+}
+
+message ObstacleArray {
+    proto.common.Timestamp timestamp = 1;
+    // Note: it is the singular noun instead of plural.
+    // This will make the generated method more readable.
+    // int obstacle_size() const;
+    // ::proto::tutorial::Obstacle* add_obstacle();
+    // ::proto::tutorial::Obstacle* mutable_obstacle(int index);
+    repeated Obstacle obstacle = 2;
+    repeated CalibrationRefine calib_refine = 3;
+}
+
