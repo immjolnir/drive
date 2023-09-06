@@ -16,10 +16,12 @@ mytest:
 3d:
 	cmake -B build -S . -D ENABLE_3D=ON
 	make -C build
+	make -C build test
 
 pb:
 	cmake -B build -S . -D ENABLE_PROTOBUFF=ON -D DEVELOPMENT_BUILD=ON 
 	make -C build
+	make -C build test
 
 opencv:
 	cmake -B build -S . -D ENABLE_MODULE_LEARN_OPENCV=ON -D BUILD_TESTING=ON -D DEVELOPMENT_BUILD=ON 

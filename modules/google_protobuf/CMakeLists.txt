@@ -75,16 +75,12 @@ target_link_libraries(pb_example
     ${Protobuf_LIBRARIES}
 )
 
-set(ALL_FILES
+set(TEST_SOURCES
     test_addressbook.cpp
     test_obstacle.cpp
     test_timestamp.cpp
 )
 
-# On the basis of Gtest, creating the cases.
-foreach(file ${ALL_FILES})
-    add_example(${file} 
-        ${PROJECT_NAME}
-        ${GTEST_BOTH_LIBRARIES}
-    )
+foreach(file ${TEST_SOURCES})
+    add_testcase(${file})
 endforeach()

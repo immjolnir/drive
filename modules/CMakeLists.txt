@@ -31,7 +31,7 @@ if (ENABLE_PROTOBUFF)
 endif()
 
 if (ENABLE_3D)
-    add_subdirectory(3d)
+    add_subdirectory(three_dimensions)
 endif()
 
 if (ENABLE_MYTEST)
