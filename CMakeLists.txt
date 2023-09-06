@@ -12,6 +12,7 @@ option(ENABLE_MODULE_VOT "vot" OFF)
 option(ENABLE_MODULE_MLAP "mlap" OFF)
 option(ENABLE_PROTOBUFF "Google Protobuffer" OFF)
 option(ENABLE_3D "Three-Dimensions" OFF)
+option(ENABLE_MYTEST "mytest copied from gtest" OFF)
 
 include(CMakeDependentOption)
 # BUILD_TESTING is an builtin environment variable.

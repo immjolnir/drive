@@ -9,7 +9,7 @@ rotation matrix and back, how to rotate objects in both the forward and reverse 
 multiple rotations into a single rotation matrix.
 
 Anyone dealing with three dimensional rotations will need to be familiar with both Euler angles and rotation matrices.
-Euler angels are useful for describing 3D rotations in a way that is understandable to humans, and are therefore
+Euler angles are useful for describing 3D rotations in a way that is understandable to humans, and are therefore
 commonly seen in user interfaces. Rotation matrices, on the other hand, are the representation of choice when it comes
 to implementing efficient rotations in software.
 
@@ -339,4 +339,33 @@ TEST(Rotations, EulerAngles_and_Rotation_Matrices) {
 TEST(ThreeDimensions, Example) {
     EXPECT_EQ(1, 1);
     EXPECT_TRUE(true);
+
+    /*
+    Eigen::Matrix4d radar_refine = Eigen::Matrix4d::Identity();
+    Eigen::Quaterniond q(radar_calib_refine.calib_refine().qw(), radar_calib_refine.calib_refine().qx(),
+                         radar_calib_refine.calib_refine().qy(), radar_calib_refine.calib_refine().qz());
+    radar_refine.block<3, 3>(0, 0) = q.matrix();
+    */
 }
+
+/*
+        // calculate R_fix which fix the tr_radar_to_imu, rotate around camera's y axis
+        Eigen::AngleAxisd pitch_angle(
+                _radar_calib_refines_y_rot[_camera_radar_check_map[offsets.first]],
+                Eigen::Vector3d::UnitY());
+        Eigen::Quaternion<double> q = Eigen::AngleAxisd(0.0, Eigen::Vector3d::UnitZ()) *
+                                      pitch_angle *
+                                      Eigen::AngleAxisd(0.0, Eigen::Vector3d::UnitX());
+        radar_refine.block<3, 3>(0, 0) = q.matrix();
+*/
+
+/*
+        const Eigen::Matrix4d& refine_matrix = _radar_to_imu_refines[radar_topic];
+        Eigen::Vector3d radar_position_imu =
+                (refine_matrix * radar_detection_info.getPositionVector().homogeneous())
+                        .hnormalized();
+        Eigen::Vector3d radar_velocity_imu =
+                refine_matrix.block<3, 3>(0, 0) * radar_detection_info.getVelocityVector();
+        radar_detection_info.setPosition(radar_position_imu);
+        radar_detection_info.setVelocity(radar_velocity_imu);
+*/

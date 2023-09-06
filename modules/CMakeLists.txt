@@ -33,3 +33,7 @@ endif()
 if (ENABLE_3D)
     add_subdirectory(3d)
 endif()
+
+if (ENABLE_MYTEST)
+    add_subdirectory(mytest)
+endif()

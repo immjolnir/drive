@@ -9,6 +9,10 @@ cleanup:
 	rm -rf build
 	mkdir build
 
+mytest:
+	cmake -B build -S . -D ENABLE_MYTEST=ON
+	make -C build
+
 3d:
 	cmake -B build -S . -D ENABLE_3D=ON
 	make -C build

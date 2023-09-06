@@ -35,7 +35,21 @@ message Obstacle {
     float box_height = 5;
 
     Motion motion = 6;
+}
 
+// Installation error calibration
+// The installation error model of the gyroscope integrated is analyzed, and then error calibration model of flexible gyroscope integrated is deduced when malalignment Angle is considered.
+// 从挠性陀螺组合安装误差模型入手，推导出存在轴不对准角情况下的挠性陀螺组合静态误差标定模型，并给出静态误差标定的位置试验方案。
+message SensorInstallationError {
+    double imu_to_ground = 1;
+    double imu_to_front_bumper = 2;
+
+    // Explicit default values are not allowed in proto3.
+    // https://stackoverflow.com/questions/33222551/why-are-there-no-custom-default-values-in-proto3
+    // Euler Angles of IMU frame to vehicle frame
+    double imu_to_vehicle_roll = 3;
+    double imu_to_vehicle_pitch = 4;
+    double imu_to_vehicle_yaw = 5;
 }
 
 message ObstacleArray {
