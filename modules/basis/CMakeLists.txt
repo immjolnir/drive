@@ -2,6 +2,10 @@ project(basis CXX)
 
 add_header()
 
+set(GTEST_EXAMPLES
+    gtest_handing_exception.cpp
+)
+
 set(STRING_FILES
     # Sequence Containers
     raw_array.cpp
@@ -20,6 +24,7 @@ set(STRING_FILES
     # C++ Specifiers
     qualifiers.cpp
     casting_type.cpp
+    type_conversion_dynamic_cast.cpp
 
     # io
     iomanip.cpp
@@ -38,6 +43,7 @@ set(HAS_MAIN_FILES
 )
 
 set(ALL_FILES
+    ${GTEST_EXAMPLES}
     ${STRING_FILES}
     ${HAS_MAIN_FILES}
 )
