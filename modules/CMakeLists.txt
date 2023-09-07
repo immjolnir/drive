@@ -37,3 +37,7 @@ endif()
 if (ENABLE_MYTEST)
     add_subdirectory(mytest)
 endif()
+
+if (ENABLE_EIGEN)
+    add_subdirectory(eigen)
+endif()

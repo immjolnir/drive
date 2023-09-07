@@ -9,6 +9,10 @@ cleanup:
 	rm -rf build
 	mkdir build
 
+eigen:
+	cmake -B build -S . -D ENABLE_EIGEN=ON
+	make -C build
+
 mytest:
 	cmake -B build -S . -D ENABLE_MYTEST=ON
 	make -C build
