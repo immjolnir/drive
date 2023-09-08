@@ -6,6 +6,12 @@ set(GTEST_EXAMPLES
     gtest_handing_exception.cpp
 )
 
+set(EXCEPTION_EXAMPLES
+    exception_stardardarized_example.cpp
+    exception_throw_any_type.cpp
+    exception_api_current_exception.cpp
+)
+
 set(STRING_FILES
     # Sequence Containers
     raw_array.cpp
@@ -45,6 +51,7 @@ set(HAS_MAIN_FILES
 set(ALL_FILES
     ${GTEST_EXAMPLES}
     ${STRING_FILES}
+    ${EXCEPTION_EXAMPLES}
     ${HAS_MAIN_FILES}
 )
 
