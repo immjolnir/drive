@@ -44,5 +44,20 @@ TEST(matrix, matrix) {
     EXPECT_EQ(6, matrix_23(1, 2));
 
     cout << "xxx=" << matrix_23.transpose() << endl;
-    cout << "xxx=" << matrix_23.rotation() << endl;
+    // error: 'class Eigen::Matrix<float, 2, 3>' has no member named 'rotation'
+    // cout << "xxx=" << matrix_23.rotation() << endl;
+}
+
+TEST(Matrix, Matrix3d) {
+    Eigen::Matrix3d expected;
+    expected << 1, 0, 0, 0, 1, 0, 0, 0, 1;
+    Eigen::Matrix3d mat = Eigen::Matrix3d::Identity();
+
+    cout << mat << endl;
+    /*
+    1 0 0
+    0 1 0
+    0 0 1
+    */
+    EXPECT_EQ(expected, mat);
 }
