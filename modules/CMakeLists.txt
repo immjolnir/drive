@@ -1,43 +1,47 @@
-list(APPEND MODULES common demo_project)
+
+#list(APPEND MODULES common demo_project)
+
+if(ENABLE_MODULE_BASIS)
+    list(APPEND MODULES
+        basis
+        forward_declaration/fix0v1
+        forward_declaration/issuecase
+    )
+endif()
+
+if(ENABLE_MODULE_EXPLORING)
+    list(APPEND MODULES exploring)
+endif()
+
+if(ENABLE_MODULE_LEARN_OPENCV)
+    list(APPEND MODULES learnopencv)
+endif()
+
+if(ENABLE_MODULE_VOT)
+    list(APPEND MODULES common)
+    list(APPEND MODULES vot)
+endif()
+
+if(ENABLE_MODULE_MLAP)
+    list(APPEND MODULES mlap)
+endif()
+
+if (ENABLE_PROTOBUFF)
+    list(APPEND MODULES google_protobuf)
+endif()
+
+if (ENABLE_3D)
+    list(APPEND MODULES three_dimensions)
+endif()
+
+if (ENABLE_MYTEST)
+    list(APPEND MODULES mytest)
+endif()
+
+if (ENABLE_EIGEN)
+    list(APPEND MODULES eigen)
+endif()
 
 foreach(m ${MODULES})
     add_subdirectory(${m})
 endforeach()
-
-if(ENABLE_MODULE_BASIS)
-    add_subdirectory(basis)
-    add_subdirectory(forward_declaration/fix0v1)
-    add_subdirectory(forward_declaration/issuecase)
-endif()
-
-if(ENABLE_MODULE_EXPLORING)
-    add_subdirectory(exploring)
-endif()
-
-if(ENABLE_MODULE_LEARN_OPENCV)
-    add_subdirectory(learnopencv)
-endif()
-
-if(ENABLE_MODULE_VOT)
-    add_subdirectory(vot)
-endif()
-
-if(ENABLE_MODULE_MLAP)
-    add_subdirectory(mlap)
-endif()
-
-if (ENABLE_PROTOBUFF)
-    add_subdirectory(google_protobuf)
-endif()
-
-if (ENABLE_3D)
-    add_subdirectory(three_dimensions)
-endif()
-
-if (ENABLE_MYTEST)
-    add_subdirectory(mytest)
-endif()
-
-if (ENABLE_EIGEN)
-    add_subdirectory(eigen)
-endif()

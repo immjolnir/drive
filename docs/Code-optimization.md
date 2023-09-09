@@ -113,3 +113,20 @@ To explicitly instantiate a template class function member, follow the template 
 To explicitly instantiate a template class static data member, follow the template keyword by a declaration (not definition) for the member, with the member identifier qualified by the template class, followed by the template argument.
 
   template int String<19>::overflows;
+
+在 eigen里面就这么用的, 即
+  # 504 "/usr/include/eigen3/Eigen/src/Core/Matrix.h"
+  typedef Matrix<int, 2, 2> Matrix2i;
+  typedef Matrix<int, 2, 1> Vector2i;
+  typedef Matrix<int, 1, 2> RowVector2i;
+  typedef Matrix<int, 3, 3> Matrix3i;
+  typedef Matrix<int, 3, 1> Vector3i;
+  typedef Matrix<int, 1, 3> RowVector3i;
+  typedef Matrix<int, 4, 4> Matrix4i;
+  typedef Matrix<int, 4, 1> Vector4i;
+  typedef Matrix<int, 1, 4> RowVector4i;
+  typedef Matrix<int, Dynamic, Dynamic> MatrixXi;
+  typedef Matrix<int, Dynamic, 1> VectorXi;
+  typedef Matrix<int, 1, Dynamic> RowVectorXi;
+
+但需要提前 precompile它们才可以达到目的生效.
