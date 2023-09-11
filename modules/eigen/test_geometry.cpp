@@ -48,27 +48,7 @@ TEST(geometry, rotation) {
 // https://machinelearningmastery.com/vector-norms-machine-learning/#:~:text=The%20length%20of%20the%20vector,vector's%20magnitude%20or%20the%20norm.
 // https://askubuntu.com/questions/1408784/apps-crash-randomly-on-newly-installed-ubuntu-22-04
 
-class GeometryTestCase : public testing::Test {
-  public:
-    // Now that we has precompiled header, we can use eigen's template instantiations.
-
-    // typedef Matrix<double, 3, 3> Matrix3d;
-    // typedef Matrix<double, 4, 4> Matrix4d;
-    // typedef Matrix<double, 2, 1> Vector2d;
-    // typedef Matrix<double, 3, 1> Vector3d;
-    // typedef Matrix<double, 4, 1> Vector4d;
-    // typedef Quaternion<double> Quaternionxd;
-    // typedef AngleAxis<double> AngleAxisx;
-    // typedef DiagonalMatrix<double, 3> AlignedScaling3;
-    // typedef Translation<double, 2> Translation2;
-    // typedef Translation<double, 3> Translation3;
-
-    virtual void SetUp() {}
-
-    virtual void TearDown() {}
-};
-
-TEST_F(GeometryTestCase, geo_transformations) {
+TEST(geometry, geo_transformations) {
     Matrix3d actual_rot;
     // rotation matrix conversion
     actual_rot =
@@ -88,7 +68,7 @@ TEST_F(GeometryTestCase, geo_transformations) {
    The length of a vector is a nonnegative number that describes the extent of the vector in space, and is sometimes
    referred to as the vector's magnitude or the norm.
  */
-TEST_F(GeometryTestCase, vector_norm) {
+TEST(geometry, vector_norm) {
     Vector3d v0 = Vector3d::Random();
     while (v0.norm() < 1e-5f) {
         cout << "regenerate the vector for its norm is too small: v0=\n" << v0 << std::endl;
@@ -96,4 +76,36 @@ TEST_F(GeometryTestCase, vector_norm) {
     }
     cout << "norm=" << v0.norm() << endl;
     cout << "v0=\n" << v0 << endl;
+}
+
+TEST(geometry, Quaternion) {
+    Vector3d v0 = Vector3d::Random();
+    double a = Eigen::internal::random<double>(EIGEN_PI, EIGEN_PI);
+
+    std::cout << "a=" << a << std::endl;
+
+    Quaterniond q1;
+    q1 = AngleAxisd(a, v0.normalized());
+    std::cout << q1 << std::endl;
+}
+
+TEST(geometry, transform) {
+    Transform3 t0, t1, t2;
+
+    // first test setIdentity() and Identity()
+    t0.setIdentity();
+    VERIFY_IS_APPROX(t0.matrix(), Transform3::MatrixType::Identity());
+    t0.matrix().setZero();
+    t0 = Transform3::Identity();
+    VERIFY_IS_APPROX(t0.matrix(), Transform3::MatrixType::Identity());
+
+    t0.setIdentity();
+    t1.setIdentity();
+    v1 << 1, 2, 3;
+    t0.linear() = q1.toRotationMatrix();
+    t0.pretranslate(v0);
+    t0.scale(v1);
+    t1.linear() = q1.conjugate().toRotationMatrix();
+    t1.prescale(v1.cwiseInverse());
+    t1.translate(-v0);
 }

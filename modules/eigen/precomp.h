@@ -291,4 +291,12 @@ inline Rotation2D slerp(const Scalar& t, const Rotation2D& other) const {
     Scalar dist = Rotation2D(other.m_angle - m_angle).smallestAngle();
     return Rotation2D(m_angle + dist * t);
 }
+
+ \ingroup Geometry_Module
+Eigen/src/Geometry/Quaternion.h
+
+// single precision quaternion type
+typedef Quaternion<float> Quaternionf;
+// double precision quaternion type
+typedef Quaternion<double> Quaterniond;
 */
