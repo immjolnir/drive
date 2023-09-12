@@ -13,3 +13,10 @@
   - Use the system python version. 
     - `python3 -m venv`
 
+# venv vs conda
+
+```
+$ python -m venv --system-site-packages --symlinks .venv
+$ conda create -n venv python=3.8.3
+```
+venv cannot specify the python version but the conda can.

@@ -9,6 +9,10 @@ cleanup:
 	rm -rf build
 	mkdir build
 
+boost:
+	cmake -B build -S . -D ENABLE_BOOST=ON
+	make -C build
+
 eigen:
 	cmake -B build -S . -D ENABLE_EIGEN=ON
 	make -C build

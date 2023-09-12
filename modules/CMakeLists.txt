@@ -42,6 +42,10 @@ if (ENABLE_EIGEN)
     list(APPEND MODULES eigen)
 endif()
 
+if (ENABLE_BOOST)
+    list(APPEND MODULES boostorg)
+endif()
+
 foreach(m ${MODULES})
     add_subdirectory(${m})
 endforeach()
