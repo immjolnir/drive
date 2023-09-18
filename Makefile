@@ -9,6 +9,10 @@ cleanup:
 	rm -rf build
 	mkdir build
 
+logging:
+	cmake -B build -S . -D ENABLE_LOGGING=ON
+	make -C build
+
 boost:
 	cmake -B build -S . -D ENABLE_BOOST=ON
 	make -C build

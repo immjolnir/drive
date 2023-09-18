@@ -46,6 +46,10 @@ if (ENABLE_BOOST)
     list(APPEND MODULES boostorg)
 endif()
 
+if (ENABLE_LOGGING)
+    list(APPEND MODULES logging)
+endif()
+
 foreach(m ${MODULES})
     add_subdirectory(${m})
 endforeach()

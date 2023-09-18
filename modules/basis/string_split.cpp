@@ -8,6 +8,8 @@
 #include <boost/algorithm/string/split.hpp>  // boost::algorithm::split
 #include <boost/regex.hpp>
 
+#include <string.h>  // std::memchr
+#include <cstring>
 #include <sstream>
 
 /* 6 Methods to Split a String in C++
@@ -128,6 +130,21 @@ TEST(string_split, stringstream_getline) {
     EXPECT_EQ("test2", strs[2]);
 }
 
+/*
+NAME
+       memchr, memrchr, rawmemchr - scan memory for a character
+
+SYNOPSIS
+       #include <string.h>
+
+       void *memchr(const void *s, int c, size_t n);
+
+       void *memrchr(const void *s, int c, size_t n);
+
+       void *rawmemchr(const void *s, int c);
+
+It is similar with find.
+*/
 void find_str(std::string s, const std::string& del, std::vector<std::string>& res) {
     // Use find function to find 1st position of delimiter.
     int end = s.find(del);

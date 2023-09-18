@@ -15,6 +15,7 @@ option(ENABLE_3D "Three-Dimensions" OFF)
 option(ENABLE_MYTEST "mytest copied from gtest" OFF)
 option(ENABLE_EIGEN "Learning Eigen" OFF)
 option(ENABLE_BOOST "Learing Boost's libraries" OFF)
+option(ENABLE_LOGGING "Learing logging module" OFF)
 
 
 include(CMakeDependentOption)
