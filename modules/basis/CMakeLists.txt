@@ -39,6 +39,11 @@ set(STRING_FILES
     yaml_cpp.cpp
 )
 
+set(BIT_FILES
+    bit.cpp
+    machine_word.cpp
+)
+
 
 set(HAS_MAIN_FILES
     variadic_template.cpp
@@ -52,6 +57,7 @@ set(ALL_FILES
     ${STRING_FILES}
     ${EXCEPTION_EXAMPLES}
     ${HAS_MAIN_FILES}
+    ${BIT_FILES}
 )
 
 set(RESOURCES

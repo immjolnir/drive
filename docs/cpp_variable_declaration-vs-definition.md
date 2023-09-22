@@ -125,3 +125,6 @@ types are checked is refered to as type checking.
 See `module/basis/cpp_variables`.
 
 
+* `extern` vs `static`
+  extern int i;
+  static int j;

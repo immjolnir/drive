@@ -337,3 +337,29 @@ static ios_base::Init __ioinit __attribute__((init_priority(90)));
 ```
 
 See modules/basis/myio
+
+## nm
+* https://www.thegeekstuff.com/2012/03/linux-nm-command/
+
+The characters that identify symbol type describe :
+
+* `A` :  Global absolute symbol.
+* `a`  :  Local absolute symbol.
+* `B` : Global bss symbol.
+* `b` : Local bss symbol.
+* `D` : Global data symbol.
+* `d` : Local data symbol.
+* `f` : Source file name symbol.
+* `L` : Global thread-local symbol (TLS).
+* `l` : Static thread-local symbol (TLS).
+* `T` : Global text symbol.
+* `t`  : Local text symbol.
+* `U` : Undefined symbol.
+
+```
+$ nm -g test_global_variables
+
+0000000000059040 B i
+0000000000059178 B j
+0000000000059010 D k
+```
