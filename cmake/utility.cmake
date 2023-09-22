@@ -112,6 +112,11 @@ function(add_testcase unittest_file)
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     )
     set(additional_libs ${ARGN})
+    # what's the -Wl,-rpath,/home/xx /home/yy?
+    link_directories(
+        ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+        ${CMAKE_CURRENT_BINARY_DIR}
+    )
     target_link_libraries(${testcase}
         ${PROJECT_NAME}
         # ${Boost_LIBRARIES}

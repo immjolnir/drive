@@ -64,4 +64,8 @@ foreach(file ${ALL_FILES})
     add_example(${file} ${GTEST_BOTH_LIBRARIES})
 endforeach()
 
+
+add_subdirectory(myio)
+add_subdirectory(cpp_variables)
+
 add_footer()
