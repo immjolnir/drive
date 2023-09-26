@@ -18,6 +18,7 @@ set(STRING_FILES
     array.cpp
     vector.cpp
     sstream.cpp
+    list.cpp
 
     # String
     string.cpp

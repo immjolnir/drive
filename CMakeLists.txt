@@ -113,6 +113,13 @@ include(${CMAKE_FILES}/CompilerWarnings.cmake)
 
 # set_cxx_compiler_warnings()
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+
+# Changing the linker
+# https://stackoverflow.com/questions/1867745/cmake-use-a-custom-linker
+# https://github.com/rui314/mold#how-to-use
+# For GCC 12.1.0 or later: pass -fuse-ld=mold
+# lld, gold, mold
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=gold")
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 include(${CMAKE_FILES}/utility.cmake)
