@@ -3,6 +3,18 @@
 #include <gtest/gtest.h>
 using namespace std;
 
+TEST(string, deep_copy) {
+    // The std::string is deep copy.
+    // https://stackoverflow.com/questions/8467049/c-stl-string-copy-constructor-always-a-deep-copy
+    std::string s0 = "abc";
+    std::string s1 = s0;
+    EXPECT_EQ(s0, s1);
+
+    s0[0] = 'x';
+    EXPECT_EQ("xbc", s0);
+    EXPECT_EQ("abc", s1);
+}
+
 TEST(string, remove_last_character_with_pop_back) {
     // use the pop_back() method to remove the last character of a string in C++
     //

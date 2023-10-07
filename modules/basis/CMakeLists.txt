@@ -45,7 +45,6 @@ set(BIT_FILES
     machine_word.cpp
 )
 
-
 set(HAS_MAIN_FILES
     variadic_template.cpp
     variadic_template_v1.cpp
@@ -59,6 +58,8 @@ set(ALL_FILES
     ${EXCEPTION_EXAMPLES}
     ${HAS_MAIN_FILES}
     ${BIT_FILES}
+
+    test_steadytime.cpp
 )
 
 set(RESOURCES
@@ -74,5 +75,6 @@ endforeach()
 
 add_subdirectory(myio)
 add_subdirectory(cpp_variables)
+add_subdirectory(zero-copy)
 
 add_footer()

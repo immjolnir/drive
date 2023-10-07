@@ -1,23 +1,130 @@
-# Zereo-Copy: sendfile 
+# Zero Copy
 
-## sendfile
+"Zero-copy" describes computer operations in which the CPU does not perform the task of copying data from one memory area to another or in which unnecessary data copies are avoided. This is frequently used to save CPU cycles and memory bandwidth in many time consuming tasks, such as when transmitting a file at high speed over a network, etc., thus improving the performance of programs (processes) executed by a computer.
 
+- What is Zero Copy
+  - “Zero”: Means that the number of times of copying data is 0.
+  - “Copy”: Means that the data is transferred from one storage to another storage area.
+
+- Execution Process of traditional IO
+
+For example, if you want to implement a download function, the task of the server is to send the files in the server host disk from the connected socket. The key code is as follows:
 ```
-#include <sys/sendfile.h>
-
-ssize_t sendfile(int out_fd, int in_fd, off_t *_Nullable offset, size_t count);
+while((n = read(diskfd, buf, BUF_SIZE)) > 0)
+    write(sockfd, buf , n);
 ```
+The traditional IO process includes read and write processes
 
-- `sendfile()` copies data between one file descriptor and another. Because this copying is done within the kernel, `sendfile()` is more efficient than the combination of read(2) and write(2), which would require transferring data to and from user space.
+  - read : read data from disk to kernel buffer, copy to user buffer
+  - write : first write data to socket buffer, and finally write to network card device
+
+![](./zero_copy_io.webp)
+
+- The application calls the read function, initiates an IO call to the operating system, and the context switches from user mode to kernel mode
+
+- The DMA controller reads the data from disk to the kernel buffer
+
+- The CPU reads the kernel buffer and copy data to application.
+
+
+## Principle
+Zero-copy programming techniques can be used when exchanging data within a user space process (i.e. between two or more threads, etc.) and/or between two or more processes (see also producer–consumer problem) and/or when data has to be accessed / copied / moved inside kernel space or between a user space process and kernel space portions of operating systems (OS).
+
+Usually when a user space process has to execute system operations like reading or writing data from/to a device (i.e. a disk, a NIC, etc.) through their high level software interfaces or like moving data from one device to another, etc., it has to perform one or more system calls that are then executed in kernel space by the operating system.
+
+If data has to be copied or moved from source to destination and both are located inside kernel space (i.e. two files, a file and a network card, etc.) then unnecessary data copies, from kernel space to user space and from user space to kernel space, can be avoided by using special (zero-copy) system calls, usually available in most recent versions of popular operating systems.
+
+Zero-copy versions of operating system elements, such as device drivers, file systems, network protocol stacks, etc., greatly increase the performance of certain application programs (that become processes when executed) and more efficiently utilize system resources. Performance is enhanced by allowing the CPU to move on to other tasks while data copies / processing proceed in parallel in another part of the machine. Also, zero-copy operations reduce the number of time-consuming context switches between user space and kernel space. System resources are utilized more efficiently since using a sophisticated CPU to perform extensive data copy operations, which is a relatively simple task, is wasteful if other simpler system components can do the copying.
+
+As an example, reading a file and then sending it over a network the traditional way requires 2 extra data copies (1 to read from kernel to user space + 1 to write from user to kernel space) and 4 context switches per read/write cycle. Those extra data copies use the CPU. Sending that file by using mmap of file data and a cycle of write calls, reduces the context switches to 2 per write call and avoids those previous 2 extra user data copies. Sending the same file via zero copy reduces the context switches to 2 per sendfile call and eliminates all CPU extra data copies (both in user and in kernel space).[1][2][3][4]
+
+Zero-copy protocols are especially important for very high-speed networks in which the capacity of a network link approaches or exceeds the CPU's processing capacity. In such a case the CPU may spend nearly all of its time copying transferred data, and thus becomes a bottleneck which limits the communication rate to below the link's capacity. A rule of thumb used in the industry is that roughly one CPU clock cycle is needed to process one bit of incoming data.
+
+## Hardware implementation
+
+Techniques for creating zero-copy software include the use of direct memory access (DMA)-based copying and memory-mapping through a memory management unit (MMU). These features require specific hardware support and usually involve particular memory alignment requirements.
+
+A newer approach used by the Heterogeneous System Architecture (HSA) facilitates the passing of pointers between the CPU and the GPU and also other processors. This requires a unified address space for the CPU and the GPU.
+
+
+## 0. Zero Copy Data Access
+Zero copy data access (ZCDA) is a technique that allows data to be transferred between applications without being copied from one memory location to another.
+It can improve the performance of data-intensive applications by reducing the amount of time it takes to move data between different parts of the system.
+
+
+ZCDA enables applications to access the memory location where the data is stored directly, saving time and improving performance.
 
 
 
-For instance:
+## Linux tool: `cp` without Zero-copy
+
+- Generating big data
 ```
 $ dd if=/dev/urandom of=sendfile.in.tmp bs=1K count=10M
 10485760+0 records in
 10485760+0 records out
 10737418240 bytes (11 GB, 10 GiB) copied, 44.8099 s, 240 MB/s
+```
+
+- time and strace
+```
+$ time cp sendfile.in.tmp sendfile.in.tmp0
+
+read(3, "(7\7\273j1\321\35\373;P\264f\344\257\214+\31E\330\26\305\336'\224\37 ,\30\310~\313"..., 131072) = 131072
+write(4, "(7\7\273j1\321\35\373;P\264f\344\257\214+\31E\330\26\305\336'\224\37 ,\30\310~\313"..., 131072) = 131072
+read(3, "<\337\324\v\371\261]\315{\346\363\341&\317r\204\324\317\244\207\r\10\335\312YG\0160\332-\355\315"..., 131072) = 131072
+write(4, "<\337\324\v\371\261]\315{\346\363\341&\317r\204\324\317\244\207\r\10\335\312YG\0160\332-\355\315"..., 131072) = 131072
+read(3, "\327\30\333\310\347\337F\v\234\301\r\253\210\310\265\"\200#+\242\251\206\200`\247\0\nv\367\267(\327"..., 131072) = 131072
+write(4, "\327\30\333\310\347\337F\v\234\301\r\253\210\310\265\"\200#+\242\251\206\200`\247\0\nv\367\267(\327"..., 131072) = 131072
+
+real	0m10.987s
+user	0m0.060s
+sys	0m9.022s
+```
+
+- Re-implement a `cp` with `sendfile`
+
+```
+$ cat cp2.c 
+#define _GNU_SOURCE
+#include <assert.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <sys/sendfile.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+int main(int argc, char **argv) {
+  char *source_path, *dest_path;
+  int source, dest;
+  struct stat stat_source;
+
+  if (argc > 1) {
+    source_path = argv[1];
+  } else {
+    source_path = "sendfile.in.tmp";
+  }
+  if (argc > 2) {
+    dest_path = argv[2];
+  } else {
+    dest_path = "sendfile.out.tmp";
+  }
+
+  source = open(source_path, O_RDONLY);
+  assert(source != -1);
+
+  dest = open(dest_path, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+  assert(dest != -1);
+
+  assert(fstat(source, &stat_source) != -1);
+  // this copying is done within the kernel -- zero copy.
+  assert(sendfile(dest, source, 0, stat_source.st_size) != -1);
+  assert(close(source) != -1);
+  assert(close(dest) != -1);
+  
+  return EXIT_SUCCESS;
+}
 
 $ time strace ./cp2 sendfile.in.tmp sendfile.in.tmp3
 execve("./cp2", ["./cp2", "sendfile.in.tmp", "sendfile.in.tmp3"], 0x7fff3438a1c0 /* 81 vars */) = 0
@@ -64,18 +171,18 @@ exit_group(0)                           = ?
 real	0m1.217s
 user	0m0.005s
 sys	0m1.213s
-
 ```
 
-read(3, "(7\7\273j1\321\35\373;P\264f\344\257\214+\31E\330\26\305\336'\224\37 ,\30\310~\313"..., 131072) = 131072
-write(4, "(7\7\273j1\321\35\373;P\264f\344\257\214+\31E\330\26\305\336'\224\37 ,\30\310~\313"..., 131072) = 131072
-read(3, "<\337\324\v\371\261]\315{\346\363\341&\317r\204\324\317\244\207\r\10\335\312YG\0160\332-\355\315"..., 131072) = 131072
-write(4, "<\337\324\v\371\261]\315{\346\363\341&\317r\204\324\317\244\207\r\10\335\312YG\0160\332-\355\315"..., 131072) = 131072
-read(3, "\327\30\333\310\347\337F\v\234\301\r\253\210\310\265\"\200#+\242\251\206\200`\247\0\nv\367\267(\327"..., 131072) = 131072
-write(4, "\327\30\333\310\347\337F\v\234\301\r\253\210\310\265\"\200#+\242\251\206\200`\247\0\nv\367\267(\327"..., 131072) = 131072
+## Refers
+- `sendfile()` copies data between one file descriptor and another. Because this copying is done within the kernel, `sendfile()` is more efficient than the combination of read(2) and write(2), which would require transferring data to and from user space.
 
-$ time cp sendfile.in.tmp sendfile.in.tmp0
+```
+#include <sys/sendfile.h>
 
-real	0m10.987s
-user	0m0.060s
-sys	0m9.022s
+ssize_t sendfile(int out_fd, int in_fd, off_t *_Nullable offset, size_t count);
+```
+
+- [Apache Arrow](https://arrow.apache.org/)
+  - Apache Arrow defines a language-independent columnar memory format for flat and hierarchical data, organized for efficient analytic operations on modern hardware like CPUs and GPUs. The Arrow memory format also supports zero-copy reads for lightning-fast data access without serialization overhead.
+
+- 
