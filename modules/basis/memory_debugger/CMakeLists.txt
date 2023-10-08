@@ -2,6 +2,7 @@ project(basis_memory_debugger CXX)
 
 set(FILES
     leak_example.cpp
+    uninitialized_variable.cpp
 )
 
 foreach(f ${FILES})

@@ -66,6 +66,12 @@ Options:
 
 - `mtime`：修改时间（modifytime），指的是文件内容最后被修改的时间，修改动作可以使echo重定向、vi等等；
 
+## Permission
+
+```
+$ find . -perm 775 -a -type f -exec rm {} \;
+```
+
 # What is a Package Manager in Linux? How Does it Work?
 
 ```
