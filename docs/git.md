@@ -14,3 +14,15 @@ Generally, Git doesn't add empty directories and sometimes we may need to add th
      |_ .gitkeep
 ```
 
+## clone a repo including its submodules
+- Way 1:
+```
+$ git clone https://github.com/cameronmcnz/surface.git
+$ git submodule init
+$ git submodule update
+```
+
+- Way 2:
+  - `git clone --recurse-submodules -j8 git://github.com/foo/bar.git`
+    - `--recurse-submodules` can be used instead of `--recursive`.
+    - `-j8` is an optional performance optimization that became available in version 2.8, and fetches up to 8 submodules at a time in parallel — see `man git-clone`.

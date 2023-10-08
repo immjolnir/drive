@@ -77,5 +77,6 @@ endforeach()
 add_subdirectory(myio)
 add_subdirectory(cpp_variables)
 add_subdirectory(zero-copy)
+add_subdirectory(memory_debugger)
 
 add_footer()
