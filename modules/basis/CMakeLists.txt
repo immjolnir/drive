@@ -17,6 +17,7 @@ set(STRING_FILES
     raw_array.cpp
     array.cpp
     vector.cpp
+    vector-test-deep_copy-vs-shadow_copy.cpp
     sstream.cpp
     list.cpp
 
