@@ -1,14 +1,19 @@
 #include <gtest/gtest.h>
 
-#include "chararray.h"
-#include "chararray_ptr.h"
 #include "global.h"
 
-TEST(CharArray, size) {
-    EXPECT_EQ(10, sizeof(CharArray));
-    EXPECT_EQ(8, sizeof(CharArrayPtr));
-    EXPECT_EQ(8, sizeof(void*));
-}
+/*
+// Expand it as shown below
+
+extern int i;
+static int j;
+
+static int k = i;
+
+// Is the `static int k = i;` safe?
+// The `static int k=i;` is resolved at the runtime, while the the `extern int i;` is resolved by the linker at the
+linking stage. So yes, it's safe.
+*/
 
 TEST(extern_vs_static, whats_the_order) {
     EXPECT_EQ(1, i);

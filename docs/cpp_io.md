@@ -336,7 +336,19 @@ static ios_base::Init __ioinit __attribute__((init_priority(90)));
 #endif
 ```
 
-See modules/basis/myio
+
+See
+- modules/basis
+  - myio
+  - cpp_variables/extern_vs_static
+
+# Summary
+
+When the `iostream` is included, the file will has the `extern ostream cout;` and `static ios_base::Init __foo;`.
+The definition of the `cout` is resolved at linking stage and the `__foo` is initialized at the begining of the runtime.
+So everything works well.
+
+Note: linker only find the symbol and do care about its type.
 
 ## nm
 * https://www.thegeekstuff.com/2012/03/linux-nm-command/
@@ -344,7 +356,7 @@ See modules/basis/myio
 The characters that identify symbol type describe :
 
 * `A` :  Global absolute symbol.
-* `a`  :  Local absolute symbol.
+* `a` :  Local absolute symbol.
 * `B` : Global bss symbol.
 * `b` : Local bss symbol.
 * `D` : Global data symbol.
@@ -353,7 +365,7 @@ The characters that identify symbol type describe :
 * `L` : Global thread-local symbol (TLS).
 * `l` : Static thread-local symbol (TLS).
 * `T` : Global text symbol.
-* `t`  : Local text symbol.
+* `t` : Local text symbol.
 * `U` : Undefined symbol.
 
 ```

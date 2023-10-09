@@ -122,6 +122,58 @@ that use that variable must declare—but not define—that variable.
 C++ is statically typed language, which means that types are checked at compile time. The process by which
 types are checked is refered to as type checking.
 
+## Variable Scope
+
+The scope of a variable refers to the extent of the block of code in which the variable can be accessed, modified, and worked with. There are mainly two kinds of variable scopes.
+
+The scope of a variable is the area of the program where the variable is valid.
+- Global variables
+- Local variables
+
+## Global Variables
+
+A global variable is valid from the point it is declared to the end of the program. 
+
+A global variable can be accessed from anywhere in the entire program. It is usually declared at the top or start of the program outside of all blocks and functions of the program. It can be accessed from any function without any error.
+
+- Definition of C++ Global Variable
+
+A global variable can be accessed from anywhere in the entire program. It is usually declared at the top or start of the program outside of all blocks and functions of the program. It can be accessed from any function without any error.
+
+- How to Access a Global Variable when There is a Local Variable with the Same Name?
+So how do we access the global variable when there exists a local variable with the same name. To do that, we use the scope resolution operator as shown below.
+
+```c++
+#include<iostream>
+using namespace std;
+
+// Global variable  
+int a = 3; 
+
+int main()
+{
+    // Local variable   
+    int a = 7;
+    cout << "Value of global variable a is " << ::a<<endl;
+    cout<< "Value of local variable a is " << a; 
+}
+```
+
+- Working of C++ Global Variables
+However, global variables are declared at the top of the program outside any function or block of code. These variables can be accessed from within any function of the block of code. They can be accessed and modified anywhere in the program without any compilation error.
+
+
+## Local Variables
+
+A local variable's scope is limited to the block where it is declared and cannot be accessed (set or read) outside that block. A block is a section of code enclosed in curly braces (`{ }`).
+
+It is possible to declare a local variable with the same name as a global variable.
+
+- In case both local and global variables are present with the same name, the compiler gives preference to the local variable when it is called by any method.
+
+- In case both local and global variables are present with the same name, we use the scope resolution operator(`::`) to call the local variable.
+
+
 See `module/basis/cpp_variables`.
 
 
