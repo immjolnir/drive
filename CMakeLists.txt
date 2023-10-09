@@ -16,6 +16,8 @@ option(ENABLE_MYTEST "mytest copied from gtest" OFF)
 option(ENABLE_EIGEN "Learning Eigen" OFF)
 option(ENABLE_BOOST "Learing Boost's libraries" OFF)
 option(ENABLE_LOGGING "Learing logging module" OFF)
+option(ENABLE_ARROW "A Mini Arrow module" OFF)
+option(ENABLE_APOLLO "A Mini Apollo module" OFF)
 
 
 include(CMakeDependentOption)

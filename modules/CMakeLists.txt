@@ -50,6 +50,10 @@ if (ENABLE_LOGGING)
     list(APPEND MODULES logging)
 endif()
 
+if (ENABLE_ARROW)
+    list(APPEND MODULES miniarrow)
+endif()
+
 foreach(m ${MODULES})
     add_subdirectory(${m})
 endforeach()

@@ -9,6 +9,10 @@ cleanup:
 	rm -rf build
 	mkdir build
 
+arrow:
+	cmake -B build -S . -D ENABLE_ARROW=ON
+	make -C build
+
 logging:
 	cmake -B build -S . -D ENABLE_LOGGING=ON
 	make -C build
