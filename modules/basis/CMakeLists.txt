@@ -13,6 +13,11 @@ set(EXCEPTION_EXAMPLES
 )
 
 set(STRING_FILES
+    # Alignment
+    alignment.cpp
+    alignment_alignas.cpp
+    alignment_aligned_storage.cpp
+
     # Sequence Containers
     raw_array.cpp
     array.cpp
@@ -20,6 +25,10 @@ set(STRING_FILES
     vector-test-deep_copy-vs-shadow_copy.cpp
     sstream.cpp
     list.cpp
+
+    # New API
+    launder.cpp
+    destroy.cpp
 
     # String
     string.cpp
@@ -60,7 +69,7 @@ set(ALL_FILES
     ${HAS_MAIN_FILES}
     ${BIT_FILES}
 
-    test_steadytime.cpp
+    steadytime.cpp
 )
 
 set(RESOURCES

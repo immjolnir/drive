@@ -3,7 +3,9 @@ project(miniarrow CXX)
 add_header()
 
 set(TEST_FILES
-    test_employee.cpp
+    employee_test.cc
+    arrow/util/aligned_storage_test.cc
+    arrow/util/small_vector_test.cc
 )
 
 foreach(f ${TEST_FILES})
