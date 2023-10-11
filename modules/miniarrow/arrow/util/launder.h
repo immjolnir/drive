@@ -7,9 +7,8 @@ namespace arrow
     namespace internal
     {
 
-// defined in c++11 library
 #if __cpp_lib_launder
-        using std::launder;
+        using std::launder; // since c++17
 #else
         template <class T>
         constexpr T* launder(T* p) noexcept {

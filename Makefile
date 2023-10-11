@@ -45,7 +45,7 @@ opencv:
 	make -C build test
 
 basis: 
-	cmake -B build -S . -D ENABLE_MODULE_BASIS=ON -D BUILD_TESTING=ON -D DEVELOPMENT_BUILD=ON 
+	cmake -B build -S . -D ENABLE_MODULE_BASIS=ON -D BUILD_TESTING=ON -D DEVELOPMENT_BUILD=ON  -D ENABLE_SANITIZER=ON
 	make -C build
 	make -C build test
 

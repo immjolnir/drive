@@ -36,7 +36,7 @@ namespace arrow
             template <typename... A>
             void construct(A&&... args) noexcept {
                 // placement new operator
-                new (&data_) T(std::forward<A>(args)...);
+                new (&data_) T(std::forward<A>(args)...);  // It must have a constructor: T(args).
             }
 
             template <typename V>

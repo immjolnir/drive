@@ -407,7 +407,7 @@ class [[nodiscard]] Result : public util::EqualityComparable<Result<T>> {
 
   constexpr T& ValueUnsafe() & { return *storage_.get(); }
 
-  T ValueUnsafe() && { return MoveValueUnsafe(); }
+  T ValueUnsafe() && { return MoveValueUnsafe(); } // 这后面两个 && 是什么意思？
 
   T MoveValueUnsafe() { return std::move(*storage_.get()); }
 

@@ -3,6 +3,8 @@ project(drive CXX)
 
 option(ARCHETYPE_DEVELOPMENT_BUILD "Build tests, enable warnings, enable Werror, etc" OFF)
 option(ENABLE_DOXYGEN "Generating documentation from annotated C++ sources" OFF)
+option(ENABLE_SANITIZER "Sanitizer: address, memory" OFF)
+
 
 # The building is awful and scared. the projects are disabled by default.
 option(ENABLE_MODULE_BASIS "C++ Programming Basic Skips" OFF)
@@ -126,6 +128,27 @@ message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 include(${CMAKE_FILES}/utility.cmake)
 
+# https://clang.llvm.org/docs/UsersManual.html#controlling-code-generation
+# -fsanitize=address: AddressSanitizer, a memory error detector.
+# 
+# -fsanitize=thread: ThreadSanitizer, a data race detector.
+# 
+# -fsanitize=memory: MemorySanitizer, a detector of uninitialized reads. Requires instrumentation of all program code.
+# 
+# -fsanitize=undefined: UndefinedBehaviorSanitizer, a fast and compatible undefined behavior checker.
+# 
+# -fsanitize=dataflow: DataFlowSanitizer, a general data flow analysis.
+# 
+# -fsanitize=cfi: control flow integrity checks. Requires -flto.
+# 
+# -fsanitize=kcfi: kernel indirect call forward-edge control flow integrity.
+# 
+# -fsanitize=safe-stack: safe stack protection against stack-based memory corruption errors.
+if(ENABLE_SANITIZER)
+    include(${CMAKE_FILES}/EnableSanitizer.cmake)
+    enable_sanitizer(address)
+endif(ENABLE_SANITIZER)
+
 add_header()
 
 # Basic paths
@@ -193,7 +216,6 @@ endif()
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
-
 
 # We need to bring-in the variables defined there to this scope
 add_subdirectory(modules)

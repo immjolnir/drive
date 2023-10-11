@@ -18,6 +18,9 @@ set(STRING_FILES
     alignment_alignas.cpp
     alignment_aligned_storage.cpp
 
+    new_operator.cpp
+    replacement_new_operator.cpp
+
     # Sequence Containers
     raw_array.cpp
     array.cpp
@@ -83,6 +86,7 @@ foreach(file ${ALL_FILES})
 endforeach()
 
 
+add_subdirectory(iterator)
 add_subdirectory(myio)
 add_subdirectory(cpp_variables)
 add_subdirectory(zero-copy)
