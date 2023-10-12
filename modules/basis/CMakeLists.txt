@@ -20,6 +20,8 @@ set(STRING_FILES
 
     new_operator.cpp
     replacement_new_operator.cpp
+    replacement_new_operator_dont_complain_about_out_of_bounds.cpp
+    replacement_new_operator_dont_complain_about_out_of_bounds_with_fix.cpp
 
     # Sequence Containers
     raw_array.cpp

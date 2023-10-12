@@ -20,6 +20,7 @@ option(ENABLE_BOOST "Learing Boost's libraries" OFF)
 option(ENABLE_LOGGING "Learing logging module" OFF)
 option(ENABLE_ARROW "A Mini Arrow module" OFF)
 option(ENABLE_APOLLO "A Mini Apollo module" OFF)
+option(ENABLE_JSON "Jsoncpp module" OFF)
 
 
 include(CMakeDependentOption)
@@ -78,6 +79,13 @@ message(STATUS "GMOCK_MAIN_LIBRARIES: ${GMOCK_MAIN_LIBRARIES}")
 # /usr/lib/x86_64-linux-gnu/libgmock.a;/usr/lib/x86_64-linux-gnu/libgmock_main.a
 message(STATUS "GMOCK_BOTH_LIBRARIES: ${GMOCK_BOTH_LIBRARIES}")
 
+# jsoncpp
+include(${CMAKE_FILES}/FindJsonCpp.cmake)
+find_package(JsonCpp REQUIRED)
+include_directories(${JsonCpp_INCLUDE_DIRS})
+message(STATUS "JsonCpp_INCLUDE_DIRS: ${JsonCpp_INCLUDE_DIRS}")
+message(STATUS "JsonCpp_LIBRARIES: ${JsonCpp_LIBRARIES}")
+
 # Boost
 # -- Boost_LIBRARIES = Boost::atomic;Boost::chrono;Boost::container;Boost::context;Boost::coroutine;Boost::date_time;Boost::exception;Boost::fiber;Boost::filesystem;Boost::graph;Boost::graph_parallel;Boost::iostreams;Boost::json;Boost::locale;Boost::log;Boost::log_setup;Boost::math_c99;Boost::math_c99f;Boost::math_c99l;Boost::math_tr1;Boost::math_tr1f;Boost::math_tr1l;Boost::mpi;Boost::mpi_python;Boost::nowide;Boost::numpy;Boost::prg_exec_monitor;Boost::program_options;Boost::python;Boost::random;Boost::regex;Boost::serialization;Boost::stacktrace_addr2line;Boost::stacktrace_backtrace;Boost::stacktrace_basic;Boost::stacktrace_noop;Boost::system;Boost::test_exec_monitor;Boost::thread;Boost::timer;Boost::type_erasure;Boost::unit_test_framework;Boost::wave;Boost::wserialization
 # find_package(Boost REQUIRED COMPONENTS ALL)
@@ -130,19 +138,19 @@ include(${CMAKE_FILES}/utility.cmake)
 
 # https://clang.llvm.org/docs/UsersManual.html#controlling-code-generation
 # -fsanitize=address: AddressSanitizer, a memory error detector.
-# 
+#
 # -fsanitize=thread: ThreadSanitizer, a data race detector.
-# 
+#
 # -fsanitize=memory: MemorySanitizer, a detector of uninitialized reads. Requires instrumentation of all program code.
-# 
+#
 # -fsanitize=undefined: UndefinedBehaviorSanitizer, a fast and compatible undefined behavior checker.
-# 
+#
 # -fsanitize=dataflow: DataFlowSanitizer, a general data flow analysis.
-# 
+#
 # -fsanitize=cfi: control flow integrity checks. Requires -flto.
-# 
+#
 # -fsanitize=kcfi: kernel indirect call forward-edge control flow integrity.
-# 
+#
 # -fsanitize=safe-stack: safe stack protection against stack-based memory corruption errors.
 if(ENABLE_SANITIZER)
     include(${CMAKE_FILES}/EnableSanitizer.cmake)

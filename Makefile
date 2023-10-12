@@ -9,6 +9,10 @@ cleanup:
 	rm -rf build
 	mkdir build
 
+json:
+	cmake -B build -S . -D ENABLE_JSON=ON -D ENABLE_SANITIZER=ON
+	make -C build
+
 arrow:
 	cmake -B build -S . -D ENABLE_ARROW=ON
 	make -C build

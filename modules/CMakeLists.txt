@@ -42,6 +42,10 @@ if (ENABLE_EIGEN)
     list(APPEND MODULES eigen)
 endif()
 
+if (ENABLE_JSON)
+    list(APPEND MODULES jsoncpp)
+endif()
+
 if (ENABLE_BOOST)
     list(APPEND MODULES boostorg)
 endif()
