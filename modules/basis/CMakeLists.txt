@@ -14,6 +14,7 @@ set(EXCEPTION_EXAMPLES
 
 set(STRING_FILES
     # Alignment
+    trivial.cpp
     alignment.cpp
     alignment_alignas.cpp
     alignment_aligned_storage.cpp

@@ -3,7 +3,13 @@
 See
 - aligned_storage_test.cc
 
-From [Trivial, standard-layout, POD, and literal types](https://learn.microsoft.com/en-us/cpp/cpp/trivial-standard-layout-and-pod-types?view=msvc-170)
+From [Trivial, standard-layout, POD, and literal types](https://learn.microsoft.com/en-us/cpp/cpp/trivial-standard-layout-and-pod-types?view=msvc-170) and [C++20: Aggregate, POD, trivial type, standard layout class, what is what](https://andreasfertig.blog/2021/01/cpp20-aggregate-pod-trivial-type-standard-layout-class-what-is-what/)
+I like to give you some details about the new definition in C++20 of a:
+
+- POD
+- Trivial type
+- Standard layout class
+- Aggregate
 
 The term layout refers to how the members of an object of class, struct or union type are arranged in memory. In some cases, the layout is well-defined by the language specification. But when a class or struct contains certain C++ language features such as virtual base classes, virtual functions, members with different access control, then the compiler is free to choose a layout. That layout may vary depending on what optimizations are being performed and in many cases the object might not even occupy a contiguous area of memory. For example, if a class has virtual functions, all the instances of that class might share a single virtual function table. Such types are very useful, but they also have limitations. Because the layout is undefined they cannot be passed to programs written in other languages, such as C, and because they might be non-contiguous they cannot be reliably copied with fast low-level functions such as memcopy, or serialized over a network.
 
@@ -12,7 +18,9 @@ To enable compilers as well as C++ programs and metaprograms to reason about the
 
 
 ## Trivial types
-When a class or struct in C++ has compiler-provided or explicitly defaulted special member functions, then it is a trivial type. It occupies a contiguous memory area. It can have members with different access specifiers. In C++, the compiler is free to choose how to order members in this situation. Therefore, you can memcopy such objects but you cannot reliably consume them from a C program. A trivial type T can be copied into an array of char or unsigned char, and safely copied back into a T variable. Note that because of alignment requirements, there might be padding bytes between type members.
+When a class or struct in C++ has compiler-provided or explicitly defaulted special member functions, then it is a trivial type. __It occupies a contiguous memory area__. It can have members with different access specifiers. In C++, the compiler is free to choose how to order members in this situation. Therefore, you can __memcopy__ such objects but you cannot reliably consume them from a C program. A trivial type T can be copied into an array of char or unsigned char, and safely copied back into a T variable. Note that because of alignment requirements, there might be padding bytes between type members.
+
+In short, a trivial type is a class or struct for which the compiler provides all the special members, either implicitly or because they are explicitly defaulted by us. Once we provide our own default constructor for a class, such a type is no longer a trivial type. Another property of a trivial type is that such a type occupies a contiguous memory area, which makes it memcopy-able, and it supports static initialization.
 
 Trivial types have a trivial default constructor, trivial copy constructor, trivial copy assignment operator and trivial destructor. In each case, trivial means the constructor/operator/destructor is not user-provided and belongs to a class that has
 
@@ -42,8 +50,13 @@ private:
 };
 ```
 
+Alignment and also the size of the type may be different from char due to alignment and padding rules.
+
 ## Standard layout types
 When a class or struct does not contain certain C++ language features such as virtual functions which are not found in the C language, and all members have the same access control, it is a standard-layout type. It is memcopy-able and the layout is sufficiently defined that it can be consumed by C programs. Standard-layout types can have user-defined special member functions. In addition, standard layout types have these characteristics:
+
+The term layout refers to the arrangement of members of classes, structs, or unions in memory. A standard-layout class defines a type, which does not use certain specific C++ features that are not available in C. Such a type is memcopy-able, and its layout is defined in a way that the same type can be used in a C program. So in more general speak, a standard-layout class (or type) is compatible with C and can be exchanged over a C-API.
+
 
 - no virtual functions or virtual base classes
 
@@ -90,7 +103,7 @@ struct Derived : public Base
 
 In this example Derived is standard-layout because Base has no non-static data members:
 
-```++
+```c++
 struct Base
 {
    void Foo() {}
@@ -104,6 +117,8 @@ struct Derived : public Base
 };
 ```
 Derived would also be standard-layout if Base had the data members and Derived had only member functions.
+
+Please note that at this point, we talk about the layout in the memory and the interoperability with C. What you do not see in the definition above is that a standard-layout class could have special members. They do not change the memory layout. Special members only help to initialize an object. Despite that C has no special members, we can have them in C++ in a standard-layout type because it is just about the layout, nothing else.
 
 ## POD types
 
@@ -172,7 +187,30 @@ int main()
 }
 ```
 
+Before C++20, we had the definition of a POD type. The specification was that a POD is a type that is trivial and standard-layout. With C++20, the definition of POD, as well as the type-trait std::is_pod, is gone. No worries, your favorite STL vendor will for sure provide the type-trait for some time before it actually gets removed.
 
+The idea of a POD was that it supports two distinct properties:
+
+- we can compile a POD in C++ and still use it in a C program, as it has the same memory layout in both languages (meet by standard-layout);
+- a POD supports static initialization (meet by trivial type).
+
+While a standard-layout type has a C compatible memory layout, it can have a user-defined default constructor. This is something C doesn't have. Hence we need the second property, a trivial type. As we learned above, such a type is default constructible the same way as a C struct.
+
+As far as the C++20 standard is concerned, the term POD no longer exists. POD is replaced by standard-layout and trivial type. As a consequence, the type-trait std::is_pod is deprecated in C++20, and you are encouraged to use the two type-traits `std::is_trivial` and `std::is_standard_layout`.
+
+- https://stackoverflow.com/questions/48225673/why-is-stdis-pod-deprecated-in-c20
+
+
+## [Aggregate](https://en.cppreference.com/w/cpp/types/is_aggregate)
+Since c++17
+
+An aggregate can be seen as a composition of other types. All data members of an aggregate must be public. The interesting thing is that since C++17 aggregates can have public base classes as long as they are not virtual. These base classes do not need to be aggregates themself. If they are not, they are list-initialized.
+
+- [Aggregate initialization](https://en.cppreference.com/w/cpp/language/aggregate_initialization)
+Initializes an aggregate from an initializer list. It is a form of list-initialization. (since C++11)
+
+  - For non-aggregate type, use () syntax.
+  - For aggregate type, use {} syntax.
 
 ## Literal types
 A literal type is one whose layout can be determined at compile time. The following are the literal types:
@@ -183,6 +221,16 @@ A literal type is one whose layout can be determined at compile time. The follow
 - Arrays of void, scalar types or references
 - A class that has a trivial destructor, and one or more constexpr constructors that are not move or copy constructors. Additionally, all its non-static data members and base classes must be literal types and not volatile.
 
+## Summary 
+
+Properties Overview
+| Type  | memcopy-able| C compatible memory layout|
+| ------|-----------|----- |
+| Trivial type	|Yes|No|
+| Standard-layout|Yes|Yes|
+| Aggregate	|Yes|maybe|
+
+
 ## reference
 - https://stackoverflow.com/questions/61329240/what-is-the-difference-between-trivial-and-non-trivial-objects
 
@@ -190,3 +238,37 @@ The point of triviality is that the type can be treated exactly like a fundament
 
 As for alignment, it simply isn't all that relevant because it's all taken care of for you. The compiler knows the alignment of the types it's working with, thanks to the strong static type system.
 
+
+
+## Others
+
+> Note that for `memcpy` to be legal to copy an object, the struct has to be trivially copyable. The important fact now is that the compiler knows that trivially copyable types can be trivially copied and will emit optimal code.
+
+- New founding
+If it is a trivial type, the assignment operator `=` and `memcpy` will generate the same assembly code.
+
+Test it on https://godbolt.org/
+
+```c++
+#include <cstring>
+
+struct A
+{
+    long long a0;
+    long long a1;
+    long long a2;
+    long long a3;
+    long long a4;
+    // virtual void f() {}
+};
+
+void f( A& x, const A& y)
+{
+    x = y;
+}
+
+void g( A& x, const A& y)
+{
+    memcpy(&x, &y, sizeof(A));
+}
+```
