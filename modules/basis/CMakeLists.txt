@@ -24,6 +24,9 @@ set(STRING_FILES
     replacement_new_operator_dont_complain_about_out_of_bounds.cpp
     replacement_new_operator_dont_complain_about_out_of_bounds_with_fix.cpp
 
+    # atomic
+    atomic_exploring.cpp
+
     # Sequence Containers
     raw_array.cpp
     array.cpp
@@ -85,7 +88,11 @@ add_resource_tunnel(${RESOURCES})
 
 # On the basis of Gtest, creating the cases.
 foreach(file ${ALL_FILES})
-    add_example(${file} ${GTEST_BOTH_LIBRARIES})
+    add_example(${file} 
+        ${GTEST_BOTH_LIBRARIES}
+        # /usr/include/c++/11/atomic:361: error: undefined reference to '__atomic_compare_exchange_16'
+        atomic
+    )
 endforeach()
 
 
