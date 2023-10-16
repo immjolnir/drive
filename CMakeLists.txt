@@ -21,6 +21,7 @@ option(ENABLE_LOGGING "Learing logging module" OFF)
 option(ENABLE_ARROW "A Mini Arrow module" OFF)
 option(ENABLE_APOLLO "A Mini Apollo module" OFF)
 option(ENABLE_JSON "Jsoncpp module" OFF)
+option(ENABLE_ALGOS "Struct&Algorithm module" OFF)
 
 
 include(CMakeDependentOption)

@@ -9,6 +9,10 @@ cleanup:
 	rm -rf build
 	mkdir build
 
+algos:
+	cmake -B build -S . -D ENABLE_ALGOS=ON -D ENABLE_SANITIZER=ON
+	make -C build
+
 json:
 	cmake -B build -S . -D ENABLE_JSON=ON -D ENABLE_SANITIZER=ON
 	make -C build

@@ -58,6 +58,10 @@ if (ENABLE_ARROW)
     list(APPEND MODULES miniarrow)
 endif()
 
+if (ENABLE_ALGOS)
+    list(APPEND MODULES algos)
+endif()
+
 foreach(m ${MODULES})
     add_subdirectory(${m})
 endforeach()
