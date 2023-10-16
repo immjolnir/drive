@@ -35,6 +35,9 @@ set(STRING_FILES
     sstream.cpp
     list.cpp
 
+    # numeric library
+    numeric.cpp
+
     # New API
     launder.cpp
     destroy.cpp
