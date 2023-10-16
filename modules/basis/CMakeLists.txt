@@ -55,6 +55,9 @@ set(STRING_FILES
     # io
     iomanip.cpp
 
+    # Sorting
+    nth_element.cpp
+
     # YAML-cpp
     yaml_cpp.cpp
 )
