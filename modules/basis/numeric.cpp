@@ -22,6 +22,17 @@ Fills the range [first, last) with sequentially increasing values, starting with
 *(first + 2) = ++value;
 *(first + 3) = ++value;
 ...
+
+iota vs std::fill
+
+* std::fill
+fill( ForwardIt first, ForwardIt last, const T& value );
+
+Assigns the given value to the elements in the range [first, last).
+
+    std::vector<int> v {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    std::fill(v.begin(), v.end(), -1);
+
 */
 
 class BigData  // inefficient to copy

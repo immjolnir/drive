@@ -14,7 +14,6 @@ namespace arrow
 {
     namespace internal
     {
-
         template <typename T>
         class AlignedStorage {
           public:

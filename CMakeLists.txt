@@ -3,7 +3,7 @@ project(drive CXX)
 
 option(ARCHETYPE_DEVELOPMENT_BUILD "Build tests, enable warnings, enable Werror, etc" OFF)
 option(ENABLE_DOXYGEN "Generating documentation from annotated C++ sources" OFF)
-option(ENABLE_SANITIZER "Sanitizer: address, memory" OFF)
+option(ENABLE_SANITIZER "Sanitizer: address, memory" ON)
 
 
 # The building is awful and scared. the projects are disabled by default.

@@ -13,6 +13,8 @@ set(EXCEPTION_EXAMPLES
 )
 
 set(STRING_FILES
+    union.cpp
+
     # Alignment
     trivial.cpp
     alignment.cpp
@@ -94,7 +96,7 @@ add_resource_tunnel(${RESOURCES})
 
 # On the basis of Gtest, creating the cases.
 foreach(file ${ALL_FILES})
-    add_example(${file} 
+    add_example(${file}
         ${GTEST_BOTH_LIBRARIES}
         # /usr/include/c++/11/atomic:361: error: undefined reference to '__atomic_compare_exchange_16'
         atomic
@@ -107,5 +109,6 @@ add_subdirectory(myio)
 add_subdirectory(cpp_variables)
 add_subdirectory(zero-copy)
 add_subdirectory(memory_debugger)
+add_subdirectory(optional_impl)
 
 add_footer()

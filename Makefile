@@ -10,11 +10,11 @@ cleanup:
 	mkdir build
 
 algos:
-	cmake -B build -S . -D ENABLE_ALGOS=ON -D ENABLE_SANITIZER=ON
+	cmake -B build -S . -D ENABLE_ALGOS=ON
 	make -C build
 
 json:
-	cmake -B build -S . -D ENABLE_JSON=ON -D ENABLE_SANITIZER=ON
+	cmake -B build -S . -D ENABLE_JSON=ON
 	make -C build
 
 arrow:
@@ -53,7 +53,7 @@ opencv:
 	make -C build test
 
 basis: 
-	cmake -B build -S . -D ENABLE_MODULE_BASIS=ON -D BUILD_TESTING=ON -D DEVELOPMENT_BUILD=ON  -D ENABLE_SANITIZER=ON
+	cmake -B build -S . -D ENABLE_MODULE_BASIS=ON -D BUILD_TESTING=ON -D DEVELOPMENT_BUILD=ON
 	make -C build
 	make -C build test
 
