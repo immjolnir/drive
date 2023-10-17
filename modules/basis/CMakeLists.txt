@@ -13,6 +13,8 @@ set(EXCEPTION_EXAMPLES
 )
 
 set(STRING_FILES
+    initial_values.cpp
+
     union.cpp
 
     # Alignment
