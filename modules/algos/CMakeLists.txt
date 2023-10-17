@@ -2,11 +2,16 @@ project(algos CXX)
 
 add_header()
 
+set(TEST_FILES
+    kdtree/kdtree_test.cpp
+)
+
 set(KDTREE_FILES
     kdtree/hdu2966.cpp
 )
 
 set(ALL_FILES
+    ${TEST_FILES}
     ${KDTREE_FILES}
 )
 
