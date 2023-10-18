@@ -56,3 +56,23 @@
         return __ret;
     }
     ```
+
+# [std::iter_swap](https://en.cppreference.com/w/cpp/algorithm/iter_swap)
+Swaps the values of the elements the given iterators are pointing to.
+
+```c++
+template< class ForwardIt1, class ForwardIt2 >
+void iter_swap( ForwardIt1 a, ForwardIt2 b );
+```
+
+Possible implementation
+```c++
+template<class ForwardIt1, class ForwardIt2>
+constexpr void iter_swap(ForwardIt1 a, ForwardIt2 b) // constexpr since C++20
+{
+    using std::swap;
+    swap(*a, *b);
+}
+```
+
+See `iter_swap.cpp`

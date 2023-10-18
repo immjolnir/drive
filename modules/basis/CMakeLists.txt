@@ -62,9 +62,6 @@ set(STRING_FILES
     # io
     iomanip.cpp
 
-    # Sorting
-    nth_element.cpp
-
     # YAML-cpp
     yaml_cpp.cpp
 )
@@ -112,5 +109,7 @@ add_subdirectory(cpp_variables)
 add_subdirectory(zero-copy)
 add_subdirectory(memory_debugger)
 add_subdirectory(optional_impl)
+
+add_subdirectory(stl_algorithm)
 
 add_footer()

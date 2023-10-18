@@ -9,6 +9,10 @@ cleanup:
 	rm -rf build
 	mkdir build
 
+lc:
+	cmake -B build -S . -D ENABLE_LEETCODE=ON
+	make -C build
+
 algos:
 	cmake -B build -S . -D ENABLE_ALGOS=ON
 	make -C build

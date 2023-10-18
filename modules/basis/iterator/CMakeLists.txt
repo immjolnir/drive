@@ -1,5 +1,13 @@
 project(basis_iterator CXX)
 
-add_example(read_whole_file.cpp
-    ${GTEST_BOTH_LIBRARIES}
+set(ALL_FILES
+    swap.cpp
+    iter_swap.cpp
+
+    read_whole_file.cpp
 )
+
+foreach(f ${ALL_FILES})
+    add_example(${f} ${GTEST_BOTH_LIBRARIES})
+endforeach()
+

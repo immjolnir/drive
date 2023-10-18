@@ -62,6 +62,10 @@ if (ENABLE_ALGOS)
     list(APPEND MODULES algos)
 endif()
 
+if (ENABLE_LEETCODE)
+    list(APPEND MODULES leetcode)
+endif()
+
 foreach(m ${MODULES})
     add_subdirectory(${m})
 endforeach()
