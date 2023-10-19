@@ -57,6 +57,8 @@ TEST(sstream, remove_last_character) {
     ss.seekp(-1, std::ios_base::end);
     ss << '\0';  // null character
     string after = ss.str();
+    // EXPECT_EQ("Hello123\b\0", after); // Why it can be represented like this?
+    // EXPECT_EQ("Hello123\b\\0", after);
     EXPECT_EQ("Hello123\b", after);
 }
 
@@ -69,5 +71,26 @@ TEST(sstream, remove_last_character_with_null_character) {
 
     string after;
     ss >> after;
-    EXPECT_EQ("Hello12", after); // 这个还在sstream里，只是在console里没有而已。
+    // EXPECT_EQ("Hello12\0", after);   // Why it can be represented like this?
+    EXPECT_EQ("Hello12", after);
+}
+
+TEST(sstream, check_empty) {
+    {
+        std::stringstream ss;
+        EXPECT_EQ(std::streampos(0), ss.tellp());
+    }
+
+    {
+        std::stringstream ss;
+        ss << "";
+        EXPECT_EQ(std::streampos(0), ss.tellp());
+    }
+
+    {
+        std::stringstream ss;
+        ss << "a";  // write one char.
+        EXPECT_NE(std::streampos(0), ss.tellp());
+        EXPECT_EQ(std::streampos(1), ss.tellp());
+    }
 }
