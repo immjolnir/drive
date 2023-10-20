@@ -86,6 +86,8 @@ set(ALL_FILES
     ${BIT_FILES}
 
     steadytime.cpp
+
+    filesystem.cpp
 )
 
 set(RESOURCES

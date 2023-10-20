@@ -1,9 +1,13 @@
 #include <algorithm>  // sort
 #include <numeric>    // std::accumulate
+#include <set>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
 using namespace std;
 
 template <typename T>
@@ -64,4 +68,34 @@ TEST(vector, get_index_of_maximum_element) {
     int the_index = std::distance(vec.begin(), it);
     EXPECT_EQ(1, the_index);
     EXPECT_NEAR(0.901856, *it, 1e-6);
+}
+
+TEST(vector, erase_duplicate_element) {
+    // https://en.cppreference.com/w/cpp/algorithm/unique
+    // a vector containing several duplicate elements
+    std::vector<int> vec{1, 2, 1, 1, 3, 3, 3, 4, 5, 4};
+    std::sort(vec.begin(), vec.end());
+
+    // remove consecutive (adjacent) duplicates
+    auto last = std::unique(vec.begin(), vec.end());
+
+    vec.erase(last, vec.end());
+    EXPECT_THAT(vec, testing::ElementsAre(1, 2, 3, 4, 5));
+}
+
+// template <typename T, template <template, template = std::allocator<T>> class CONTAINER>
+template <typename T>
+std::vector<T> unique(const std::vector<T>& in) {
+    // std::unordered_set<T> out(std::begin(in), std::end(in));
+    // use std::set to keep the output's order.
+    // std::set is used so that the order of the elements of the returned array does not change each time
+    std::set<T> out(std::begin(in), std::end(in));
+    return {std::begin(out), std::end(out)};
+}
+
+TEST(vector, erase_duplicate_element_best_way) {
+    // https://www.reddit.com/r/cpp_questions/comments/bjims8/the_best_way_to_remove_duplicates_from_vector_of/
+    std::vector<int> vec{1, 2, 1, 1, 3, 3, 3, 4, 5, 4};
+    auto unique_vec = unique(vec);
+    EXPECT_THAT(unique_vec, testing::ElementsAre(1, 2, 3, 4, 5));
 }

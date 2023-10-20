@@ -19,3 +19,10 @@ there is a crash or not. But if you simply leave your code as is and your test c
 to fix it.
 
 Tracing the origin of the crash is easy with the help of tools like Valgrind or Dr. Memory.
+
+- Comparing array/list
+```c++
+#include <gmock/gmock.h>
+
+    EXPECT_THAT(vec, testing::ElementsAre(1, 2, 3, 4, 5));
+```

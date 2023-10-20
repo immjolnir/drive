@@ -30,3 +30,4 @@ This method uses about 3 comparisons and 1.5 swaps per permutation, amortized ov
 - leetcode: https://leetcode.cn/problems/next-permutation/solutions/?utm_source=LCUS&utm_medium=ip_redirect&utm_campaign=transfer2china
 
 - modules/basis/stl_algorithm/next_permutation.cpp
+- modules/leetcode/31.cpp
