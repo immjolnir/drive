@@ -38,3 +38,8 @@ Input:
 - [Learning OpenCV 4 Computer Vision with Python 3 - Third Edition](https://github.com/PacktPublishing/Learning-OpenCV-4-Computer-Vision-with-Python-Third-Edition)
 
 - [Hands-On GPU Accelerated Computer Vision with OpenCV and CUDA](https://github.com/PacktPublishing/Hands-On-GPU-Accelerated-Computer-Vision-with-OpenCV-and-CUDA)
+
+
+## Visualizing Tools
+- cloudcompare
+  - vis lidar/images

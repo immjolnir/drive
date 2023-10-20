@@ -1,4 +1,5 @@
 #include <algorithm>  // sort
+#include <list>       // for push_front
 #include <numeric>    // std::accumulate
 #include <set>
 #include <string>
@@ -8,6 +9,12 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+/**
+ * Vector
+
+- insert
+
+*/
 using namespace std;
 
 template <typename T>
@@ -98,4 +105,39 @@ TEST(vector, erase_duplicate_element_best_way) {
     std::vector<int> vec{1, 2, 1, 1, 3, 3, 3, 4, 5, 4};
     auto unique_vec = unique(vec);
     EXPECT_THAT(unique_vec, testing::ElementsAre(1, 2, 3, 4, 5));
+}
+
+TEST(vector, back_insert_vector) {
+    std::vector<int> a{1, 2, 3}, b{4, 5};
+    // Copy the contents of b into a.
+    std::copy(b.begin(), b.end(), std::back_inserter(a));
+    EXPECT_THAT(a, testing::ElementsAre(1, 2, 3, 4, 5));
+}
+
+// constexpr iterator insert( const_iterator pos, InputIt first, InputIt last );
+TEST(vector, back_insert_vector2) {
+    std::vector<int> a{1, 2, 3}, b{4, 5};
+    // Copy the contents of b into a.
+    a.insert(a.end(), b.begin(), b.end());
+    EXPECT_THAT(a, testing::ElementsAre(1, 2, 3, 4, 5));
+}
+
+TEST(vector, front_insert_vector) {
+    // std::vector<int> a{1, 2, 3}, b{4, 5};
+    // Copy the contents of b into a.
+    // /usr/include/c++/11/bits/stl_iterator.h:794:20:
+    // error: 'class std::vector<int>' has no member named 'push_front'
+    //   794 |         container->push_front(__value);
+    // std::copy(b.begin(), b.end(), std::front_inserter(a));
+    // std::vector doesn't have the push_front method.
+
+    std::list<int> a{1, 2, 3}, b{4, 5};
+    std::copy(b.begin(), b.end(), std::front_inserter(a));
+    EXPECT_THAT(a, testing::ElementsAre(5, 4, 1, 2, 3));
+}
+
+TEST(vector, front_insert_vector2) {
+    std::vector<int> a{1, 2, 3}, b{4, 5};
+    a.insert(a.begin(), b.begin(), b.end());
+    EXPECT_THAT(a, testing::ElementsAre(4, 5, 1, 2, 3));
 }
