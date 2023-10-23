@@ -1,5 +1,8 @@
 # [Permutation](https://en.wikipedia.org/wiki/Permutation#Algorithms_to_generate_permutations)
 
+Factorials and Binomial Coefficients. 阶乘和二项式系数。
+
+
 ## Algorithms to generate permutations
 
 In computing it may be required to generate permutations of a given sequence of values. The methods best adapted to do this depend on whether one wants some randomly chosen permutations, or all permutations, and in the latter case if a specific ordering is required. Another question is whether possible equality among entries in the given sequence is to be taken into account; if so, one should only generate distinct multiset permutations of the sequence.

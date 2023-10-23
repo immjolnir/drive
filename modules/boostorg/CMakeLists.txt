@@ -1,8 +1,11 @@
 project(boostorg CXX)
 
 set(FILES
-    filesystem.cpp
-    regex.cpp
+    boost_filesystem.cpp
+    
+    boost_regex.cpp
+
+    boost_math_factorial_and_binomial_coefficient.cpp
 )
 
 set(ALL_FILES
