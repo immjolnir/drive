@@ -1,5 +1,10 @@
 project(basis_stl_algorithm CXX)
 
+set(SEARCHING
+    min_element.cpp
+    upper_lower_bounds.cpp
+)
+
 set(SORTING
     nth_element.cpp
 )
@@ -10,6 +15,7 @@ set(PERMUTATION
 )
 
 set(ALL_FILES
+    ${SEARCHING}
     ${SORTING}
     ${PERMUTATION}
 )

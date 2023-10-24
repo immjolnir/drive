@@ -272,3 +272,10 @@ void g( A& x, const A& y)
     memcpy(&x, &y, sizeof(A));
 }
 ```
+
+## Codes
+- modules/basis/steadytime.cpp
+- modules/basis/serialize_unserialize.cpp
+
+Save many memory.
+
