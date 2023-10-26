@@ -67,3 +67,90 @@ Size_(_Tp _width, _Tp _height)Size是先宽后高，这一点如果不记得可�
 Rect_(_Tp _x, _Tp _y, _Tp _width, _Tp _height)在opencv中x方向指的都是水平方向；y方向指的都是y方向，这一点在各处都是一样的。其实对于Size也是按照先x后y的顺序的。
 matrix.at<char>(row, col)数组的访问当然还是按照先行后列的方式，这跟存储方式有关，不要搞混。
 
+
+# [How to find out what type of a mat object?](https://stackoverflow.com/questions/10167534/how-to-find-out-what-type-of-a-mat-object-is-with-mattype-in-opencv)
+```c++
+mat = imread("C:\someimage.jpg");
+type = mat.type();
+```
+and type = 16, how do I find out what type of mat matrix is?.
+
+For debugging purposes in case you want to look up a raw Mat::type in a debugger:
+
+|      | C1 |	C2 | C3 |	C4 |C(5)|C(6)|C(7)|C(8)|
+|:-----|:---|:---|:---|:---|:---|:---|:---|:---|
+|CV_8U |	0 |	8  |	16|	 24|	32|	 40|	48|  56|
+|CV_8S |	1 |	9  |	17|	 25|	33|	 41|	49|  57|
+|CV_16U|	2 |	10 |	18|	 26|	34|	 42|	50|  58|
+|CV_16S|	3 |	11 |	19|	 27|	35|	 43|	51|  59|
+|CV_32S|	4 |	12 |	20|	 28|	36|	 44|	52|  60|
+|CV_32F|	5 |	13 |	21|	 29|	37|	 45|	53|  61|
+|CV_64F|	6 |	14 |	22|	 30|	38|	 46|	54|  62|
+
+So for example, if type = 30 then OpenCV data type is CV_64FC4. If type = 50 then the OpenCV data type is CV_16UC(7).
+
+Here is a handy function you can use to help with identifying your opencv matrices at runtime. I find it useful for debugging, at least.
+```c++
+string type2str(int type) {
+  string r;
+
+  uchar depth = type & CV_MAT_DEPTH_MASK;
+  uchar chans = 1 + (type >> CV_CN_SHIFT);
+
+  switch ( depth ) {
+    case CV_8U:  r = "8U"; break;
+    case CV_8S:  r = "8S"; break;
+    case CV_16U: r = "16U"; break;
+    case CV_16S: r = "16S"; break;
+    case CV_32S: r = "32S"; break;
+    case CV_32F: r = "32F"; break;
+    case CV_64F: r = "64F"; break;
+    default:     r = "User"; break;
+  }
+
+  r += "C";
+  r += (chans+'0');
+
+  return r;
+}
+```
+To get depth and chans you could use the macros `CV_MAT_DEPTH(type)` and `CV_MAT_CN(type)`, respectively.
+Their type should also be int, which would allow you to use `to_string(chans)` instead of chans+'0'.
+
+## What does the "isContinuous()" function do?
+
+- https://docs.opencv.org/4.x/d3/d63/classcv_1_1Mat.html#aa90cea495029c7d1ee0a41361ccecdf3
+
+> The method returns true if the matrix elements are stored continuously without gaps at the end of each row. Otherwise, it returns false.
+
+Obviously, 
+- 1x1 or 1xN matrices are always continuous. 
+- Matrices created with Mat::create are always continuous. 
+- But if you extract a part of the matrix using `Mat::col`, `Mat::diag`, and so on, or constructed a matrix header for externally allocated data, such matrices may no longer have this property.
+
+The continuity flag is stored as a bit in the `Mat::flags` field and is computed automatically when you construct a matrix header. Thus, the continuity check is a very fast operation, though theoretically it could be done as follows:
+```c++
+// alternative implementation of Mat::isContinuous()
+bool myCheckMatContinuity(const Mat& m)
+{
+ //return (m.flags & Mat::CONTINUOUS_FLAG) != 0;
+ return m.rows == 1 || m.step == m.cols*m.elemSize();
+}
+```
+The method is used in quite a few of OpenCV functions. 
+
+
+`isContinuous` is meant like: the memory in yout Mat is a continuous, single chunk.
+
+there are some cases, where this isn't so, think of a ROI:
+
+```
++-----------+
++           +
++   +---+   +
++   +   +   +
++   +---+   +
++-----------+
+```
+or `Mat::diag()`, or `Mat::col(i)`, all cases of non-continuous memory.
+

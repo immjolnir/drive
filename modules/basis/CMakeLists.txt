@@ -51,9 +51,6 @@ set(STRING_FILES
     string_split.cpp
     string_size_length_capacity.cpp
 
-    # Serialize/Deserialize
-    serialize_unserialize.cpp
-
     # C++ Specifiers
     qualifiers.cpp
     casting_type.cpp
@@ -85,7 +82,6 @@ set(ALL_FILES
     ${HAS_MAIN_FILES}
     ${BIT_FILES}
 
-    steadytime.cpp
 
     filesystem.cpp
 )

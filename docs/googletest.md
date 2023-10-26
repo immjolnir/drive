@@ -26,3 +26,28 @@ Tracing the origin of the crash is easy with the help of tools like Valgrind or 
 
     EXPECT_THAT(vec, testing::ElementsAre(1, 2, 3, 4, 5));
 ```
+
+- Handle Exception Test Case
+
+Using `FAIL() << ..` to test it.
+
+```c++
+    // modules/basis/exception_stardardarized_example.cpp
+    try {
+        // Code that could throw an exception
+        md = GetNetworkResource();
+    } catch (const networkIOException& e) {
+        FAIL() << "Expected ellipsis Exception 1";
+    } catch (const myDataFormatException& e) {
+        FAIL() << "Expected ellipsis Exception 2";
+    } catch (const std::exception& e) {
+        FAIL() << "Expected ellipsis Exception 3";
+    } catch (...) {
+        // Here we cannot get it
+        // https://stackoverflow.com/questions/14232814/how-do-i-make-a-call-to-what-on-stdexception-ptr
+        // An opaque pointer to an arbitrary exception
+        std::cerr << "ellipsis handler deeper] who knows!" << std::endl;
+        eptr = std::current_exception();  // capture
+        EXPECT_EQ(15, age);
+    }
+```
