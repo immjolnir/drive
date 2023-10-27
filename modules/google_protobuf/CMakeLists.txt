@@ -75,12 +75,20 @@ target_link_libraries(pb_example
     ${Protobuf_LIBRARIES}
 )
 
+SET(BUILT_INS
+    builtin_repeated_field.cpp
+)
+
 set(TEST_SOURCES
     test_addressbook.cpp
     test_obstacle.cpp
     test_timestamp.cpp
 )
+set(ALL_TESTS
+    ${TEST_SOURCES}
+    ${BUILT_INS}
+)
 
-foreach(file ${TEST_SOURCES})
+foreach(file ${ALL_TESTS})
     add_testcase(${file})
 endforeach()

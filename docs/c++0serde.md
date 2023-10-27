@@ -1,6 +1,8 @@
 # SerDe
 
-- Easy Way:
+- Easy Way: 
+  - std::memcpy.
+  - construct an object without memory copy. (just change data type signature)
   - example: modules/basis/serde/serde_vector.cpp
 
 - Boost.serialization
