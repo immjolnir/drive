@@ -385,3 +385,14 @@ template class PROTOBUF_EXPORT_TEMPLATE_DEFINE RepeatedField<double>;
 - Summary
   - Holds a successive heap space, underlying type is byte array.
 
+
+## [What datatype should I use for a small int values in protobuffer?](https://stackoverflow.com/questions/50463770/what-datatype-should-i-use-for-a-small-int-values-in-protobuffer)
+
+- Q: I looked at scalar value types and it seems there's no option to store small int values (practically I need integer values 1 through 10).
+
+Is there any option other than creating a enum with 10 possible values for this?
+
+- A: 
+You are right in that there is no specific support for a smaller primitive; that's because the schema syntax needs to support a wide range of implementations on different platforms and languages, so the types are intentionally left to a subset that will be available for most systems.
+
+Enumerations (enum in .proto) are treated as int32 values, using "varint" encoding. There's no advantage between using int32 vs declaring an enum with values Zero, One, etc. So you might as well just use int32. As long as you only use low values, it will automatically encode very efficiently, simply because of how "varint" encoding works - anything in the range 0-127 will take a single byte to encode on the wire (plus the field header, which is usually another single byte for simple values).
