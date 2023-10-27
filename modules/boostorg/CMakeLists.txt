@@ -5,6 +5,7 @@ set(FILES
     boost_regex.cpp
     boost_math_factorial_and_binomial_coefficient.cpp
     boost_serialization.cpp
+    boost_pfr.cpp
 )
 
 set(ALL_FILES

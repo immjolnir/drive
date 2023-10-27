@@ -31,3 +31,10 @@ We can found other types from the directory: `/usr/include/boost/serialization/`
 Boost.Serialization can also serialize pointers and references. Because a pointer stores the address of an object, serializing the address does not make much sense. When serializing pointers and references, the referenced object is serialized.
 
 
+- [Serialization of Class Hierarchy Objects](https://theboostcpplibraries.com/boost.serialization-class-hierarchies)
+
+Derived classes must access the function `boost::serialization::base_object()` inside the member function `serialize()` to serialize objects based on class hierarchies. This function guarantees that inherited member variables of base classes are correctly serialized.
+
+
+- [Wrapper Functions for Optimization](https://theboostcpplibraries.com/boost.serialization-wrappers)
+This section introduces wrapper functions to optimize the serialization process. These functions mark objects to allow Boost.Serialization to apply certain optimization techniques.

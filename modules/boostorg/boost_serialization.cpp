@@ -280,3 +280,86 @@ TEST(boost_serialization, archive_serialize_unique_ptr) {
     // EXPECT_EQ(expected, ss.str());
     load_with_check(ss);
 }
+
+namespace hierarchy_object
+{
+
+    class animal {
+      public:
+        animal() = default;
+
+        animal(int legs) : legs_{legs} {}
+
+        int legs() const { return legs_; }
+
+      private:
+        friend class boost::serialization::access;
+
+        template <typename Archive>
+        void serialize(Archive& ar, const unsigned int version) {
+            ar & legs_;
+        }
+
+        int legs_;
+    };
+
+    class bird : public animal {
+      public:
+        bird() = default;
+
+        bird(int legs, bool can_fly) : animal{legs}, can_fly_{can_fly} {}
+
+        bool can_fly() const { return can_fly_; }
+
+      private:
+        friend class boost::serialization::access;
+
+        template <typename Archive>
+        void serialize(Archive& ar, const unsigned int version) {
+            // Derived class must access the fution base_ojbect` inside the member function `serialize()`
+            // to serialize objects based on class hierarchies.
+            ar& boost::serialization::base_object<animal>(*this);
+            ar & can_fly_;
+        }
+
+        bool can_fly_;
+    };
+
+    // Failed for ==23148==ERROR: AddressSanitizer: new-delete-type-mismatch on 0x602000010970 in thread T0:
+    TEST(boost_serialization, serialize_hierarchy_object) {
+        GTEST_SKIP() << "Skipping it for address sanitizer fails";
+
+        auto save = [](std::stringstream& ss) {
+            boost::archive::text_oarchive oa{ss};
+            oa.register_type<bird>();
+            animal* a = new bird{2, false};
+            oa << a;
+            delete a;
+        };
+
+        auto load = [](std::stringstream& ss) {
+            boost::archive::text_iarchive ia{ss};
+            ia.register_type<bird>();
+            animal* a;
+            ia >> a;
+
+            EXPECT_EQ(2, a->legs());
+            /*
+            dynamic_cast is a keyword; do drop the `std::`
+
+            error: cannot 'dynamic_cast' 'a' (of type 'class hierarchy_object::animal*') to type 'class
+            hierarchy_object::bird*' (source type is not polymorphic)
+
+            if (auto b = dynamic_cast<bird*>(a)) {
+
+            Becuase the base type don't have virtual function.
+            */
+            // EXPECT_FALSE(((bird*)a)->can_fly());
+            delete a;
+        };
+
+        std::stringstream ss;
+        save(ss);
+        load(ss);
+    }
+}  // namespace hierarchy_object
