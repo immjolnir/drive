@@ -716,14 +716,12 @@ bool CodedInputStream::ReadVarint32Slow(uint32* value) {
 
 int64 CodedInputStream::ReadVarint32Fallback(uint32 first_byte_or_zero) {
   if (BufferSize() >= kMaxVarintBytes ||
-      // Optimization:  We're also safe if the buffer is non-empty and it ends
-      // with a byte that would terminate a varint.
+      // Optimization:  We're also safe if the buffer is non-empty and it ends with a byte that would terminate a varint.
       (buffer_end_ > buffer_ && !(buffer_end_[-1] & 0x80))) {
-    GOOGLE_DCHECK_NE(first_byte_or_zero, 0)
-        << "Caller should provide us with *buffer_ when buffer is non-empty";
+    GOOGLE_DCHECK_NE(first_byte_or_zero, 0) << "Caller should provide us with *buffer_ when buffer is non-empty";
+
     uint32 temp;
-    ::std::pair<bool, const uint8*> p =
-        ReadVarint32FromArray(first_byte_or_zero, buffer_, &temp);
+    std::pair<bool, const uint8*> p = ReadVarint32FromArray(first_byte_or_zero, buffer_, &temp);
     if (!p.first) return -1;
     buffer_ = p.second;
     return temp;
@@ -737,45 +735,44 @@ int64 CodedInputStream::ReadVarint32Fallback(uint32 first_byte_or_zero) {
 }
 
 // inline methods ====================================================
-// The vast majority of varints are only one byte.  These inline
-// methods optimize for that case.
-
+// The vast majority of varints are only one byte.
+// These inline methods optimize for that case.
 inline bool CodedInputStream::ReadVarint32(uint32* value) {
   uint32 v = 0;
   if (PROTOBUF_PREDICT_TRUE(buffer_ < buffer_end_)) {
-    v = *buffer_;
-    if (v < 0x80) {
+    v = *buffer_; // 这里是赋值，即把 buffer_ 的第一个字节赋值给 v.
+    if (v < 0x80) { // true 的条件是 v 的最高位是0，表示这是一个 uint8 是个独立的单元.
       *value = v;
-      Advance(1);
+      Advance(1); // 使 buffer_ 指向下一个有效 byte.
       return true;
     }
   }
-  int64 result = ReadVarint32Fallback(v);
+  int64 result = ReadVarint32Fallback(v); // v是 *buffer_, 单位 unit8, 即 first_byte 
   *value = static_cast<uint32>(result);
   return result >= 0;
 }
 
 // Read a varint from the given buffer, write it to *value, and return a pair.
-// The first part of the pair is true iff the read was successful.  The second
-// part is buffer + (number of bytes read).  This function is always inlined,
-// so returning a pair is costless.
+// The first part of the pair is true iff the read was successful.
+// The second part is buffer + (number of bytes read).
+// This function is always inlined, so returning a pair is costless. 这句话怎么理解？
 PROTOBUF_ALWAYS_INLINE
-::std::pair<bool, const uint8*> ReadVarint32FromArray(uint32 first_byte, const uint8* buffer, uint32* value);
-
-inline ::std::pair<bool, const uint8*> ReadVarint32FromArray(uint32 first_byte, const uint8* buffer, uint32* value) {
-    // Fast path:  We have enough bytes left in the buffer to guarantee that
-    // this read won't cross the end, so we can skip the checks.
+std::pair<bool, const uint8*> ReadVarint32FromArray(uint32 first_byte, const uint8* buffer, uint32* value) {
+    // Fast path: 
+    // We have enough bytes left in the buffer to guarantee that this read won't cross the end, so we can skip the checks.
     GOOGLE_DCHECK_EQ(*buffer, first_byte);
     GOOGLE_DCHECK_EQ(first_byte & 0x80, 0x80) << first_byte;
     const uint8* ptr = buffer;
     uint32 b;
-    uint32 result = first_byte - 0x80;
-    ++ptr;  // We just processed the first byte.  Move on to the second.
-    b = *(ptr++);
+    uint32 result = first_byte - 0x80; // 这里的 first_byte 必然大于 0x80, 所以，减法不会溢出，result 就是 Least-Significant 7 bits.
+    ++ptr;  // We just processed the first byte. Move on to the second.
+    b = *(ptr++); // 这是第几个字节？
     result += b << 7;
-    if (!(b & 0x80)) goto done;
+    if (!(b & 0x80)) goto done; // 即 b 的最高位是0, 表示该字节不属于当前的数,是重新开辟一个空间.
+    
     result -= 0x80 << 7;
     b = *(ptr++);
+    
     result += b << 14;
     if (!(b & 0x80)) goto done;
     result -= 0x80 << 14;
@@ -1066,7 +1063,7 @@ uint8* EpsCopyOutputStream::WriteRawFallback(const void* data, int size,
 
 template <typename T>
 PROTOBUF_ALWAYS_INLINE static uint8* UnsafeVarint(T value, uint8* ptr) {
-    // 只能时无符号整形
+    // 只能是无符号整形
     static_assert(std::is_unsigned<T>::value, "Varint serialization must be unsigned");
     if (value < 0x80) {  // 一个小于 128 的数字
         ptr[0] = static_cast<uint8>(value);
@@ -1085,7 +1082,7 @@ PROTOBUF_ALWAYS_INLINE static uint8* UnsafeVarint(T value, uint8* ptr) {
         } else {  // 处理大于 128 的数字
             ptr++;
             do {
-                *ptr = static_cast<uint8>(value | 0x80);
+                *ptr = static_cast<uint8>(value | 0x80); // 保留低7位, 并将第8位设置为1
                 value >>= 7;
                 ++ptr;
             } while (PROTOBUF_PREDICT_FALSE(value >= 0x80));
