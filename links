@@ -40,3 +40,18 @@ https://www.bilibili.com/video/BV1uV411T7bP/?spm_id_from=333.1007.tianma.4-2-12.
 
 - https://www.bilibili.com/video/BV1DP41147Kb/?spm_id_from=333.1007.tianma.15-1-55.click&vd_source=9ab30976194ddffb80a1e41d535c9bd5
 
+
+
+# 2023-10-30
+- https://github.com/rpclib/benchmarks.git
+
+- https://github.com/thekvs/cpp-serializers
+Benchmark comparing various data serialization libraries (thrift, protobuf etc.) for C++
+
+- https://github.com/eoin-barr/pathfinding-visualizer
+
+- https://github.com/denoland/deno.git
+A modern runtime for JavaScript and TypeScript.
+  - https://github.com/denoland/deno/issues/269
+  - https://github.com/kentonv
+

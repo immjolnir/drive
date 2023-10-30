@@ -77,6 +77,7 @@ target_link_libraries(pb_example
 
 SET(BUILT_INS
     builtin_repeated_field.cpp
+    builtin_coded_stream.cpp
 )
 
 set(TEST_SOURCES
