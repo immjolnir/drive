@@ -76,14 +76,14 @@ target_link_libraries(pb_example
 )
 
 SET(BUILT_INS
-    builtin_repeated_field.cpp
-    builtin_coded_stream.cpp
 )
 
 set(TEST_SOURCES
     test_addressbook.cpp
     test_obstacle.cpp
     test_timestamp.cpp
+    test_repeated_field.cpp
+    test_coded_stream.cpp
 )
 set(ALL_TESTS
     ${TEST_SOURCES}

@@ -526,6 +526,292 @@ template class PROTOBUF_EXPORT_TEMPLATE_DEFINE RepeatedField<double>;
 - https://www.jianshu.com/p/074359bea057?utm_campaign=hugo&utm_content=note&utm_medium=writer_share&utm_source=weibo
 - https://blog.csdn.net/qq_51492202/article/details/131128939
 
+- src/google/protobuf/stubs/casts.h
+```c++
+template<typename To, typename From>
+inline To bit_cast(const From& from) {
+  GOOGLE_COMPILE_ASSERT(sizeof(From) == sizeof(To),
+                        bit_cast_with_different_sizes);
+  To dest;
+  memcpy(&dest, &from, sizeof(dest));
+  return dest;
+}
+```
+- src/google/protobuf/wire_format_lite.h
+```c++
+  // Helper functions for converting between floats/doubles and IEEE-754
+  // uint32s/uint64s so that they can be written.  (Assumes your platform
+  // uses IEEE-754 floats.)
+  static uint32 EncodeFloat(float value);
+  static float DecodeFloat(uint32 value);
+  static uint64 EncodeDouble(double value);
+  static double DecodeDouble(uint64 value);
+
+  // Helper functions for mapping signed integers to unsigned integers in
+  // such a way that numbers with small magnitudes will encode to smaller
+  // varints.  If you simply static_cast a negative number to an unsigned
+  // number and varint-encode it, it will always take 10 bytes, defeating
+  // the purpose of varint.  So, for the "sint32" and "sint64" field types,
+  // we ZigZag-encode the values.
+  static uint32 ZigZagEncode32(int32 n);
+  static int32 ZigZagDecode32(uint32 n);
+  static uint64 ZigZagEncode64(int64 n);
+  static int64 ZigZagDecode64(uint64 n);
+
+inline uint32 WireFormatLite::EncodeFloat(float value) {
+  return bit_cast<uint32>(value);
+}
+
+inline float WireFormatLite::DecodeFloat(uint32 value) {
+  return bit_cast<float>(value);
+}
+
+inline uint64 WireFormatLite::EncodeDouble(double value) {
+  return bit_cast<uint64>(value);
+}
+
+inline double WireFormatLite::DecodeDouble(uint64 value) {
+  return bit_cast<double>(value);
+}
+
+// ZigZag Transform:  Encodes signed integers so that they can be
+// effectively used with varint encoding.
+//
+// varint operates on unsigned integers, encoding smaller numbers into
+// fewer bytes.  If you try to use it on a signed integer, it will treat
+// this number as a very large unsigned integer, which means that even
+// small signed numbers like -1 will take the maximum number of bytes
+// (10) to encode.  ZigZagEncode() maps signed integers to unsigned
+// in such a way that those with a small absolute value will have smaller
+// encoded values, making them appropriate for encoding using varint.
+//
+//       int32 ->     uint32
+// -------------------------
+//           0 ->          0
+//          -1 ->          1
+//           1 ->          2
+//          -2 ->          3
+//         ... ->        ...
+//  2147483647 -> 4294967294
+// -2147483648 -> 4294967295
+//
+//        >> encode >>
+//        << decode <<
+
+inline uint32 WireFormatLite::ZigZagEncode32(int32 n) {
+  // Note:  the right-shift must be arithmetic
+  // Note:  left shift must be unsigned because of overflow
+  return (static_cast<uint32>(n) << 1) ^ static_cast<uint32>(n >> 31);
+}
+
+inline int32 WireFormatLite::ZigZagDecode32(uint32 n) {
+  // Note:  Using unsigned types prevent undefined behavior
+  return static_cast<int32>((n >> 1) ^ (~(n & 1) + 1));
+}
+
+inline uint64 WireFormatLite::ZigZagEncode64(int64 n) {
+  // Note:  the right-shift must be arithmetic
+  // Note:  left shift must be unsigned because of overflow
+  return (static_cast<uint64>(n) << 1) ^ static_cast<uint64>(n >> 63);
+}
+
+inline int64 WireFormatLite::ZigZagDecode64(uint64 n) {
+  // Note:  Using unsigned types prevent undefined behavior
+  return static_cast<int64>((n >> 1) ^ (~(n & 1) + 1));
+}
+```
+- src/google/protobuf/io/coded_stream.h
+
+```c++
+  template <typename T, typename E>
+  PROTOBUF_ALWAYS_INLINE uint8* WriteVarintPacked(int num, const T& r, int size,
+                                                  uint8* ptr, const E& encode) {
+    ptr = EnsureSpace(ptr);
+    ptr = WriteLengthDelim(num, size, ptr);
+    auto it = r.data();
+    auto end = it + r.size();
+    do {
+      ptr = EnsureSpace(ptr);
+      ptr = UnsafeVarint(encode(*it++), ptr);
+    } while (it < end);
+    return ptr;
+  }
+
+  static uint32 Encode32(uint32 v) { return v; }
+  static uint64 Encode64(uint64 v) { return v; }
+
+  static uint32 ZigZagEncode32(int32 v) {
+    return (static_cast<uint32>(v) << 1) ^ static_cast<uint32>(v >> 31);
+  }
+  static uint64 ZigZagEncode64(int64 v) {
+    return (static_cast<uint64>(v) << 1) ^ static_cast<uint64>(v >> 63);
+  }
+
+  template <typename T>
+  PROTOBUF_ALWAYS_INLINE uint8* WriteInt32Packed(int num, const T& r, int size, uint8* ptr) {
+    return WriteVarintPacked(num, r, size, ptr, Encode64); // Int32 调用普通编码方式
+  }
+
+  template <typename T>
+  PROTOBUF_ALWAYS_INLINE uint8* WriteUInt32Packed(int num, const T& r, int size, uint8* ptr) {
+    return WriteVarintPacked(num, r, size, ptr, Encode32); // UInt32 也是调用普通编码方式
+  }
+  
+  template <typename T>
+  PROTOBUF_ALWAYS_INLINE uint8* WriteSInt32Packed(int num, const T& r, int size, uint8* ptr) {
+    return WriteVarintPacked(num, r, size, ptr, ZigZagEncode32); // 只有 SInt32 才会调用 ZigZag 方式
+  }
+```
+
+- src/google/protobuf/descriptor.cc
+```c++
+// Convenience functions to set an int field the right way, depending on
+// its wire type (a single int CppType can represent multiple wire types).
+void SetInt32(int number, int32 value, FieldDescriptor::Type type, UnknownFieldSet* unknown_fields);
+
+void DescriptorBuilder::OptionInterpreter::SetInt32(int number, int32 value, FieldDescriptor::Type type, UnknownFieldSet* unknown_fields) {
+  switch (type) {
+    case FieldDescriptor::TYPE_INT32:
+      unknown_fields->AddVarint(number, static_cast<uint64>(static_cast<int64>(value))); //  int32 -> int64 -> uint64
+      break;
+
+    case FieldDescriptor::TYPE_SFIXED32:
+      unknown_fields->AddFixed32(number, static_cast<uint32>(value)); // fixed int32 to uint32
+      break;
+
+    case FieldDescriptor::TYPE_SINT32:
+      unknown_fields->AddVarint(number, internal::WireFormatLite::ZigZagEncode32(value)); // Apply the ZigZag for sint32
+      break;
+
+    default:
+      GOOGLE_LOG(FATAL) << "Invalid wire type for CPPTYPE_INT32: " << type;
+      break;
+  }
+
+  void DescriptorBuilder::OptionInterpreter::SetUInt32( int number, uint32 value, FieldDescriptor::Type type, UnknownFieldSet* unknown_fields) {
+  switch (type) {
+    case FieldDescriptor::TYPE_UINT32:
+      unknown_fields->AddVarint(number, static_cast<uint64>(value));
+      break;
+
+    case FieldDescriptor::TYPE_FIXED32:
+      unknown_fields->AddFixed32(number, static_cast<uint32>(value));
+      break;
+
+    default:
+      GOOGLE_LOG(FATAL) << "Invalid wire type for CPPTYPE_UINT32: " << type;
+      break;
+  }
+}
+
+    // Validates the value for the option field of the currently interpreted
+    // option and then sets it on the unknown_field.
+    bool SetOptionValue(const FieldDescriptor* option_field, UnknownFieldSet* unknown_fields);
+    
+bool DescriptorBuilder::OptionInterpreter::SetOptionValue(
+    const FieldDescriptor* option_field, UnknownFieldSet* unknown_fields) {
+  // We switch on the CppType to validate.
+  switch (option_field->cpp_type()) {
+    case FieldDescriptor::CPPTYPE_INT32:
+      if (uninterpreted_option_->has_positive_int_value()) {
+        if (uninterpreted_option_->positive_int_value() >
+            static_cast<uint64>(kint32max)) {
+          return AddValueError("Value out of range for int32 option \"" +
+                               option_field->full_name() + "\".");
+        } else {
+          SetInt32(option_field->number(),
+                   uninterpreted_option_->positive_int_value(),
+                   option_field->type(), unknown_fields);
+        }
+      } else if (uninterpreted_option_->has_negative_int_value()) {
+        if (uninterpreted_option_->negative_int_value() <
+            static_cast<int64>(kint32min)) {
+          return AddValueError("Value out of range for int32 option \"" +
+                               option_field->full_name() + "\".");
+        } else {
+          SetInt32(option_field->number(),
+                   uninterpreted_option_->negative_int_value(),
+                   option_field->type(), unknown_fields);
+        }
+      } else {
+        return AddValueError("Value must be integer for int32 option \"" +
+                             option_field->full_name() + "\".");
+      }
+      break;
+      ...
+  }
+}
+```
+
+- src/google/protobuf/descriptor.h
+```c++
+  // Specifies the C++ data type used to represent the field.  There is a
+  // fixed mapping from Type to CppType where each Type maps to exactly one
+  // CppType.  0 is reserved for errors.
+  enum CppType {
+    CPPTYPE_INT32 = 1,     // TYPE_INT32, TYPE_SINT32, TYPE_SFIXED32
+    CPPTYPE_INT64 = 2,     // TYPE_INT64, TYPE_SINT64, TYPE_SFIXED64
+    CPPTYPE_UINT32 = 3,    // TYPE_UINT32, TYPE_FIXED32
+    CPPTYPE_UINT64 = 4,    // TYPE_UINT64, TYPE_FIXED64
+    CPPTYPE_DOUBLE = 5,    // TYPE_DOUBLE
+    CPPTYPE_FLOAT = 6,     // TYPE_FLOAT
+    CPPTYPE_BOOL = 7,      // TYPE_BOOL
+    CPPTYPE_ENUM = 8,      // TYPE_ENUM
+    CPPTYPE_STRING = 9,    // TYPE_STRING, TYPE_BYTES
+    CPPTYPE_MESSAGE = 10,  // TYPE_MESSAGE, TYPE_GROUP
+
+    MAX_CPPTYPE = 10,  // Constant useful for defining lookup tables
+                       // indexed by CppType.
+  };
+```
+
+- https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/type.proto
+```
+// A single field of a message type.
+message Field {
+  // Basic field types.
+  enum Kind {
+    // Field type unknown.
+    TYPE_UNKNOWN = 0;
+    // Field type double.
+    TYPE_DOUBLE = 1;
+    // Field type float.
+    TYPE_FLOAT = 2;
+    // Field type int64.
+    TYPE_INT64 = 3;
+    // Field type uint64.
+    TYPE_UINT64 = 4;
+    // Field type int32.
+    TYPE_INT32 = 5;
+    // Field type fixed64.
+    TYPE_FIXED64 = 6;
+    // Field type fixed32.
+    TYPE_FIXED32 = 7;
+    // Field type bool.
+    TYPE_BOOL = 8;
+    // Field type string.
+    TYPE_STRING = 9;
+    // Field type group. Proto2 syntax only, and deprecated.
+    TYPE_GROUP = 10;
+    // Field type message.
+    TYPE_MESSAGE = 11;
+    // Field type bytes.
+    TYPE_BYTES = 12;
+    // Field type uint32.
+    TYPE_UINT32 = 13;
+    // Field type enum.
+    TYPE_ENUM = 14;
+    // Field type sfixed32.
+    TYPE_SFIXED32 = 15;
+    // Field type sfixed64.
+    TYPE_SFIXED64 = 16;
+    // Field type sint32.
+    TYPE_SINT32 = 17;
+    // Field type sint64.
+    TYPE_SINT64 = 18;
+  }
+}
+```
 
 # SQLite 
 - https://www.sqlite.org/fileformat.html
