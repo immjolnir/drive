@@ -66,6 +66,11 @@ if (ENABLE_LEETCODE)
     list(APPEND MODULES leetcode)
 endif()
 
+if (ENABLE_ASSEMBLER)
+    list(APPEND MODULES assembler)
+endif()
+
+
 foreach(m ${MODULES})
     add_subdirectory(${m})
 endforeach()

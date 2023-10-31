@@ -722,7 +722,7 @@ int64 CodedInputStream::ReadVarint32Fallback(uint32 first_byte_or_zero) {
 
     uint32 temp;
     std::pair<bool, const uint8*> p = ReadVarint32FromArray(first_byte_or_zero, buffer_, &temp);
-    if (!p.first) return -1;
+    if (!p.first) return -1; // 失败时，返回 -1
     buffer_ = p.second;
     return temp;
   } else {
@@ -749,11 +749,14 @@ inline bool CodedInputStream::ReadVarint32(uint32* value) {
   }
   int64 result = ReadVarint32Fallback(v); // v是 *buffer_, 单位 unit8, 即 first_byte 
   *value = static_cast<uint32>(result);
-  return result >= 0;
+  return result >= 0; // result=-1 when failed to decode it.
 }
 
+static const int kMaxVarintBytes = 10;
+static const int kMaxVarint32Bytes = 5;
+
 // Read a varint from the given buffer, write it to *value, and return a pair.
-// The first part of the pair is true iff the read was successful.
+// The first part of the pair is true if the read was successful.
 // The second part is buffer + (number of bytes read).
 // This function is always inlined, so returning a pair is costless. 这句话怎么理解？
 PROTOBUF_ALWAYS_INLINE
@@ -762,38 +765,86 @@ std::pair<bool, const uint8*> ReadVarint32FromArray(uint32 first_byte, const uin
     // We have enough bytes left in the buffer to guarantee that this read won't cross the end, so we can skip the checks.
     GOOGLE_DCHECK_EQ(*buffer, first_byte);
     GOOGLE_DCHECK_EQ(first_byte & 0x80, 0x80) << first_byte;
+    /* After `const uint8* ptr = buffer;`
+       buffer
+         v
+        [ ][ ][ ]...[ ][ ]
+         ^
+        ptr
+    */
     const uint8* ptr = buffer;
     uint32 b;
     uint32 result = first_byte - 0x80; // 这里的 first_byte 必然大于 0x80, 所以，减法不会溢出，result 就是 Least-Significant 7 bits.
+    /* After `++ptr;`
+       buffer
+         v
+        [ ][ ][ ]...[ ][ ]
+            ^
+           ptr
+    */
     ++ptr;  // We just processed the first byte. Move on to the second.
-    b = *(ptr++); // 这是第几个字节？
+    /* After `b = *(ptr++);`
+       buffer
+         v
+        [ ][ ][ ]...[ ][ ]
+            ^  ^
+            | ptr
+            |
+        it equals to b.
+    */
+    b = *(ptr++); // 这是第几个字节？ 第2个byte, b是ptr加1前的值。等价于 `b = *ptr; ptr=ptr+1;`
     result += b << 7;
-    if (!(b & 0x80)) goto done; // 即 b 的最高位是0, 表示该字节不属于当前的数,是重新开辟一个空间.
-    
-    result -= 0x80 << 7;
+    if (!(b & 0x80)) goto done; // 即 b 的最高位是0, 表示该字节是当前的数的最后一个组成部分，完成int32数值的组装。
+    // 否则，记录处理第三个字节
+    result -= 0x80 << 7; // 这里为什么要减去 0x80<<7('0x4000'）？ 因为if前的 `result += b << 7;` 有把b（第2个byte）的最高位加进去，但这个位只是个标志位。所以这里需要减掉.
+    /* After `b = *(ptr++);`
+       buffer
+         v
+        [0][1][2][3]...[ ][ ]
+               ^  ^
+               | ptr
+               |
+           it equals to b.
+    */
     b = *(ptr++);
-    
     result += b << 14;
     if (!(b & 0x80)) goto done;
-    result -= 0x80 << 14;
+    result -= 0x80 << 14; // 减掉b（第3个byte）的标志位
+    /* After `b = *(ptr++);`
+       buffer
+         v
+        [0][1][2][3][4]...[ ][ ]
+                  ^  ^
+                  | ptr
+                  |
+              it equals to b.
+    */
     b = *(ptr++);
     result += b << 21;
     if (!(b & 0x80)) goto done;
-    result -= 0x80 << 21;
+    result -= 0x80 << 21; // 减掉b（第4个byte）的标志位
+    /* After `b = *(ptr++);`
+       buffer
+         v
+        [0][1][2][3][4][5]...[ ][ ]
+                     ^  ^
+                     | ptr
+                     |
+                 it equals to b.
+    */
     b = *(ptr++);
     result += b << 28;
-    if (!(b & 0x80)) goto done;
+    if (!(b & 0x80)) goto done; // 就是说，它有可能需要5个字节来存放一个 int32.
     // "result -= 0x80 << 28" is irrevelant.
 
     // If the input is larger than 32 bits, we still need to read it all
-    // and discard the high-order bits.
+    // and discard the high-order bits. 虽然继续处理，但已经不更新 ptr 了
     for (int i = 0; i < kMaxVarintBytes - kMaxVarint32Bytes; i++) {
         b = *(ptr++);
         if (!(b & 0x80)) goto done;
     }
 
-    // We have overrun the maximum size of a varint (10 bytes).  Assume
-    // the data is corrupt.
+    // We have overrun the maximum size of a varint (10 bytes).  Assume the data is corrupt.
     return std::make_pair(false, ptr);
 
 done:

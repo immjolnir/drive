@@ -23,6 +23,7 @@ option(ENABLE_APOLLO "A Mini Apollo module" OFF)
 option(ENABLE_JSON "Jsoncpp module" OFF)
 option(ENABLE_ALGOS "Struct&Algorithm module" OFF)
 option(ENABLE_LEETCODE "LeetCode module" OFF)
+option(ENABLE_ASSEMBLER "Assembler module" OFF)
 
 
 include(CMakeDependentOption)

@@ -55,3 +55,174 @@ A modern runtime for JavaScript and TypeScript.
   - https://github.com/denoland/deno/issues/269
   - https://github.com/kentonv
 
+
+https://learnopencv.com/install-opencv-docker-image-ubuntu-macos-windows/
+
+https://www.stereolabs.com/docs/docker/configure-opencv-dockerfile/
+
+https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/concurrent/ForkJoinPool.java
+
+     hexdump, hd — ASCII, decimal, hexadecimal, octal dump
+hd binary | head -n 1
+objdump -d binary
+main is not our entry of program.The _start is the real entry point.
+
+
+#include <iostream>
+#include <vector>
+#include <stack>
+using namespace std;
+
+struct Node {
+  int data;
+  Node *left;
+  Node *right;
+};
+
+
+void preorder(Node *root) {
+    stack<Node*> st;
+    st.push(root);
+    while(!st.empty()) {
+        Node* node = st.top();
+        st.pop();
+        cout << node->data << " ";
+        if (!node->right) st.push(node->right);
+        if (!node->left) st.push(node->left);
+    }
+}
+
+int main() {
+   
+   
+    Node* tree;
+    preorder(tree);
+   
+    return 0;
+}
+
+
+
+https://www.youtube.com/watch?v=By7b19YIv8Q
+
+
+https://www.youtube.com/watch?v=DZ93lP1I7wU
+
+https://github.com/itanium-cxx-abi/cxx-abi
+
+https://github.com/cpp-best-practices/cppbestpractices
+
+https://en.cppreference.com/w/cpp/container/span
+
+
+Ha, nope it won't be since setDim returns an lvalue, good catch. On the other hand, CommonDetectionInfo is a simple POD class with no extra internal allocations, so copying == moving anyway.
+That said, I'll change this line just to be extra sure 
+
+
+2. All of them don't have the explicitly move-constructor,
+the move operator will fallback to their default copy-constructor.To make the movable semantic work, the move-constructor is required.Fortunately, copying of a LidarDetectionInfo is not outrageously expensive (the worst parts are the shared_ptrs, for which we'd have to increment reference counters). 1
+
+
+#include <iostream>
+using namespace std;
+
+template <class T>
+struct NodeList
+{
+    T data;
+    NodeList<T> *next;
+};
+
+template <class T>
+NodeList<T>* FindK(NodeList<T>* head, int k)
+{
+    if (head == nullptr) {
+        return nullptr;
+    }
+
+    if (k <= 0) {
+        return nullptr;
+    }
+
+    NodeList<T>* node_k = head;
+    NodeList<T>* start = head;
+    int index = 1;
+
+    while (start != nullptr) {
+        start = start->next;
+        ++index;
+        if (index > k + 1) {
+            node_k = node_k->next;
+        }
+    }
+
+    if (index < k) {
+        return nullptr;
+    }
+
+    return node_k;
+}
+
+int main() {
+    //int a;
+    //cin >> a;
+
+    int goal = 0;
+
+
+    cout << "Hello World!" << endl;
+}
+
+
+--
+Thanks.
+Best Regards.
+Zhishan Li
+
+
+merge Sort
+
+#include <iostream>
+using namespace std;
+
+template <class T>
+void MergeSort(vector<T>::iterator start, vector<T>::iterator end)
+{
+    if (end - start <= 1) {
+        return;
+    }
+
+    vector<T>::iterator mid = start + (end - start) / 2;
+    vector<T> start_mid(start, mid);
+    vector<T> mid_end(mid, end);
+    MergeSort<T>(start_mid.begin(), start_mid.end());
+    MergeSort<T>(mid_end.begin(), mid_end.end());
+
+    vector<T>::iterator start1 = start_mid.begin();
+    vector<T>::iterator start2 = mid_end.begin();
+    vector<T>::iterator merge_index = start;
+    while (start1 != start_mid.end() || start2 != mid_end.end()) {
+        if (start2 == mid_end.end() || *start1 < *start2) {
+            *merge_index = *start1;
+            ++merge_index;
+            ++start1;
+        } else {
+            *merge_index = *start2;
+            ++merge_index;
+            ++start2;
+        }
+    }
+}
+
+int main() {
+    //int a;
+    //cin >> a;
+    cout << "Hello World!" << endl;
+}
+
+
+--
+Thanks.
+Best Regards.
+Zhishan Li
+

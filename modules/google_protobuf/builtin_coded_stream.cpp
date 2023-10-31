@@ -494,6 +494,54 @@ TEST(coded_stream, integer) {
     }
 }
 
+TEST(coded_stream, ReadVarint32FromArray_possibly_has_bug) {
+    /*
+    ReadVarint32FromArray 中
+
+    // If the input is larger than 32 bits, we still need to read it all
+    // and discard the high-order bits. 虽然继续处理，但已经不更新 ptr 了
+    for (int i = 0; i < kMaxVarintBytes - kMaxVarint32Bytes; i++) { // for-loop 5 units more
+        b = *(ptr++);
+        if (!(b & 0x80)) goto done; // 就是说，在接下来的5个uint8里，如果有一个的 标志位为0,则进入 goto, 返回成功标志了
+    }
+
+    因为这个函数是在 .cc中定义的，我们没有办法直接对其测试.
+    */
+    //                              0     1     2     3     4     5     6     7     8     9    10
+    static uint8 buffer_[1024] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x01};
+
+    const int kBlockSizes[] = {1, 2, 3, 5, 7, 13, 32, 1024};
+    for (int i = 0; i < GOOGLE_ARRAYSIZE(kBlockSizes); ++i) {
+        io::ArrayInputStream input(buffer_, 11, 1);
+        io::CodedInputStream coded_input(&input);
+
+        uint32 value;
+        EXPECT_EQ(false, coded_input.ReadVarint32(&value));
+    }
+
+    // Trigger the bug
+    {
+        buffer_[4] = 0x7f;
+        io::ArrayInputStream input(buffer_, 11, 1);
+        io::CodedInputStream coded_input(&input);
+
+        uint32 value;
+        EXPECT_EQ(true, coded_input.ReadVarint32(&value));
+        EXPECT_EQ(0xffffffff, value);
+    }
+
+    {
+        buffer_[4] = 0xff;  // Restore it
+        buffer_[5] = 0x7f;  // Enters its for-loop
+        io::ArrayInputStream input(buffer_, 11, 1);
+        io::CodedInputStream coded_input(&input);
+
+        uint32 value;
+        EXPECT_EQ(false, coded_input.ReadVarint32(&value));  // Found the bug now. It cannot return false.
+        EXPECT_EQ(0xffffffff, value);
+    }
+}
+
 TEST(coded_stream, string) {
     std::string str;
     char expect[] = "Hello world!";
@@ -575,7 +623,7 @@ TEST(coded_stream, GetDirectBufferPointerInput) {
     EXPECT_TRUE(coded_input.Skip(5));
     EXPECT_TRUE(coded_input.GetDirectBufferPointer(&ptr, &size));
     EXPECT_EQ(buffer_ + 8, ptr);
-    EXPECT_EQ(8, size);
+    EXPECT_EQ(2, size);
 }
 
 TEST(coded_stream, ExpectAtEnd) {
@@ -603,7 +651,7 @@ TEST(coded_stream, OverflowLimit) {
     // position is more than 2GB into the stream.
     io::ArrayInputStream input(buffer_, sizeof(buffer_));
     io::CodedInputStream coded_input(&input);
-    ASSERT_TRUE(coded_input.Skip(128));
+    ASSERT_FALSE(coded_input.Skip(128));  // Cannot be true
 
     io::CodedInputStream::Limit limit = coded_input.PushLimit(INT_MAX);
     // BytesUntilLimit() returns -1 to mean "no limit", which actually means
@@ -679,4 +727,3 @@ TEST(coded_stream, InputOver2G) {
     EXPECT_EQ(INT_MAX - 512, input.backup_amount_);
     EXPECT_EQ(0, errors.size());
 }
-

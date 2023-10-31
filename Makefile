@@ -9,6 +9,10 @@ cleanup:
 	rm -rf build
 	mkdir build
 
+asm:
+	cmake -B build -S . -D ENABLE_ASSEMBLER=ON
+	make -C build
+
 lc:
 	cmake -B build -S . -D ENABLE_LEETCODE=ON
 	make -C build
