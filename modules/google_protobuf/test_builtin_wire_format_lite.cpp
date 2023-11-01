@@ -16,6 +16,8 @@ src/google/protobuf/wire_format_unittest.cc
 
 #include "proto/builtin/unittest.pb.h"
 
+#include <fstream>
+
 // Source from  <google/protobuf/port_def.inc>  // PROTOBUF_ULONGLONG
 #ifdef _MSC_VER
 #define PROTOBUF_LONGLONG(x) x##I64
@@ -37,6 +39,18 @@ TEST(WireFormatTest, ZigZag) {  // x
 // avoid line-wrapping
 #define LL(x) PROTOBUF_LONGLONG(x)
 #define ULL(x) PROTOBUF_ULONGLONG(x)
+/*
+inline uint32 WireFormatLite::ZigZagEncode32(int32 n) {
+  // Note:  the right-shift must be arithmetic
+  // Note:  left shift must be unsigned because of overflow
+  return (static_cast<uint32>(n) << 1) ^ static_cast<uint32>(n >> 31);
+}
+
+inline int32 WireFormatLite::ZigZagDecode32(uint32 n) {
+  // Note:  Using unsigned types prevent undefined behavior
+  return static_cast<int32>((n >> 1) ^ (~(n & 1) + 1));
+}
+*/
 #define ZigZagEncode32(x) WireFormatLite::ZigZagEncode32(x)
 #define ZigZagDecode32(x) WireFormatLite::ZigZagDecode32(x)
 #define ZigZagEncode64(x) WireFormatLite::ZigZagEncode64(x)
@@ -177,6 +191,11 @@ TEST(RepeatedVarint, EncodedSizeComparision_negative_data) {
         msg.set_data(i);
         msg.SerializeToString(&serialized);
         EXPECT_EQ(11, serialized.length());
+        // hexedit
+        // 08 FF FF FF  FF FF FF FF  FF FF 01
+        // https://en.cppreference.com/w/cpp/io/ios_base/openmode
+        // std::ofstream out("int32.bin", std::ios::out | std::ios::trunc | std::ios::binary);
+        // out << serialized;
     }
     {
         std::string serialized;
@@ -184,6 +203,10 @@ TEST(RepeatedVarint, EncodedSizeComparision_negative_data) {
         msg.set_data(i);
         msg.SerializeToString(&serialized);
         EXPECT_EQ(2, serialized.length());
+        // hexedit
+        // 08 01
+        // std::ofstream out("sint32.bin", std::ios::out | std::ios::trunc | std::ios::binary);
+        // out << serialized;
     }
 
     // int64 vs sint64
@@ -215,7 +238,13 @@ TEST(RepeatedVarint, EncodedSizeComparision_repeated_negative_data) {
         msg.add_data(i);
 
         msg.SerializeToString(&serialized);
-        EXPECT_EQ(33, serialized.length());  // Why?
+        EXPECT_EQ(33, serialized.length());  // Why? 11 * 3
+        // hexed it
+        // 08 FF FF FF  FF FF FF FF  FF FF 01
+        // 08 FF FF FF  FF FF FF FF  FF FF 01
+        // 08 FF FF FF  FF FF FF FF  FF FF 01
+        // std::ofstream out("repeated_int32.bin", std::ios::out | std::ios::trunc | std::ios::binary);
+        // out << serialized;
     }
     {
         std::string serialized;
@@ -226,7 +255,107 @@ TEST(RepeatedVarint, EncodedSizeComparision_repeated_negative_data) {
         msg.add_data(i);
 
         msg.SerializeToString(&serialized);
-        EXPECT_EQ(6, serialized.length());  // Why?
+        EXPECT_EQ(6, serialized.length());  // Why? 2 * 3
+        // hexedit
+        // 08 01 08 01  08 01
+        // std::ofstream out("repeated_sint32.bin", std::ios::out | std::ios::trunc | std::ios::binary);
+        // out << serialized;
+    }
+}
+
+TEST(RepeatedVarint, EncodedSizeComparision_positive_data) {
+    int i = 1;
+    // int32 vs uint32 vs fixed32 vs sint32
+    {
+        std::string serialized;
+        proto::unittest::Int32Message msg;
+        msg.set_data(i);
+        msg.SerializeToString(&serialized);
+        EXPECT_EQ(2, serialized.length());
+        // hexedit
+        // 08 01
+        // https://en.cppreference.com/w/cpp/io/ios_base/openmode
+        // std::ofstream out("int32.bin", std::ios::out | std::ios::trunc | std::ios::binary);
+        // out << serialized;
+    }
+    {
+        std::string serialized;
+        proto::unittest::Uint32Message msg;
+        msg.set_data(i);
+        msg.SerializeToString(&serialized);
+        EXPECT_EQ(2, serialized.length());
+        // hexedit
+        // 08 01
+        // https://en.cppreference.com/w/cpp/io/ios_base/openmode
+        // std::ofstream out("uint32.bin", std::ios::out | std::ios::trunc | std::ios::binary);
+        // out << serialized;
+    }
+    {
+        std::string serialized;
+        proto::unittest::Fint32Message msg;
+        msg.set_data(i);
+        msg.SerializeToString(&serialized);
+        EXPECT_EQ(5, serialized.length());
+        // hexedit
+        // 0D 01 00 00  00
+        // https://en.cppreference.com/w/cpp/io/ios_base/openmode
+        // std::ofstream out("fint32.bin", std::ios::out | std::ios::trunc | std::ios::binary);
+        // out << serialized;
+    }
+    {
+        std::string serialized;
+        proto::unittest::Sint32Message msg;
+        msg.set_data(i);
+        msg.SerializeToString(&serialized);
+        EXPECT_EQ(2, serialized.length());
+        // hexedit
+        // 08 02, but why?
+        // std::ofstream out("sint32.bin", std::ios::out | std::ios::trunc | std::ios::binary);
+        // out << serialized;
+    }
+}
+
+TEST(RepeatedVarint, DecodedSizeComparision_positive_data) {
+    const uint8_t buffer[2] = {0x08, 0x02};
+    /*
+    error: 'reinterpret_cast' from type 'const uint8_t*' {aka 'const unsigned char*'} to type 'char*' casts away
+  qualifiers
+  308 |     const std::string serialized = reinterpret_cast<char*>(buffer);
+    */
+    // ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffe02e8e062 at pc 0x7fadd2fc1aa7 bp 0x7ffe02e8dcc0
+    // sp 0x7ffe02e8d468
+    // https://iq.opengenus.org/convert-array-of-uint8t-to-string-in-cpp/
+    // const std::string serialized = reinterpret_cast<char*>(const_cast<uint8_t*>(buffer));
+    // std::string serialized;
+    // serialized.resize(sizeof(buffer));                                         // Pre-Allocation the space for memcpy
+    // std::memcpy(const_cast<uint8_t*>(buffer), serialized[0], sizeof(buffer));  // Won't change the str's length
+    // EXPECT_EQ(2, serialized.length());
+
+    // Convert uint8_t array to string
+    // https://stackoverflow.com/questions/55260989/convert-uint8-t-array-to-string
+    std::string serialized(reinterpret_cast<char const*>(buffer), sizeof(buffer));
+    EXPECT_EQ(2, serialized.length());
+    {
+        proto::unittest::Sint32Message msg;
+        ASSERT_TRUE(msg.ParseFromString(serialized));
+        ASSERT_EQ(1, msg.data());
+    }
+    {  // Encode VS Decode
+        EXPECT_EQ(2u, ZigZagEncode32(1));
+        EXPECT_EQ(1, ZigZagDecode32(2u));
+    }
+    {
+        io::ArrayInputStream input(buffer, 11, 1);
+        io::CodedInputStream coded_input(&input);
+
+        uint32 tag = 8;
+        EXPECT_EQ(tag, coded_input.ReadTag());
+
+        uint32 value;
+        EXPECT_EQ(true, coded_input.ReadVarint32(&value));
+        EXPECT_EQ(2u, value);
+        EXPECT_EQ(1, ZigZagDecode32(2u));
+        // So, for sint32, the decoding flow is ReadVarint32 -> uint32 -> ZigZagDecode32 -> int32.
     }
 }
 
@@ -359,6 +488,19 @@ TEST(RepeatedVarint, Enum) {
 
     EXPECT_EQ(expected, WireFormatLite::EnumSize(v));
 }
+
+/*
+TEST(RepeatedVarint, ReadPrimitive_int32_vs_sint32) {
+    // Generated by:
+    //     std::string serialized;
+    //     proto::unittest::Sint32Message msg;
+    //     msg.set_data(i);
+    //     msg.SerializeToString(&serialized);
+    const uint8_t buffer[2] = {0x08, 0x02};
+    io::ArrayInputStream input(buffer, 11, 1);
+    io::CodedInputStream coded_input(&input);
+}
+*/
 
 }  // namespace
 }  // namespace internal

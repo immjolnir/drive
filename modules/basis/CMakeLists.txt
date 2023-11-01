@@ -109,5 +109,6 @@ add_subdirectory(memory_debugger)
 add_subdirectory(optional_impl)
 
 add_subdirectory(stl_algorithm)
+add_subdirectory(template)
 
 add_footer()

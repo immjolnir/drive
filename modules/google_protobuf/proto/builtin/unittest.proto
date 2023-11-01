@@ -51,6 +51,10 @@ message Sint64Message {
   optional sint64 data = 1;
 }
 
+message Fint32Message {
+  optional fixed32 data = 1;
+}
+
 message MoreInt32Message {
   repeated int32 data = 1;
 }

@@ -661,6 +661,155 @@ inline int64 WireFormatLite::ZigZagDecode64(uint64 n) {
   PROTOBUF_ALWAYS_INLINE uint8* WriteSInt32Packed(int num, const T& r, int size, uint8* ptr) {
     return WriteVarintPacked(num, r, size, ptr, ZigZagEncode32); // 只有 SInt32 才会调用 ZigZag 方式
   }
+
+  // =================================================================
+// Methods for reading/writing individual field.
+
+// Read fields, not including tags.  The assumption is that you already
+// read the tag to determine what field to read.
+
+// For primitive fields, we just use a templatized routine parameterized by
+// the represented type and the FieldType. These are specialized with the
+// appropriate definition for each declared type.
+template <typename CType, enum FieldType DeclaredType>
+PROTOBUF_ALWAYS_INLINE static bool ReadPrimitive(io::CodedInputStream* input, CType* value);
+
+// Reads repeated primitive values, with optimizations for repeats.
+// tag_size and tag should both be compile-time constants provided by the
+// protocol compiler.
+template <typename CType, enum FieldType DeclaredType>
+PROTOBUF_ALWAYS_INLINE static bool ReadRepeatedPrimitive(int tag_size, uint32 tag, io::CodedInputStream* input,
+                                                         RepeatedField<CType>* value);
+
+// Identical to ReadRepeatedPrimitive, except will not inline the
+// implementation.
+template <typename CType, enum FieldType DeclaredType>
+static bool ReadRepeatedPrimitiveNoInline(int tag_size, uint32 tag, io::CodedInputStream* input,
+                                          RepeatedField<CType>* value);
+
+// Reads a primitive value directly from the provided buffer. It returns a
+// pointer past the segment of data that was read.
+//
+// This is only implemented for the types with fixed wire size, e.g.
+// float, double, and the (s)fixed* types.
+template <typename CType, enum FieldType DeclaredType>
+PROTOBUF_ALWAYS_INLINE static const uint8* ReadPrimitiveFromArray(const uint8* buffer, CType* value);
+
+template <>
+inline bool WireFormatLite::ReadPrimitive<int32, WireFormatLite::TYPE_INT32>(io::CodedInputStream* input,
+                                                                             int32* value) {
+    uint32 temp;
+    if (!input->ReadVarint32(&temp)) return false;
+    *value = static_cast<int32>(temp);
+    return true;
+}
+
+template <>
+inline bool WireFormatLite::ReadPrimitive<uint32, WireFormatLite::TYPE_UINT32>(io::CodedInputStream* input,
+                                                                               uint32* value) {
+    return input->ReadVarint32(value);
+}
+
+template <>
+inline bool WireFormatLite::ReadPrimitive<uint32, WireFormatLite::TYPE_FIXED32>(io::CodedInputStream* input,
+                                                                                uint32* value) {
+    return input->ReadLittleEndian32(value);
+}
+
+template <>
+inline bool WireFormatLite::ReadPrimitive<int32, WireFormatLite::TYPE_SINT32>(io::CodedInputStream* input,
+                                                                              int32* value) {
+    uint32 temp;
+    if (!input->ReadVarint32(&temp)) return false;
+    *value = ZigZagDecode32(temp);
+    return true;
+}
+
+template <>
+inline bool WireFormatLite::ReadPrimitive<float, WireFormatLite::TYPE_FLOAT>(io::CodedInputStream* input,
+                                                                             float* value) {
+    uint32 temp;
+    if (!input->ReadLittleEndian32(&temp)) return false;
+    *value = DecodeFloat(temp);
+    return true;
+}
+
+template <>
+inline bool WireFormatLite::ReadPrimitive<double, WireFormatLite::TYPE_DOUBLE>(io::CodedInputStream* input,
+                                                                               double* value) {
+    uint64 temp;
+    if (!input->ReadLittleEndian64(&temp)) return false;
+    *value = DecodeDouble(temp);
+    return true;
+}
+```
+- wire_format_lite: tag
+```c++
+// The wire format is composed of a sequence of tag/value pairs, each
+// of which contains the value of one field (or one element of a repeated
+// field).
+// Each tag is encoded as a varint.
+// The lower bits of the tag identify its wire type, which specifies the format of the data to follow.
+// The rest of the bits contain the field number.  Each type of field (as
+// declared by FieldDescriptor::Type, in descriptor.h) maps to one of
+// these wire types.  Immediately following each tag is the field's value,
+// encoded in the format specified by the wire type.  Because the tag
+// identifies the encoding of this data, it is possible to skip
+// unrecognized fields for forwards compatibility.
+
+enum WireType {
+    WIRETYPE_VARINT = 0,
+    WIRETYPE_FIXED64 = 1,
+    WIRETYPE_LENGTH_DELIMITED = 2,
+    WIRETYPE_START_GROUP = 3,
+    WIRETYPE_END_GROUP = 4,
+    WIRETYPE_FIXED32 = 5,
+};
+
+// This macro does the same thing as WireFormatLite::MakeTag(), but the
+// result is usable as a compile-time constant, which makes it usable
+// as a switch case or a template input.  WireFormatLite::MakeTag() is more
+// type-safe, though, so prefer it if possible.
+#define GOOGLE_PROTOBUF_WIRE_FORMAT_MAKE_TAG(FIELD_NUMBER, TYPE) \
+    static_cast<uint32>((static_cast<uint32>(FIELD_NUMBER) << 3) | (TYPE))
+
+// Number of bits in a tag which identify the wire type.
+static constexpr int kTagTypeBits = 3;
+// Mask for those bits.
+static constexpr uint32 kTagTypeMask = (1 << kTagTypeBits) - 1;
+
+// Helper functions for encoding and decoding tags.  (Inlined below and in
+// _inl.h)
+//
+// This is different from MakeTag(field->number(), field->type()) in the
+// case of packed repeated fields.
+constexpr static uint32 MakeTag(int field_number, WireType type);
+static WireType GetTagWireType(uint32 tag);
+static int GetTagFieldNumber(uint32 tag);
+
+// Compute the byte size of a tag.  For groups, this includes both the start
+// and end tags.
+static inline size_t TagSize(int field_number, WireFormatLite::FieldType type);
+
+constexpr inline uint32 WireFormatLite::MakeTag(int field_number, WireType type) {
+    return GOOGLE_PROTOBUF_WIRE_FORMAT_MAKE_TAG(field_number, type);
+}
+
+inline WireFormatLite::WireType WireFormatLite::GetTagWireType(uint32 tag) {
+    return static_cast<WireType>(tag & kTagTypeMask);
+}
+
+inline int WireFormatLite::GetTagFieldNumber(uint32 tag) { return static_cast<int>(tag >> kTagTypeBits); }
+
+inline size_t WireFormatLite::TagSize(int field_number, WireFormatLite::FieldType type) {
+    size_t result = io::CodedOutputStream::VarintSize32(static_cast<uint32>(field_number << kTagTypeBits));
+    if (type == TYPE_GROUP) {
+        // Groups have both a start and an end tag.
+        return result * 2;
+    } else {
+        return result;
+    }
+}
 ```
 
 - src/google/protobuf/descriptor.cc
@@ -707,7 +856,7 @@ void DescriptorBuilder::OptionInterpreter::SetInt32(int number, int32 value, Fie
     // Validates the value for the option field of the currently interpreted
     // option and then sets it on the unknown_field.
     bool SetOptionValue(const FieldDescriptor* option_field, UnknownFieldSet* unknown_fields);
-    
+
 bool DescriptorBuilder::OptionInterpreter::SetOptionValue(
     const FieldDescriptor* option_field, UnknownFieldSet* unknown_fields) {
   // We switch on the CppType to validate.
