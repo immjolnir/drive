@@ -1,0 +1,60 @@
+// Copy from src/google/protobuf/unittest.proto
+
+syntax = "proto2";
+package proto.unittest;
+
+// Test String and Bytes: string is for valid UTF-8 strings
+message OneString {
+  optional string data = 1;
+}
+
+message MoreString {
+  repeated string data = 1;
+}
+
+message OneBytes {
+  optional bytes data = 1;
+}
+
+message MoreBytes {
+  repeated bytes data = 1;
+}
+
+// Test int32, uint32, int64, uint64, and bool are all compatible
+message Int32Message {
+  optional int32 data = 1;
+}
+
+message Uint32Message {
+  optional uint32 data = 1;
+}
+
+
+message Int64Message {
+  optional int64 data = 1;
+}
+
+message Uint64Message {
+  optional uint64 data = 1;
+}
+
+message BoolMessage {
+  optional bool data = 1;
+}
+
+// How about the sint32 and sint64?
+message Sint32Message {
+  optional sint32 data = 1;
+}
+
+message Sint64Message {
+  optional sint64 data = 1;
+}
+
+message MoreInt32Message {
+  repeated int32 data = 1;
+}
+
+message MoreSInt32Message {
+  repeated sint32 data = 1;
+}

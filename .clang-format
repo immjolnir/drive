@@ -12,17 +12,33 @@ ConstructorInitializerIndentWidth: 2
 ContinuationIndentWidth: 2
 AccessModifierOffset: -2
 #InsertNewlineAtEOF: true
-NamespaceIndentation: All
+NamespaceIndentation: None
 SeparateDefinitionBlocks: Always
 #SortUsingDeclarations: LexicographicNumeric
 # Precise control over the wrapping of braces.
 BreakBeforeBraces: Custom
 BraceWrapping:
-    AfterNamespace: true
+    AfterNamespace: false
     AfterExternBlock: true
-
 
 
 # Force pointers/references to the type for C++.
 # See: https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rl-ptr
 DerivePointerAlignment: false
+
+# Case study:
+# 1. when "NamespaceIndentation: All" and "AfterNamespace: true":
+# namespace google 
+# {
+#     namespace protobuf 
+#     {
+#         namespace internal 
+#         {
+#             namespace 
+#             {
+# Two many spaces.
+# 2. when "NamespaceIndentation: None" and "AfterNamespace: false":
+# namespace google {
+# namespace protobuf {
+# namespace internal {
+# namespace {

@@ -19,6 +19,7 @@ set(PROTO_FILES
     proto/common/timestamp.proto
     proto/tutorial/addressbook.proto
     proto/tutorial/obstacle.proto
+    proto/builtin/unittest.proto # copy from proto repo
 )
 
 # https://github.com/protocolbuffers/protobuf/issues/1743
@@ -82,8 +83,11 @@ set(TEST_SOURCES
     test_addressbook.cpp
     test_obstacle.cpp
     test_timestamp.cpp
-    test_repeated_field.cpp
-    test_coded_stream.cpp
+
+    # Test Builtin-APIs
+    test_builtin_repeated_field.cpp
+    test_builtin_coded_stream.cpp
+    test_builtin_wire_format_lite.cpp
 )
 set(ALL_TESTS
     ${TEST_SOURCES}

@@ -155,317 +155,316 @@ TEST(ARRAY_SIZE, primary_types) {
     EXPECT_EQ(3, GOOGLE_ARRAYSIZE(ptr));
 }
 
-namespace google::protobuf
-{
+namespace google::protobuf {
 
-    class CodedStreamTest : public testing::Test {
-      protected:
-        // Buffer used during most of the tests. This assumes tests run sequentially.
-        static constexpr int kBufferSize = 1024 * 64;
-        static uint8 buffer_[kBufferSize];
-    };
+class CodedStreamTest : public testing::Test {
+  protected:
+    // Buffer used during most of the tests. This assumes tests run sequentially.
+    static constexpr int kBufferSize = 1024 * 64;
+    static uint8 buffer_[kBufferSize];
+};
 
-    uint8 CodedStreamTest::buffer_[CodedStreamTest::kBufferSize];
+uint8 CodedStreamTest::buffer_[CodedStreamTest::kBufferSize];
 
-    // We test each operation over a variety of block sizes to insure that
-    // we test cases where reads or writes cross buffer boundaries, cases
-    // where they don't, and cases where there is so much buffer left that
-    // we can use special optimized paths that don't worry about bounds
-    // checks.
-    const int kBlockSizes[] = {1, 2, 3, 5, 7, 13, 32, 1024};
+// We test each operation over a variety of block sizes to insure that
+// we test cases where reads or writes cross buffer boundaries, cases
+// where they don't, and cases where there is so much buffer left that
+// we can use special optimized paths that don't worry about bounds
+// checks.
+const int kBlockSizes[] = {1, 2, 3, 5, 7, 13, 32, 1024};
 
-    // Varint tests.
+// Varint tests.
 
-    struct VarintCase {
-        uint8 bytes[10];  // Encoded bytes.
-        int size;         // Encoded size, in bytes.
-        uint64 value;     // Parsed value.
-    };
+struct VarintCase {
+    uint8 bytes[10];  // Encoded bytes.
+    int size;         // Encoded size, in bytes.
+    uint64 value;     // Parsed value.
+};
 
-    inline std::ostream& operator<<(std::ostream& os, const VarintCase& c) { return os << c.value; }
+inline std::ostream& operator<<(std::ostream& os, const VarintCase& c) { return os << c.value; }
 
-    VarintCase kVarintCases[] = {
-      // 32-bit values
-      {{0x00}, 1, 0},
-      {{0x01}, 1, 1},
-      {{0x7f}, 1, 127},
-      {{0xa2, 0x74}, 2, (0x22 << 0) | (0x74 << 7)},  // 14882
-      {{0xbe, 0xf7, 0x92, 0x84, 0x0b},
-       5,  // 2961488830
-       (0x3e << 0) | (0x77 << 7) | (0x12 << 14) | (0x04 << 21) | (ULL(0x0b) << 28)},
+VarintCase kVarintCases[] = {
+  // 32-bit values
+  {{0x00}, 1, 0},
+  {{0x01}, 1, 1},
+  {{0x7f}, 1, 127},
+  {{0xa2, 0x74}, 2, (0x22 << 0) | (0x74 << 7)},  // 14882
+  {{0xbe, 0xf7, 0x92, 0x84, 0x0b},
+   5,  // 2961488830
+   (0x3e << 0) | (0x77 << 7) | (0x12 << 14) | (0x04 << 21) | (ULL(0x0b) << 28)},
 
-      // 64-bit
-      {{0xbe, 0xf7, 0x92, 0x84, 0x1b},
-       5,  // 7256456126
-       (0x3e << 0) | (0x77 << 7) | (0x12 << 14) | (0x04 << 21) | (ULL(0x1b) << 28)},
-      {{0x80, 0xe6, 0xeb, 0x9c, 0xc3, 0xc9, 0xa4, 0x49},
-       8,  // 41256202580718336
-       (0x00 << 0) | (0x66 << 7) | (0x6b << 14) | (0x1c << 21) | (ULL(0x43) << 28) | (ULL(0x49) << 35) |
-         (ULL(0x24) << 42) | (ULL(0x49) << 49)},
-      // 11964378330978735131
-      {{0x9b, 0xa8, 0xf9, 0xc2, 0xbb, 0xd6, 0x80, 0x85, 0xa6, 0x01},
-       10,
-       (0x1b << 0) | (0x28 << 7) | (0x79 << 14) | (0x42 << 21) | (ULL(0x3b) << 28) | (ULL(0x56) << 35) |
-         (ULL(0x00) << 42) | (ULL(0x05) << 49) | (ULL(0x26) << 56) | (ULL(0x01) << 63)},
-    };
+  // 64-bit
+  {{0xbe, 0xf7, 0x92, 0x84, 0x1b},
+   5,  // 7256456126
+   (0x3e << 0) | (0x77 << 7) | (0x12 << 14) | (0x04 << 21) | (ULL(0x1b) << 28)},
+  {{0x80, 0xe6, 0xeb, 0x9c, 0xc3, 0xc9, 0xa4, 0x49},
+   8,  // 41256202580718336
+   (0x00 << 0) | (0x66 << 7) | (0x6b << 14) | (0x1c << 21) | (ULL(0x43) << 28) | (ULL(0x49) << 35) | (ULL(0x24) << 42) |
+     (ULL(0x49) << 49)},
+  // 11964378330978735131
+  {{0x9b, 0xa8, 0xf9, 0xc2, 0xbb, 0xd6, 0x80, 0x85, 0xa6, 0x01},
+   10,
+   (0x1b << 0) | (0x28 << 7) | (0x79 << 14) | (0x42 << 21) | (ULL(0x3b) << 28) | (ULL(0x56) << 35) | (ULL(0x00) << 42) |
+     (ULL(0x05) << 49) | (ULL(0x26) << 56) | (ULL(0x01) << 63)},
+};
 
-    TEST_2D(CodedStreamTest, ReadVarint32, kVarintCases, kBlockSizes) {
-        memcpy(buffer_, kVarintCases_case.bytes, kVarintCases_case.size);
-        io::ArrayInputStream input(buffer_, sizeof(buffer_), kBlockSizes_case);
+TEST_2D(CodedStreamTest, ReadVarint32, kVarintCases, kBlockSizes) {
+    memcpy(buffer_, kVarintCases_case.bytes, kVarintCases_case.size);
+    io::ArrayInputStream input(buffer_, sizeof(buffer_), kBlockSizes_case);
 
-        {
-            io::CodedInputStream coded_input(&input);
-
-            uint32 value;
-            EXPECT_TRUE(coded_input.ReadVarint32(&value));
-            EXPECT_EQ(static_cast<uint32>(kVarintCases_case.value), value);
-        }
-
-        EXPECT_EQ(kVarintCases_case.size, input.ByteCount());
-    }
-
-    TEST_2D(CodedStreamTest, ReadTag, kVarintCases, kBlockSizes) {
-        memcpy(buffer_, kVarintCases_case.bytes, kVarintCases_case.size);
-        io::ArrayInputStream input(buffer_, sizeof(buffer_), kBlockSizes_case);
-
-        {
-            io::CodedInputStream coded_input(&input);
-
-            uint32 expected_value = static_cast<uint32>(kVarintCases_case.value);
-            EXPECT_EQ(expected_value, coded_input.ReadTag());
-
-            EXPECT_TRUE(coded_input.LastTagWas(expected_value));
-            EXPECT_FALSE(coded_input.LastTagWas(expected_value + 1));
-        }
-
-        EXPECT_EQ(kVarintCases_case.size, input.ByteCount());
-    }
-
-    TEST_1D(CodedStreamTest, ExpectTag, kVarintCases) {
-        // Leave one byte at the beginning of the buffer so we can read it
-        // to force the first buffer to be loaded.
-        buffer_[0] = '\0';
-        memcpy(buffer_ + 1, kVarintCases_case.bytes, kVarintCases_case.size);
-        io::ArrayInputStream input(buffer_, sizeof(buffer_));
-
-        {
-            io::CodedInputStream coded_input(&input);
-
-            // Read one byte to force coded_input.Refill() to be called.  Otherwise,
-            // ExpectTag() will return a false negative.
-            uint8 dummy;
-            coded_input.ReadRaw(&dummy, 1);
-            EXPECT_EQ((uint)'\0', (uint)dummy);
-
-            uint32 expected_value = static_cast<uint32>(kVarintCases_case.value);
-
-            // ExpectTag() produces false negatives for large values.
-            if (kVarintCases_case.size <= 2) {
-                EXPECT_FALSE(coded_input.ExpectTag(expected_value + 1));
-                EXPECT_TRUE(coded_input.ExpectTag(expected_value));
-            } else {
-                EXPECT_FALSE(coded_input.ExpectTag(expected_value));
-            }
-        }
-
-        if (kVarintCases_case.size <= 2) {
-            EXPECT_EQ(kVarintCases_case.size + 1, input.ByteCount());
-        } else {
-            EXPECT_EQ(1, input.ByteCount());
-        }
-    }
-
-    TEST_2D(CodedStreamTest, WriteVarint32, kVarintCases, kBlockSizes) {
-        if (kVarintCases_case.value > ULL(0x00000000FFFFFFFF)) {
-            // Skip this test for the 64-bit values.
-            return;
-        }
-
-        io::ArrayOutputStream output(buffer_, sizeof(buffer_), kBlockSizes_case);
-
-        {
-            io::CodedOutputStream coded_output(&output);
-
-            coded_output.WriteVarint32(static_cast<uint32>(kVarintCases_case.value));
-            EXPECT_FALSE(coded_output.HadError());
-
-            EXPECT_EQ(kVarintCases_case.size, coded_output.ByteCount());
-        }
-
-        EXPECT_EQ(kVarintCases_case.size, output.ByteCount());
-        EXPECT_EQ(0, memcmp(buffer_, kVarintCases_case.bytes, kVarintCases_case.size));
-    }
-
-    // -------------------------------------------------------------------
-    // Varint failure test.
-
-    struct VarintErrorCase {
-        uint8 bytes[12];
-        int size;
-        bool can_parse;
-    };
-
-    inline std::ostream& operator<<(std::ostream& os, const VarintErrorCase& c) { return os << "size " << c.size; }
-
-    const VarintErrorCase kVarintErrorCases[] = {
-      // Control case.  (Insures that there isn't something else wrong that
-      // makes parsing always fail.)
-      {{0x00}, 1, true},
-
-      // No input data.
-      {{}, 0, false},
-
-      // Input ends unexpectedly.
-      {{0xf0, 0xab}, 2, false},
-
-      // Input ends unexpectedly after 32 bits.
-      {{0xf0, 0xab, 0xc9, 0x9a, 0xf8, 0xb2}, 6, false},
-
-      // Longer than 10 bytes.
-      {{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x01}, 11, false},
-    };
-
-    TEST_2D(CodedStreamTest, ReadVarint32Error, kVarintErrorCases, kBlockSizes) {
-        memcpy(buffer_, kVarintErrorCases_case.bytes, kVarintErrorCases_case.size);
-        io::ArrayInputStream input(buffer_, kVarintErrorCases_case.size, kBlockSizes_case);
+    {
         io::CodedInputStream coded_input(&input);
 
         uint32 value;
-        EXPECT_EQ(kVarintErrorCases_case.can_parse, coded_input.ReadVarint32(&value));
+        EXPECT_TRUE(coded_input.ReadVarint32(&value));
+        EXPECT_EQ(static_cast<uint32>(kVarintCases_case.value), value);
     }
 
-    // -------------------------------------------------------------------
-    // VarintSize
+    EXPECT_EQ(kVarintCases_case.size, input.ByteCount());
+}
 
-    struct VarintSizeCase {
-        uint64 value;
-        int size;
-    };
+TEST_2D(CodedStreamTest, ReadTag, kVarintCases, kBlockSizes) {
+    memcpy(buffer_, kVarintCases_case.bytes, kVarintCases_case.size);
+    io::ArrayInputStream input(buffer_, sizeof(buffer_), kBlockSizes_case);
 
-    inline std::ostream& operator<<(std::ostream& os, const VarintSizeCase& c) { return os << c.value; }
+    {
+        io::CodedInputStream coded_input(&input);
 
-    VarintSizeCase kVarintSizeCases[] = {
-      {0u, 1},
-      {1u, 1},
-      {127u, 1},
-      {128u, 2},
-      {758923u, 3},
-      {4000000000u, 5},
-      {ULL(41256202580718336), 8},
-      {ULL(11964378330978735131), 10},
-    };
+        uint32 expected_value = static_cast<uint32>(kVarintCases_case.value);
+        EXPECT_EQ(expected_value, coded_input.ReadTag());
 
-    TEST_1D(CodedStreamTest, VarintSize32, kVarintSizeCases) {
-        if (kVarintSizeCases_case.value > 0xffffffffu) {
-            // Skip 64-bit values.
-            return;
+        EXPECT_TRUE(coded_input.LastTagWas(expected_value));
+        EXPECT_FALSE(coded_input.LastTagWas(expected_value + 1));
+    }
+
+    EXPECT_EQ(kVarintCases_case.size, input.ByteCount());
+}
+
+TEST_1D(CodedStreamTest, ExpectTag, kVarintCases) {
+    // Leave one byte at the beginning of the buffer so we can read it
+    // to force the first buffer to be loaded.
+    buffer_[0] = '\0';
+    memcpy(buffer_ + 1, kVarintCases_case.bytes, kVarintCases_case.size);
+    io::ArrayInputStream input(buffer_, sizeof(buffer_));
+
+    {
+        io::CodedInputStream coded_input(&input);
+
+        // Read one byte to force coded_input.Refill() to be called.  Otherwise,
+        // ExpectTag() will return a false negative.
+        uint8 dummy;
+        coded_input.ReadRaw(&dummy, 1);
+        EXPECT_EQ((uint)'\0', (uint)dummy);
+
+        uint32 expected_value = static_cast<uint32>(kVarintCases_case.value);
+
+        // ExpectTag() produces false negatives for large values.
+        if (kVarintCases_case.size <= 2) {
+            EXPECT_FALSE(coded_input.ExpectTag(expected_value + 1));
+            EXPECT_TRUE(coded_input.ExpectTag(expected_value));
+        } else {
+            EXPECT_FALSE(coded_input.ExpectTag(expected_value));
         }
-
-        EXPECT_EQ(kVarintSizeCases_case.size,
-                  io::CodedOutputStream::VarintSize32(static_cast<uint32>(kVarintSizeCases_case.value)));
     }
 
-    TEST_1D(CodedStreamTest, VarintSize64, kVarintSizeCases) {
-        EXPECT_EQ(kVarintSizeCases_case.size, io::CodedOutputStream::VarintSize64(kVarintSizeCases_case.value));
+    if (kVarintCases_case.size <= 2) {
+        EXPECT_EQ(kVarintCases_case.size + 1, input.ByteCount());
+    } else {
+        EXPECT_EQ(1, input.ByteCount());
+    }
+}
+
+TEST_2D(CodedStreamTest, WriteVarint32, kVarintCases, kBlockSizes) {
+    if (kVarintCases_case.value > ULL(0x00000000FFFFFFFF)) {
+        // Skip this test for the 64-bit values.
+        return;
     }
 
-    // -------------------------------------------------------------------
-    // Fixed-size int tests
+    io::ArrayOutputStream output(buffer_, sizeof(buffer_), kBlockSizes_case);
 
-    struct Fixed32Case {
-        uint8 bytes[sizeof(uint32)];  // Encoded bytes.
-        uint32 value;                 // Parsed value.
-    };
+    {
+        io::CodedOutputStream coded_output(&output);
 
-    struct Fixed64Case {
-        uint8 bytes[sizeof(uint64)];  // Encoded bytes.
-        uint64 value;                 // Parsed value.
-    };
+        coded_output.WriteVarint32(static_cast<uint32>(kVarintCases_case.value));
+        EXPECT_FALSE(coded_output.HadError());
 
-    inline std::ostream& operator<<(std::ostream& os, const Fixed32Case& c) {
-        return os << "0x" << std::hex << c.value << std::dec;
+        EXPECT_EQ(kVarintCases_case.size, coded_output.ByteCount());
     }
 
-    inline std::ostream& operator<<(std::ostream& os, const Fixed64Case& c) {
-        return os << "0x" << std::hex << c.value << std::dec;
+    EXPECT_EQ(kVarintCases_case.size, output.ByteCount());
+    EXPECT_EQ(0, memcmp(buffer_, kVarintCases_case.bytes, kVarintCases_case.size));
+}
+
+// -------------------------------------------------------------------
+// Varint failure test.
+
+struct VarintErrorCase {
+    uint8 bytes[12];
+    int size;
+    bool can_parse;
+};
+
+inline std::ostream& operator<<(std::ostream& os, const VarintErrorCase& c) { return os << "size " << c.size; }
+
+const VarintErrorCase kVarintErrorCases[] = {
+  // Control case.  (Insures that there isn't something else wrong that
+  // makes parsing always fail.)
+  {{0x00}, 1, true},
+
+  // No input data.
+  {{}, 0, false},
+
+  // Input ends unexpectedly.
+  {{0xf0, 0xab}, 2, false},
+
+  // Input ends unexpectedly after 32 bits.
+  {{0xf0, 0xab, 0xc9, 0x9a, 0xf8, 0xb2}, 6, false},
+
+  // Longer than 10 bytes.
+  {{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x01}, 11, false},
+};
+
+TEST_2D(CodedStreamTest, ReadVarint32Error, kVarintErrorCases, kBlockSizes) {
+    memcpy(buffer_, kVarintErrorCases_case.bytes, kVarintErrorCases_case.size);
+    io::ArrayInputStream input(buffer_, kVarintErrorCases_case.size, kBlockSizes_case);
+    io::CodedInputStream coded_input(&input);
+
+    uint32 value;
+    EXPECT_EQ(kVarintErrorCases_case.can_parse, coded_input.ReadVarint32(&value));
+}
+
+// -------------------------------------------------------------------
+// VarintSize
+
+struct VarintSizeCase {
+    uint64 value;
+    int size;
+};
+
+inline std::ostream& operator<<(std::ostream& os, const VarintSizeCase& c) { return os << c.value; }
+
+VarintSizeCase kVarintSizeCases[] = {
+  {0u, 1},
+  {1u, 1},
+  {127u, 1},
+  {128u, 2},
+  {758923u, 3},
+  {4000000000u, 5},
+  {ULL(41256202580718336), 8},
+  {ULL(11964378330978735131), 10},
+};
+
+TEST_1D(CodedStreamTest, VarintSize32, kVarintSizeCases) {
+    if (kVarintSizeCases_case.value > 0xffffffffu) {
+        // Skip 64-bit values.
+        return;
     }
 
-    Fixed32Case kFixed32Cases[] = {
-      {{0xef, 0xcd, 0xab, 0x90}, 0x90abcdefu},
-      {{0x12, 0x34, 0x56, 0x78}, 0x78563412u},
-    };
+    EXPECT_EQ(kVarintSizeCases_case.size,
+              io::CodedOutputStream::VarintSize32(static_cast<uint32>(kVarintSizeCases_case.value)));
+}
 
-    Fixed64Case kFixed64Cases[] = {
-      {{0xef, 0xcd, 0xab, 0x90, 0x12, 0x34, 0x56, 0x78}, ULL(0x7856341290abcdef)},
-      {{0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88}, ULL(0x8877665544332211)},
-    };
+TEST_1D(CodedStreamTest, VarintSize64, kVarintSizeCases) {
+    EXPECT_EQ(kVarintSizeCases_case.size, io::CodedOutputStream::VarintSize64(kVarintSizeCases_case.value));
+}
 
-    TEST_2D(CodedStreamTest, ReadLittleEndian32, kFixed32Cases, kBlockSizes) {
-        memcpy(buffer_, kFixed32Cases_case.bytes, sizeof(kFixed32Cases_case.bytes));
-        io::ArrayInputStream input(buffer_, sizeof(buffer_), kBlockSizes_case);
+// -------------------------------------------------------------------
+// Fixed-size int tests
 
-        {
-            io::CodedInputStream coded_input(&input);
+struct Fixed32Case {
+    uint8 bytes[sizeof(uint32)];  // Encoded bytes.
+    uint32 value;                 // Parsed value.
+};
 
-            uint32 value;
-            EXPECT_TRUE(coded_input.ReadLittleEndian32(&value));
-            EXPECT_EQ(kFixed32Cases_case.value, value);
-        }
+struct Fixed64Case {
+    uint8 bytes[sizeof(uint64)];  // Encoded bytes.
+    uint64 value;                 // Parsed value.
+};
 
-        EXPECT_EQ(sizeof(uint32), input.ByteCount());
+inline std::ostream& operator<<(std::ostream& os, const Fixed32Case& c) {
+    return os << "0x" << std::hex << c.value << std::dec;
+}
+
+inline std::ostream& operator<<(std::ostream& os, const Fixed64Case& c) {
+    return os << "0x" << std::hex << c.value << std::dec;
+}
+
+Fixed32Case kFixed32Cases[] = {
+  {{0xef, 0xcd, 0xab, 0x90}, 0x90abcdefu},
+  {{0x12, 0x34, 0x56, 0x78}, 0x78563412u},
+};
+
+Fixed64Case kFixed64Cases[] = {
+  {{0xef, 0xcd, 0xab, 0x90, 0x12, 0x34, 0x56, 0x78}, ULL(0x7856341290abcdef)},
+  {{0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88}, ULL(0x8877665544332211)},
+};
+
+TEST_2D(CodedStreamTest, ReadLittleEndian32, kFixed32Cases, kBlockSizes) {
+    memcpy(buffer_, kFixed32Cases_case.bytes, sizeof(kFixed32Cases_case.bytes));
+    io::ArrayInputStream input(buffer_, sizeof(buffer_), kBlockSizes_case);
+
+    {
+        io::CodedInputStream coded_input(&input);
+
+        uint32 value;
+        EXPECT_TRUE(coded_input.ReadLittleEndian32(&value));
+        EXPECT_EQ(kFixed32Cases_case.value, value);
     }
 
-    TEST_2D(CodedStreamTest, WriteLittleEndian32, kFixed32Cases, kBlockSizes) {
-        io::ArrayOutputStream output(buffer_, sizeof(buffer_), kBlockSizes_case);
+    EXPECT_EQ(sizeof(uint32), input.ByteCount());
+}
 
-        {
-            io::CodedOutputStream coded_output(&output);
+TEST_2D(CodedStreamTest, WriteLittleEndian32, kFixed32Cases, kBlockSizes) {
+    io::ArrayOutputStream output(buffer_, sizeof(buffer_), kBlockSizes_case);
 
-            coded_output.WriteLittleEndian32(kFixed32Cases_case.value);
-            EXPECT_FALSE(coded_output.HadError());
+    {
+        io::CodedOutputStream coded_output(&output);
 
-            EXPECT_EQ(sizeof(uint32), coded_output.ByteCount());
-        }
+        coded_output.WriteLittleEndian32(kFixed32Cases_case.value);
+        EXPECT_FALSE(coded_output.HadError());
 
-        EXPECT_EQ(sizeof(uint32), output.ByteCount());
-        EXPECT_EQ(0, memcmp(buffer_, kFixed32Cases_case.bytes, sizeof(uint32)));
+        EXPECT_EQ(sizeof(uint32), coded_output.ByteCount());
     }
 
-    // -------------------------------------------------------------------
-    // Raw reads and writes
+    EXPECT_EQ(sizeof(uint32), output.ByteCount());
+    EXPECT_EQ(0, memcmp(buffer_, kFixed32Cases_case.bytes, sizeof(uint32)));
+}
 
-    const char kRawBytes[] = "Some bytes which will be written and read raw.";
+// -------------------------------------------------------------------
+// Raw reads and writes
 
-    TEST_1D(CodedStreamTest, ReadRaw, kBlockSizes) {
-        memcpy(buffer_, kRawBytes, sizeof(kRawBytes));
-        io::ArrayInputStream input(buffer_, sizeof(buffer_), kBlockSizes_case);
-        char read_buffer[sizeof(kRawBytes)];
+const char kRawBytes[] = "Some bytes which will be written and read raw.";
 
-        {
-            io::CodedInputStream coded_input(&input);
+TEST_1D(CodedStreamTest, ReadRaw, kBlockSizes) {
+    memcpy(buffer_, kRawBytes, sizeof(kRawBytes));
+    io::ArrayInputStream input(buffer_, sizeof(buffer_), kBlockSizes_case);
+    char read_buffer[sizeof(kRawBytes)];
 
-            EXPECT_TRUE(coded_input.ReadRaw(read_buffer, sizeof(kRawBytes)));
-            EXPECT_EQ(0, memcmp(kRawBytes, read_buffer, sizeof(kRawBytes)));
-        }
+    {
+        io::CodedInputStream coded_input(&input);
 
-        EXPECT_EQ(sizeof(kRawBytes), input.ByteCount());
+        EXPECT_TRUE(coded_input.ReadRaw(read_buffer, sizeof(kRawBytes)));
+        EXPECT_EQ(0, memcmp(kRawBytes, read_buffer, sizeof(kRawBytes)));
     }
 
-    TEST_1D(CodedStreamTest, WriteRaw, kBlockSizes) {
-        io::ArrayOutputStream output(buffer_, sizeof(buffer_), kBlockSizes_case);
+    EXPECT_EQ(sizeof(kRawBytes), input.ByteCount());
+}
 
-        {
-            io::CodedOutputStream coded_output(&output);
+TEST_1D(CodedStreamTest, WriteRaw, kBlockSizes) {
+    io::ArrayOutputStream output(buffer_, sizeof(buffer_), kBlockSizes_case);
 
-            coded_output.WriteRaw(kRawBytes, sizeof(kRawBytes));
-            EXPECT_FALSE(coded_output.HadError());
+    {
+        io::CodedOutputStream coded_output(&output);
 
-            EXPECT_EQ(sizeof(kRawBytes), coded_output.ByteCount());
-        }
+        coded_output.WriteRaw(kRawBytes, sizeof(kRawBytes));
+        EXPECT_FALSE(coded_output.HadError());
 
-        EXPECT_EQ(sizeof(kRawBytes), output.ByteCount());
-        EXPECT_EQ(0, memcmp(buffer_, kRawBytes, sizeof(kRawBytes)));
+        EXPECT_EQ(sizeof(kRawBytes), coded_output.ByteCount());
     }
+
+    EXPECT_EQ(sizeof(kRawBytes), output.ByteCount());
+    EXPECT_EQ(0, memcmp(buffer_, kRawBytes, sizeof(kRawBytes)));
+}
 
 }  // namespace google::protobuf
 
