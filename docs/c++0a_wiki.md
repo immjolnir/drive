@@ -44,7 +44,7 @@ By separating these concepts, it becomes possible to give up one without losing 
 ## Core language build-time performance enhancements
 - Extern template
 
-In C++03, the compiler must instantiate a template whenever a fully specified template is encountered in a translation unit. If the template is instantiated with the same types in many translation units, this can dramatically increase compile times. There is no way to prevent this in C++03, so C++11 introduced extern template declarations, analogous to extern data declarations.
+In C++03, the compiler must instantiate a template whenever a fully specified template is encountered in a translation unit. If the template is instantiated with the same types in many translation units, this can dramatically increase compile times. There is no way to prevent this in C++03, so C++11 introduced `extern template` declarations, analogous to extern data declarations.
 
 C++03 has this syntax to oblige the compiler to instantiate a template:
 ```c++
@@ -58,3 +58,7 @@ extern template class std::vector<MyClass>;
 which tells the compiler not to instantiate the template in this translation unit.
 
 - For example: `modules/basis/template/extern_template.cpp`
+You should only use `extern template` to force the compiler to not instantiate a template when you know that it will be instantiated somewhere else. It is used to reduce compile time and object file size.
+  - https://arne-mertz.de/2019/02/extern-template-reduce-compile-times/
+
+
