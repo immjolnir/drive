@@ -257,7 +257,7 @@ TEST(RepeatedVarint, EncodedSizeComparision_repeated_negative_data) {
         msg.SerializeToString(&serialized);
         EXPECT_EQ(6, serialized.length());  // Why? 2 * 3
         // hexedit
-        // 08 01 08 01  08 01
+        // 08 01 08 01  08 01 // Why the tag(08) is repeated so many times?
         // std::ofstream out("repeated_sint32.bin", std::ios::out | std::ios::trunc | std::ios::binary);
         // out << serialized;
     }

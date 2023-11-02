@@ -106,3 +106,16 @@ repository.
     apt-add-repository ppa:user/distro/repository
     apt-add-repository multiverse
 ```
+
+# dpkg : how to ignore error in post/pre scripts
+- https://stackoverflow.com/questions/9311627/dpkg-how-to-ignore-error-in-post-pre-scripts
+```
+$ sudo dpkg -i --force-all your.deb
+(Reading database ... 225821 files and directories currently installed.)
+Unpacking protobuf (1.0.999999) over (1.0.593) ...
+dpkg: warning: overriding problem because --force enabled:
+dpkg: warning: trying to overwrite '/opt/test/lib/python/common/__init__.py', which is also in package test-drive 1.0.12284
+dpkg: warning: overriding problem because --force enabled:
+dpkg: warning: trying to overwrite '/opt/test/lib/python/control/__init__.py', which is also in package test-drive 1.0.12284
+dpkg: warning: overriding problem because --force enabled:
+```

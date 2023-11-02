@@ -23,4 +23,13 @@ foreach(file ${ALL_FILES})
     add_example(${file})
 endforeach()
 
+set(TEST_FILES
+    test_opencv_mat.cpp
+)
+
+foreach(file ${TEST_FILES})
+    add_example(${file} ${GTEST_BOTH_LIBRARIES})
+endforeach()
+
+
 add_footer()

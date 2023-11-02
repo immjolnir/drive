@@ -2,12 +2,6 @@ project(eigen CXX)
 
 add_header()
 
-# Eigen
-find_package(Eigen3 REQUIRED)
-include_directories(${EIGEN3_INCLUDE_DIR})
-message(STATUS "EIGEN3_INCLUDE_DIR: ${EIGEN3_INCLUDE_DIR}")
-message(STATUS "EIGEN3_VERSION: ${EIGEN3_VERSION}")
-
 # if(HAVE_CXX11)
 #     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT ENABLE_PRECOMPILED_HEADERS)
 #       add_extra_compiler_option(-Wsuggest-override)
