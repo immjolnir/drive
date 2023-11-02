@@ -110,9 +110,61 @@ class PROTOBUF_EXPORT MessageLite {
   // proto.
   virtual size_t ByteSizeLong() const = 0;
 
+  // Reflective parser
+  virtual const char* _InternalParse(const char* /*ptr*/,
+                                     internal::ParseContext* /*ctx*/) {
+    return nullptr;
+    // 它被 Message 继承，并在它里面实现
+  }
 
   template <ParseFlags flags, typename T>
   bool ParseFrom(const T& input);
+};
+
+namespace internal {
+
+template <bool alias>
+bool MergeFromImpl(StringPiece input, MessageLite* msg,
+                   MessageLite::ParseFlags parse_flags);
+extern template bool MergeFromImpl<false>(StringPiece input,
+                                          MessageLite* msg,
+                                          MessageLite::ParseFlags parse_flags);
+extern template bool MergeFromImpl<true>(StringPiece input,
+                                         MessageLite* msg,
+                                         MessageLite::ParseFlags parse_flags);
+
+template <bool alias>
+bool MergeFromImpl(io::ZeroCopyInputStream* input, MessageLite* msg,
+                   MessageLite::ParseFlags parse_flags);
+extern template bool MergeFromImpl<false>(io::ZeroCopyInputStream* input,
+                                          MessageLite* msg,
+                                          MessageLite::ParseFlags parse_flags);
+extern template bool MergeFromImpl<true>(io::ZeroCopyInputStream* input,
+                                         MessageLite* msg,
+                                         MessageLite::ParseFlags parse_flags);
+
+struct BoundedZCIS {
+  io::ZeroCopyInputStream* zcis;
+  int limit;
+};
+
+template <bool alias>
+bool MergeFromImpl(BoundedZCIS input, MessageLite* msg,
+                   MessageLite::ParseFlags parse_flags);
+extern template bool MergeFromImpl<false>(BoundedZCIS input, MessageLite* msg,
+                                          MessageLite::ParseFlags parse_flags);
+extern template bool MergeFromImpl<true>(BoundedZCIS input, MessageLite* msg,
+                                         MessageLite::ParseFlags parse_flags);
+
+template <typename T>
+struct SourceWrapper;
+
+template <bool alias, typename T>
+bool MergeFromImpl(const SourceWrapper<T>& input, MessageLite* msg,
+                   MessageLite::ParseFlags parse_flags) {
+  return input.template MergeInto<alias>(msg, parse_flags);
+}
+}  // namespace internal
 
 template <MessageLite::ParseFlags flags, typename T>
 bool MessageLite::ParseFrom(const T& input) {
@@ -120,6 +172,8 @@ bool MessageLite::ParseFrom(const T& input) {
   constexpr bool alias = (flags & kMergeWithAliasing) != 0;
   return internal::MergeFromImpl<alias>(input, this, flags);
 }
+
+
 ```
 
 shutdown supports
@@ -141,7 +195,100 @@ shutdown supports
 PROTOBUF_EXPORT void ShutdownProtobufLibrary();
 ```
 - src/google/protobuf/message_lite.cc
+  - Internal MergeFromImpl
+
 ```c++
+  namespace internal {
+
+template <bool aliasing>
+bool MergeFromImpl(StringPiece input, MessageLite* msg,
+                   MessageLite::ParseFlags parse_flags) {
+  const char* ptr;
+  internal::ParseContext ctx(io::CodedInputStream::GetDefaultRecursionLimit(),
+                             aliasing, &ptr, input);
+  ptr = msg->_InternalParse(ptr, &ctx);
+  // ctx has an explicit limit set (length of string_view).
+  if (PROTOBUF_PREDICT_TRUE(ptr && ctx.EndedAtLimit())) {
+    return CheckFieldPresence(ctx, *msg, parse_flags);
+  }
+  return false;
+}
+
+template <bool aliasing>
+bool MergeFromImpl(io::ZeroCopyInputStream* input, MessageLite* msg,
+                   MessageLite::ParseFlags parse_flags) {
+  const char* ptr;
+  internal::ParseContext ctx(io::CodedInputStream::GetDefaultRecursionLimit(),
+                             aliasing, &ptr, input);
+  ptr = msg->_InternalParse(ptr, &ctx);
+  // ctx has no explicit limit (hence we end on end of stream)
+  if (PROTOBUF_PREDICT_TRUE(ptr && ctx.EndedAtEndOfStream())) {
+    return CheckFieldPresence(ctx, *msg, parse_flags);
+  }
+  return false;
+}
+
+template <bool aliasing>
+bool MergeFromImpl(BoundedZCIS input, MessageLite* msg,
+                   MessageLite::ParseFlags parse_flags) {
+  const char* ptr;
+  internal::ParseContext ctx(io::CodedInputStream::GetDefaultRecursionLimit(),
+                             aliasing, &ptr, input.zcis, input.limit);
+  ptr = msg->_InternalParse(ptr, &ctx);
+  if (PROTOBUF_PREDICT_FALSE(!ptr)) return false;
+  ctx.BackUp(ptr);
+  if (PROTOBUF_PREDICT_TRUE(ctx.EndedAtLimit())) {
+    return CheckFieldPresence(ctx, *msg, parse_flags);
+  }
+  return false;
+}
+
+template bool MergeFromImpl<false>(StringPiece input, MessageLite* msg,
+                                   MessageLite::ParseFlags parse_flags);
+template bool MergeFromImpl<true>(StringPiece input, MessageLite* msg,
+                                  MessageLite::ParseFlags parse_flags);
+template bool MergeFromImpl<false>(io::ZeroCopyInputStream* input,
+                                   MessageLite* msg,
+                                   MessageLite::ParseFlags parse_flags);
+template bool MergeFromImpl<true>(io::ZeroCopyInputStream* input,
+                                  MessageLite* msg,
+                                  MessageLite::ParseFlags parse_flags);
+template bool MergeFromImpl<false>(BoundedZCIS input, MessageLite* msg,
+                                   MessageLite::ParseFlags parse_flags);
+template bool MergeFromImpl<true>(BoundedZCIS input, MessageLite* msg,
+                                  MessageLite::ParseFlags parse_flags);
+
+}  // namespace internal
+```
+The internal::MergeFromImpl calls MessageLite::_InternalParse.
+
+  - Others
+```c++
+bool MessageLite::MergeFromImpl(io::CodedInputStream* input,
+                                MessageLite::ParseFlags parse_flags) {
+  ZeroCopyCodedInputStream zcis(input);
+  const char* ptr;
+  internal::ParseContext ctx(input->RecursionBudget(), zcis.aliasing_enabled(),
+                             &ptr, &zcis);
+  // MergePartialFromCodedStream allows terminating the wireformat by 0 or
+  // end-group tag. Leaving it up to the caller to verify correct ending by
+  // calling LastTagWas on input. We need to maintain this behavior.
+  ctx.TrackCorrectEnding();
+  ctx.data().pool = input->GetExtensionPool();
+  ctx.data().factory = input->GetExtensionFactory();
+  ptr = _InternalParse(ptr, &ctx);
+  if (PROTOBUF_PREDICT_FALSE(!ptr)) return false;
+  ctx.BackUp(ptr);
+  if (!ctx.EndedAtEndOfStream()) {
+    GOOGLE_DCHECK(ctx.LastTag() != 1);  // We can't end on a pushed limit.
+    if (ctx.IsExceedingLimit(ptr)) return false;
+    input->SetLastTag(ctx.LastTag());
+  } else {
+    input->SetConsumed();
+  }
+  return CheckFieldPresence(ctx, *this, parse_flags);
+}
+
   enum ParseFlags {
     kMerge = 0,
     kParse = 1,
@@ -326,3 +473,11 @@ class PROTOBUF_EXPORT Message : public MessageLite {
 class PROTOBUF_EXPORT Reflection final {
 ```
 
+
+- src/google/protobuf/message.cc
+```c++
+const char* Message::_InternalParse(const char* ptr,
+                                    internal::ParseContext* ctx) {
+  return WireFormat::_InternalParse(this, ptr, ctx);
+}
+```

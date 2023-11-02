@@ -33,3 +33,4 @@ TEST(template, extern_template_enhance_buildtime_performance2) {
 }
 }  // namespace protobuf
 }  // namespace google
+
