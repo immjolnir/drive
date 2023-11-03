@@ -1,8 +1,32 @@
 #include <algorithm>
 #include <iostream>
 #include <random>
+#include <string>
 #include <string_view>
 #include <vector>
+
+/*
+https://en.cppreference.com/w/cpp/algorithm/iter_swap
+
+template< class ForwardIt1, class ForwardIt2>
+void iter_swap( ForwardIt1 a, ForwardIt2 b );
+
+- Swaps the values of the elements the given iterators are pointing to.
+
+- Possible implementation
+
+template<class ForwardIt1, class ForwardIt2>
+constexpr void iter_swap(ForwardIt1 a, ForwardIt2 b) // constexpr since C++20
+{
+    using std::swap;
+    swap(*a, *b);
+}
+*/
+#if __cplusplus > 201703L
+using StringView = std::string_view;
+#else
+using StringView = const std::string&;
+#endif
 
 template <class ForwardIt>
 void selection_sort(ForwardIt begin, ForwardIt end) {
@@ -11,7 +35,7 @@ void selection_sort(ForwardIt begin, ForwardIt end) {
     }
 }
 
-void println(std::string_view rem, std::vector<int> const& v) {
+void println(StringView rem, std::vector<int> const& v) {
     std::cout << rem;
     for (int e : v) std::cout << e << ' ';
     std::cout << '\n';

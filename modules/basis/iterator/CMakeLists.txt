@@ -5,6 +5,7 @@ set(ALL_FILES
     iter_swap.cpp
 
     read_whole_file.cpp
+    iterator_category.cpp
 )
 
 foreach(f ${ALL_FILES})

@@ -272,3 +272,7 @@ const char* WireFormat::_InternalParseAndMergeField(Message* msg, const char* pt
     return nullptr;
 }
 ```
+
+## Examples
+- modules/google_protobuf/test_builtin_wire_format_lite.cpp
+

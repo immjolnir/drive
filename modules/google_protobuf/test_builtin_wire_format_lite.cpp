@@ -2,6 +2,7 @@
 src/google/protobuf/wire_format_unittest.cc
 */
 
+#include <gmock/gmock.h>  // Comparing array/list
 #include <gtest/gtest.h>
 
 #include <google/protobuf/wire_format.h>
@@ -191,6 +192,9 @@ TEST(RepeatedVarint, EncodedSizeComparision_negative_data) {
         msg.set_data(i);
         msg.SerializeToString(&serialized);
         EXPECT_EQ(11, serialized.length());
+        EXPECT_THAT(std::vector<unsigned char>(serialized.begin(), serialized.end()),
+                    testing::ElementsAre(0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01));
+
         // hexedit
         // 08 FF FF FF  FF FF FF FF  FF FF 01
         // https://en.cppreference.com/w/cpp/io/ios_base/openmode
@@ -203,6 +207,7 @@ TEST(RepeatedVarint, EncodedSizeComparision_negative_data) {
         msg.set_data(i);
         msg.SerializeToString(&serialized);
         EXPECT_EQ(2, serialized.length());
+        EXPECT_THAT(std::vector<unsigned char>(serialized.begin(), serialized.end()), testing::ElementsAre(0x08, 0x01));
         // hexedit
         // 08 01
         // std::ofstream out("sint32.bin", std::ios::out | std::ios::trunc | std::ios::binary);
@@ -216,6 +221,8 @@ TEST(RepeatedVarint, EncodedSizeComparision_negative_data) {
         msg.set_data(i);
         msg.SerializeToString(&serialized);
         EXPECT_EQ(11, serialized.length());  // Why it has the same size as the Int32Message?
+        EXPECT_THAT(std::vector<unsigned char>(serialized.begin(), serialized.end()),
+                    testing::ElementsAre(0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01));
     }
     {
         std::string serialized;
@@ -223,43 +230,7 @@ TEST(RepeatedVarint, EncodedSizeComparision_negative_data) {
         msg.set_data(i);
         msg.SerializeToString(&serialized);
         EXPECT_EQ(2, serialized.length());  // Yes, it should have the same size as Sint32Message!
-    }
-}
-
-TEST(RepeatedVarint, EncodedSizeComparision_repeated_negative_data) {
-    int i = -1;
-    // int32 vs sint32
-    {
-        std::string serialized;
-        proto::unittest::MoreInt32Message msg;
-        msg.add_data(i);
-        // Add two more numbers comparing the above case
-        msg.add_data(i);
-        msg.add_data(i);
-
-        msg.SerializeToString(&serialized);
-        EXPECT_EQ(33, serialized.length());  // Why? 11 * 3
-        // hexed it
-        // 08 FF FF FF  FF FF FF FF  FF FF 01
-        // 08 FF FF FF  FF FF FF FF  FF FF 01
-        // 08 FF FF FF  FF FF FF FF  FF FF 01
-        // std::ofstream out("repeated_int32.bin", std::ios::out | std::ios::trunc | std::ios::binary);
-        // out << serialized;
-    }
-    {
-        std::string serialized;
-        proto::unittest::MoreSInt32Message msg;
-        msg.add_data(i);
-        // Add two more numbers
-        msg.add_data(i);
-        msg.add_data(i);
-
-        msg.SerializeToString(&serialized);
-        EXPECT_EQ(6, serialized.length());  // Why? 2 * 3
-        // hexedit
-        // 08 01 08 01  08 01 // Why the tag(08) is repeated so many times?
-        // std::ofstream out("repeated_sint32.bin", std::ios::out | std::ios::trunc | std::ios::binary);
-        // out << serialized;
+        EXPECT_THAT(std::vector<unsigned char>(serialized.begin(), serialized.end()), testing::ElementsAre(0x08, 0x01));
     }
 }
 
@@ -272,6 +243,8 @@ TEST(RepeatedVarint, EncodedSizeComparision_positive_data) {
         msg.set_data(i);
         msg.SerializeToString(&serialized);
         EXPECT_EQ(2, serialized.length());
+        EXPECT_THAT(std::vector<unsigned char>(serialized.begin(), serialized.end()), testing::ElementsAre(0x08, 0x01));
+
         // hexedit
         // 08 01
         // https://en.cppreference.com/w/cpp/io/ios_base/openmode
@@ -284,6 +257,7 @@ TEST(RepeatedVarint, EncodedSizeComparision_positive_data) {
         msg.set_data(i);
         msg.SerializeToString(&serialized);
         EXPECT_EQ(2, serialized.length());
+        EXPECT_THAT(std::vector<unsigned char>(serialized.begin(), serialized.end()), testing::ElementsAre(0x08, 0x01));
         // hexedit
         // 08 01
         // https://en.cppreference.com/w/cpp/io/ios_base/openmode
@@ -296,6 +270,8 @@ TEST(RepeatedVarint, EncodedSizeComparision_positive_data) {
         msg.set_data(i);
         msg.SerializeToString(&serialized);
         EXPECT_EQ(5, serialized.length());
+        EXPECT_THAT(std::vector<unsigned char>(serialized.begin(), serialized.end()),
+                    testing::ElementsAre(0x0D, 0x01, 0x00, 0x00, 0x00));
         // hexedit
         // 0D 01 00 00  00
         // https://en.cppreference.com/w/cpp/io/ios_base/openmode
@@ -308,10 +284,133 @@ TEST(RepeatedVarint, EncodedSizeComparision_positive_data) {
         msg.set_data(i);
         msg.SerializeToString(&serialized);
         EXPECT_EQ(2, serialized.length());
+        // Why the 1 is encoded to 0x02 ?
+        EXPECT_THAT(std::vector<unsigned char>(serialized.begin(), serialized.end()), testing::ElementsAre(0x08, 0x02));
         // hexedit
         // 08 02, but why?
         // std::ofstream out("sint32.bin", std::ios::out | std::ios::trunc | std::ios::binary);
         // out << serialized;
+    }
+}
+
+TEST(RepeatedVarint, EncodedSizeComparision_repeated_negative_data) {
+    std::vector<int> vec{-1, -1, -1};
+
+    // Summary: in the ./build/modules/google_protobuf/proto/builtin/unittest.pb.h,
+    // both of them's return type is RepeatedField<int32>
+    proto::unittest::MoreInt32Message int32_msg;
+    /*
+    inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32>*
+    MoreInt32Message::mutable_data() {
+        // @@protoc_insertion_point(field_mutable_list:proto.unittest.MoreInt32Message.data)
+        return _internal_mutable_data();
+    }
+    */
+    proto::unittest::MoreSInt32Message sint32_msg;
+    /*
+    inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32>*
+    MoreSInt32Message::mutable_data() {
+        // @@protoc_insertion_point(field_mutable_list:proto.unittest.MoreSInt32Message.data)
+        return _internal_mutable_data();
+    }
+    */
+
+    // int32 vs sint32
+    {
+        std::string serialized;
+        // General Usage
+        google::protobuf::RepeatedField<int>* data = int32_msg.mutable_data();
+        data->Reserve(vec.size());
+        data->Add(vec.begin(), vec.end());
+
+        int32_msg.SerializeToString(&serialized);
+        EXPECT_EQ(33, serialized.length());  // Why? 11 * 3
+        // clang-format off
+        EXPECT_THAT(std::vector<unsigned char>(serialized.begin(), serialized.end()),
+                    testing::ElementsAre(
+                        0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01, // -1
+                        0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01, // -1
+                        0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01 // -1
+                        ));
+        // clang-format on
+        // hexed it
+        // 08 FF FF FF  FF FF FF FF  FF FF 01
+        // 08 FF FF FF  FF FF FF FF  FF FF 01
+        // 08 FF FF FF  FF FF FF FF  FF FF 01
+        // std::ofstream out("repeated_int32.bin", std::ios::out | std::ios::trunc | std::ios::binary);
+        // out << serialized;
+    }
+    {
+        std::string serialized;
+
+        google::protobuf::RepeatedField<int>* data = sint32_msg.mutable_data();
+        data->Reserve(vec.size());
+        data->Add(vec.begin(), vec.end());
+
+        sint32_msg.SerializeToString(&serialized);
+        EXPECT_EQ(6, serialized.length());  // Why? 2 * 3
+        EXPECT_THAT(std::vector<unsigned char>(serialized.begin(), serialized.end()),
+                    testing::ElementsAre(0x08, 0x01, 0x08, 0x01, 0x08, 0x01));
+        // hexedit
+        // 08 01 08 01  08 01 // Why the tag(08) is repeated so many times?
+        // std::ofstream out("repeated_sint32.bin", std::ios::out | std::ios::trunc | std::ios::binary);
+        // out << serialized;
+    }
+}
+
+TEST(RepeatedVarint, EncodedSizeComparision_repeated_positive_data) {
+    std::vector<int> vec{1, 1, 1};
+
+    // Summary: in the ./build/modules/google_protobuf/proto/builtin/unittest.pb.h,
+    // both of them's return type is RepeatedField<int32>.
+    // That's because of both the int32 and sint32 maps to int in c++.
+    proto::unittest::MoreInt32Message int32_msg;
+    /*
+    inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32>*
+    MoreInt32Message::mutable_data() {
+        // @@protoc_insertion_point(field_mutable_list:proto.unittest.MoreInt32Message.data)
+        return _internal_mutable_data();
+    }
+    */
+    proto::unittest::MoreSInt32Message sint32_msg;
+    /*
+    inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32>*
+    MoreSInt32Message::mutable_data() {
+        // @@protoc_insertion_point(field_mutable_list:proto.unittest.MoreSInt32Message.data)
+        return _internal_mutable_data();
+    }
+    */
+
+    // int32 vs sint32
+    {
+        std::string serialized;
+        // General Usage
+        google::protobuf::RepeatedField<int>* data = int32_msg.mutable_data();
+        data->Reserve(vec.size());
+        data->Add(vec.begin(), vec.end());
+
+        int32_msg.SerializeToString(&serialized);
+        EXPECT_EQ(6, serialized.length());  // Why? 11 * 3
+        EXPECT_THAT(std::vector<unsigned char>(serialized.begin(), serialized.end()),
+                    testing::ElementsAre(0x08, 0x01,  // 1
+                                         0x08, 0x01,  // 1
+                                         0x08, 0x01   // 1
+                                         ));
+    }
+    {
+        std::string serialized;
+
+        google::protobuf::RepeatedField<int>* data = sint32_msg.mutable_data();
+        data->Reserve(vec.size());
+        data->Add(vec.begin(), vec.end());
+
+        sint32_msg.SerializeToString(&serialized);
+        EXPECT_EQ(6, serialized.length());  // Why? 2 * 3
+        EXPECT_THAT(std::vector<unsigned char>(serialized.begin(), serialized.end()),
+                    testing::ElementsAre(0x08, 0x02,  // 1
+                                         0x08, 0x02,  // 1
+                                         0x08, 0x02   // 1
+                                         ));
     }
 }
 
