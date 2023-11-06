@@ -38,6 +38,7 @@ set(STRING_FILES
     vector-test-deep_copy-vs-shadow_copy.cpp
     sstream.cpp
     list.cpp
+    forward_list.cpp
 
     # numeric library
     numeric.cpp
@@ -53,7 +54,7 @@ set(STRING_FILES
 
     # C++ Specifiers
     qualifiers.cpp
-    casting_type.cpp
+    type_casting.cpp
     type_conversion_dynamic_cast.cpp
 
     # io

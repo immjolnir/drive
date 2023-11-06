@@ -234,7 +234,7 @@ Properties Overview
 ## reference
 - https://stackoverflow.com/questions/61329240/what-is-the-difference-between-trivial-and-non-trivial-objects
 
-The point of triviality is that the type can be treated exactly like a fundamental type, in that objects of the type can be copied and moved with memcpy and constructed destructed without doing anything. Hence, triviality requires a type be essentially made only of fundamental types. This is what makes the copy, move, construction, and destruction operations relevant to the definition of trivial types. Other member functions don't play a role in triviality just as you can write void fn( int*, OtherArgs... ) without affecting whether or not an int is trivial, because you can think of member functions of T as essentially being free functions with the signature ReturnType member_function( T*, OtherArgs... ) that the compiler let's you call with the syntax a.member_function( other_args... ).
+The point of triviality is that the type can be treated exactly like a fundamental type, in that objects of the type can be copied and moved with `memcpy` and constructed destructed without doing anything. Hence, triviality requires a type be essentially made only of fundamental types. This is what makes the copy, move, construction, and destruction operations relevant to the definition of trivial types. Other member functions don't play a role in triviality just as you can write void fn( int*, OtherArgs... ) without affecting whether or not an int is trivial, because you can think of member functions of T as essentially being free functions with the signature ReturnType member_function( T*, OtherArgs... ) that the compiler let's you call with the syntax a.member_function( other_args... ).
 
 As for alignment, it simply isn't all that relevant because it's all taken care of for you. The compiler knows the alignment of the types it's working with, thanks to the strong static type system.
 
@@ -278,4 +278,8 @@ void g( A& x, const A& y)
 - modules/boostorg/boost_serialization.cpp
 
 Save many memory.
+
+## std::memcpy vs std::copy
+
+
 

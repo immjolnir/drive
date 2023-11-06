@@ -40,6 +40,7 @@ output_iterator_tag
 #include <vector>
 // https://en.cppreference.com/w/cpp/iterator/iterator_traits
 #include <iterator>
+#include <ranges>  // since c++20
 
 #include <algorithm>  // iter_swap
 
@@ -325,4 +326,37 @@ TEST(iterator_category, reverse_on_raw_array) {
     int data[]{1, 2, 3, 4, 5};
     my::reverse(std::begin(data), std::end(data));
     EXPECT_THAT(data, testing::ElementsAre(5, 4, 3, 2, 1));
+}
+
+// https://stackoverflow.com/questions/3610933/iterating-c-vector-from-the-end-to-the-beginning
+TEST(reverse, range_view) {
+    std::vector<int> const vec{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    {
+        // Since c++14
+        std::vector<int> v0(vec.rbegin(), vec.rend());
+        EXPECT_THAT(v0, testing::ElementsAre(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+    }
+
+    //  std::ranges::reverse_view since c++20
+    {
+        auto view = std::ranges::views::reverse(vec);
+        std::vector<int> v0(view.begin(), view.end());
+        EXPECT_THAT(v0, testing::ElementsAre(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+    }
+
+    {
+        auto view = vec | std::ranges::views::reverse;
+        std::vector<int> v0(view.begin(), view.end());
+        EXPECT_THAT(v0, testing::ElementsAre(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+    }
+
+    for (auto& i : std::ranges::views::reverse(vec)) {
+        std::cout << i << ",";
+    }
+    std::cout << std::endl;
+
+    for (auto& i : vec | std::ranges::views::reverse) {
+        std::cout << i << ";";
+    }
+    std::cout << std::endl;
 }

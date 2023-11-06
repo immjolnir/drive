@@ -133,7 +133,7 @@ include(${CMAKE_FILES}/CompilerWarnings.cmake)
 #set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # set_cxx_compiler_warnings()
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20") # use c++20
 
 # Changing the linker
 # https://stackoverflow.com/questions/1867745/cmake-use-a-custom-linker

@@ -1,5 +1,7 @@
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <numeric>
 #include <string>
 #include <type_traits>
 
@@ -193,4 +195,23 @@ TEST(aggregate, aggregate_storage) {
 
     EXPECT_EQ(1, b->x);
     EXPECT_EQ("hello", b->data);
+}
+
+// memcpy vs std::copy
+TEST(aggregate, std_copy) {
+    std::vector<int> from_vector(10);
+    std::iota(from_vector.begin(), from_vector.end(), 0);
+    EXPECT_THAT(from_vector, testing::ElementsAre(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
+
+    std::vector<int> to_vector;
+    std::copy(from_vector.begin(), from_vector.end(), std::back_inserter(to_vector));
+
+    EXPECT_THAT(to_vector, testing::ElementsAre(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
+
+    EXPECT_EQ(std::string(from_vector.begin(), from_vector.end()), std::string(to_vector.begin(), to_vector.end()));
+
+    to_vector.clear();
+    std::copy_if(from_vector.begin(), from_vector.end(), std::back_inserter(to_vector),
+                 [](int x) { return x % 3 == 0; });
+    EXPECT_THAT(to_vector, testing::ElementsAre(0, 3, 6, 9));
 }
