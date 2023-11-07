@@ -1,6 +1,8 @@
 #include <string>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
 using namespace std;
 
 TEST(string, deep_copy) {
@@ -156,16 +158,70 @@ actually at the second-last place
 */
 TEST(string, remove_last_character_with_null_character) {
     string str("world1");
-    str[str.size() - 1] = '\0';
-    EXPECT_EQ("world", str);  // Actual: "World\o" 这是因为没有修改size的原因， string 跟 raw char array 还是有差别的。
+    size_t old_size = str.size();
+    str[old_size - 1] = '\0';
+    // EXPECT_EQ("world", str);  // Actual: "World\o" 这是因为没有修改size的原因， string 跟 raw char array
+    // 还是有差别的。
+    EXPECT_EQ(old_size, str.size());
+    EXPECT_THAT(std::vector<char>(str.begin(), str.end()), testing::ElementsAre('w', 'o', 'r', 'l', 'd', '\0'));
 }
 
 TEST(char_array, remove_last_character_with_0) {
     // char arr[256] = {'\0'};
     // memset， memcpy
-    char arr[] = {'w', 'o', 'r', 'l', 'd', '1'};
+    char arr[] = {'w', 'o', 'r', 'l', 'd', '1', '\0'};  // I must be ended with '\0'.
     EXPECT_EQ(6, strlen(arr));
 
     arr[5] = '\0';  // empty the last element.
     EXPECT_EQ(5, strlen(arr));
 }
+
+TEST(string, memory_layout) {
+    /*
+    What's the string's memory layout?
+    */
+
+    std::string str0("Hello world!");
+    std::cout << std::hex << std::setfill('0');
+    std::cout << "&str0=" << &str0 << "\n";
+
+    // print the content stored in the memory pointed by the pointer in C++
+    std::cout << "str0.data()=" << str0.data() << "\n";
+
+    // print the address stored in the pointer in C++
+    std::cout << "&str0.data()=" << reinterpret_cast<void*>(str0.data()) << "\n";
+    // &str0=0x7ffd8b2a5890
+    // str0.data()=Hello world!
+    // &str0.data()=0x7ffd8b2a58a0 它怎么跟 &str0 相差 16 bits(2bytes)?
+    auto ptr = str0.data();
+    for (int i = 0; i < str0.size(); ++i) {
+        std::cout << reinterpret_cast<void*>(ptr + i) << " stores " << ptr[i]
+                  << "(ascii=" << reinterpret_cast<void*>(ptr[i]) << ")."
+                  << "\n";
+    }
+    /*
+    &str0=0x7ffeffab91e0
+    str0.data()=Hello world!
+    &str0.data()=0x7ffeffab91f0
+    0x7ffeffab91f0 stores H(ascii=0x48).
+    0x7ffeffab91f1 stores e(ascii=0x65).
+    0x7ffeffab91f2 stores l(ascii=0x6c).
+    0x7ffeffab91f3 stores l(ascii=0x6c).
+    0x7ffeffab91f4 stores o(ascii=0x6f).
+    0x7ffeffab91f5 stores  (ascii=0x20).
+    0x7ffeffab91f6 stores w(ascii=0x77).
+    0x7ffeffab91f7 stores o(ascii=0x6f).
+    0x7ffeffab91f8 stores r(ascii=0x72).
+    0x7ffeffab91f9 stores l(ascii=0x6c).
+    0x7ffeffab91fa stores d(ascii=0x64).
+    0x7ffeffab91fb stores !(ascii=0x21).
+    */
+}
+
+/*
+It's no neccessary to understand its memory layout.
+
+For modules/google_protobuf/test_builtin_message_lite.cpp
+
+So, the reinterpret_cast should work on string.data() instead of string itself.
+*/

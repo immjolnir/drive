@@ -38,7 +38,7 @@ be stored in the memory.Its values can be ColMajor or RowMajor.
   https://eigen.tuxfamily.org/dox/group__TopicStorageOrders.html
 */
 
-TEST(matrix, OpenCVStorageOrder_row_major) {
+TEST(storage_order, OpenCVStorageOrder_row_major) {
     cv::Mat m(3, 3, CV_32FC1, 0.0f);
     m.at<float>(1, 0) = 2;
 
@@ -88,7 +88,7 @@ TEST(matrix, OpenCVStorageOrder_row_major) {
     }
 }
 
-TEST(matrix, EigenStorageOrder_column_order_by_default) {
+TEST(storage_order, EigenStorageOrder_column_order_by_default) {
     using namespace std;
     // If the storage order is not specified, then Eigen defaults to storing the entry in column-major
 

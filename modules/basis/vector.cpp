@@ -141,3 +141,44 @@ TEST(vector, front_insert_vector2) {
     a.insert(a.begin(), b.begin(), b.end());
     EXPECT_THAT(a, testing::ElementsAre(4, 5, 1, 2, 3));
 }
+
+/**
+ *  @brief  Assigns a range to a %vector.
+ *  @param  __first  An input iterator.
+ *  @param  __last   An input iterator.
+ *
+ *  This function fills a %vector with copies of the elements in the
+ *  range [__first,__last).
+ *
+ *  Note that the assignment completely changes the %vector and
+ *  that the resulting %vector's size is the same as the number
+ *  of elements assigned.
+ */
+// fill, overwrite.
+TEST(vector, reserve_and_assign) {
+    const std::vector<int> vec{0, 1, 2};
+    std::vector<int> disparities;
+
+    disparities.reserve(3);
+    EXPECT_EQ(0, disparities.size());
+    EXPECT_TRUE(disparities.empty());
+
+    disparities.assign(vec.begin(), vec.end());
+    EXPECT_EQ(3, disparities.size());
+    EXPECT_THAT(disparities, testing::ElementsAre(0, 1, 2));
+}
+
+TEST(vector, resize_and_assign) {
+    const std::vector<int> vec{0, 1, 2};
+    std::vector<int> disparities;
+
+    disparities.resize(3);
+    EXPECT_EQ(3, disparities.size());
+    EXPECT_FALSE(disparities.empty());
+
+    disparities.assign(vec.begin(), vec.end());
+    EXPECT_EQ(3, disparities.size());
+    EXPECT_THAT(disparities, testing::ElementsAre(0, 1, 2));
+}
+
+// So assign will over

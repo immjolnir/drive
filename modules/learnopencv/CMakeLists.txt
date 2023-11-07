@@ -24,7 +24,8 @@ foreach(file ${ALL_FILES})
 endforeach()
 
 set(TEST_FILES
-    test_opencv_mat.cpp
+    test_storage_order_opencv_vs_eigen.cpp
+    test_mat.cpp
 )
 
 foreach(file ${TEST_FILES})

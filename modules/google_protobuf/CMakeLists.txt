@@ -88,6 +88,7 @@ set(TEST_SOURCES
     test_builtin_repeated_field.cpp
     test_builtin_coded_stream.cpp
     test_builtin_wire_format_lite.cpp
+    test_builtin_message_lite.cpp
 )
 set(ALL_TESTS
     ${TEST_SOURCES}

@@ -1,5 +1,22 @@
 # C11
 
+## iota
+```c++
+template< class ForwardIt, class T >
+void iota( ForwardIt first, ForwardIt last, T value );
+```
+Fills the range `[first, last)` with sequentially increasing values, starting with value and repetitively evaluating `++value`.
+
+Equivalent operation:
+```
+*(first)     = value;
+*(first + 1) = ++value;
+*(first + 2) = ++value;
+*(first + 3) = ++value;
+...
+```
+
+
 ##  C++11 initializer list syntax
 
 
