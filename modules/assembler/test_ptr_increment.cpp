@@ -1,3 +1,4 @@
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 /**
@@ -54,7 +55,7 @@ done:
     return std::make_pair(true, ptr);
 }
  */
-TEST(assembler, pre_increment_operator) {
+TEST(assembler, self_increment_operators) {
     char buffer[5] = {'a', 'b', 'c', 'd', 'e'};
     const char* ptr = buffer;
 
@@ -64,4 +65,55 @@ TEST(assembler, pre_increment_operator) {
     char b = *(ptr++);  // 这里的括号，只是为了代码可读；并不会改变 pre increment opreator 的执行方式。
     EXPECT_EQ('b', b);
     EXPECT_EQ('c', *ptr);
+}
+
+TEST(assembler, post_increment_operator) {
+    int arr[3] = {1, 2, 3};
+
+    int* p = arr;
+    *(p++) = 5;
+    /*
+    equals to the two statements as below:
+        *p = 5;
+        p++;
+    */
+    EXPECT_EQ(2, *p);
+    EXPECT_THAT(arr, testing::ElementsAre(5, 2, 3));
+}
+
+TEST(assembler, post_increment_operator2) {
+    int arr[3] = {1, 2, 3};
+
+    int* p = arr;
+    *p++ = 5;  // As the same as `*(p++) = 5`;
+    EXPECT_EQ(2, *p);
+    EXPECT_THAT(arr, testing::ElementsAre(5, 2, 3));
+}
+
+TEST(assembler, pre_increment_operator) {
+    int arr[3] = {1, 2, 3};
+
+    int* p = arr;
+    *(++p) = 5;
+    /*
+    equals to the two statements as below:
+        ++p;
+        *p = 5;
+    */
+    EXPECT_EQ(5, *p);
+    EXPECT_THAT(arr, testing::ElementsAre(1, 5, 3));
+}
+
+TEST(assembler, pre_increment_operator2) {
+    int arr[3] = {1, 2, 3};
+
+    int* p = arr;
+    *++p = 5;
+    /*
+    equals to the two statements as below:
+        ++p;
+        *p = 5;
+    */
+    EXPECT_EQ(5, *p);
+    EXPECT_THAT(arr, testing::ElementsAre(1, 5, 3));
 }

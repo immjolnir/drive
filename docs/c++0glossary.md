@@ -102,3 +102,6 @@ A `method stub` or simply `stub` in software development is a piece of code used
 
 A `stub` is a routine that doesn't actually do anything other than declaring itself and the parameters it accepts and returning something that is usually the values expected in one of the "happy scenarios" for the caller. Stubs are used commonly as placeholders for implementation of a known interface, where the interface is finalized/known but the implementation is not yet known/finalized. The `stub` contains just enough code to allow it to be compiled and linked with the rest of the program.
 
+# endian
+- `/ˈendɪən/` adj. （计算机）字节序的 n. 字节存储次序，元组排列顺序
+- endianness, n. 字节顺序

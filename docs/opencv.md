@@ -63,9 +63,11 @@ Understanding these nuances not only helps in accurate data representation but a
 
 opencv中关于Rect和Size的宽高顺序折磨了我很久，略作记录。
 
-Size_(_Tp _width, _Tp _height)Size是先宽后高，这一点如果不记得可以随时查看Size定义来确认；
-Rect_(_Tp _x, _Tp _y, _Tp _width, _Tp _height)在opencv中x方向指的都是水平方向；y方向指的都是y方向，这一点在各处都是一样的。其实对于Size也是按照先x后y的顺序的。
-matrix.at<char>(row, col)数组的访问当然还是按照先行后列的方式，这跟存储方式有关，不要搞混。
+- Size_(_Tp _width, _Tp _height)Size是先宽后高，这一点如果不记得可以随时查看Size定义来确认；
+- Rect_(_Tp _x, _Tp _y, _Tp _width, _Tp _height)在opencv中x方向指的都是水平方向；y方向指的都是y方向，这一点在各处都是一样的。其实对于Size也是按照先x后y的顺序的。
+- matrix.at<char>(row, col)数组的访问当然还是按照先行后列的方式，这跟存储方式有关，不要搞混。
+
+- Example: modules/learnopencv/test_mat.cpp
 
 
 # [How to find out what type of a mat object?](https://stackoverflow.com/questions/10167534/how-to-find-out-what-type-of-a-mat-object-is-with-mattype-in-opencv)
@@ -153,4 +155,47 @@ there are some cases, where this isn't so, think of a ROI:
 +-----------+
 ```
 or `Mat::diag()`, or `Mat::col(i)`, all cases of non-continuous memory.
+
+
+# [OpenCV Mat data member access](https://stackoverflow.com/questions/34042112/opencv-mat-data-member-access)
+
+`Mat` data is an `uchar*`. If you have a, say, `float` matrix `CV_32FC1`, you need to access data as `float`.
+
+You can do in different ways, not necessarily using casting:
+```c++
+#include <opencv2\opencv.hpp>
+using namespace cv;
+
+int main()
+{
+    cv::Mat matF(3, 3, CV_32F);
+    randu(matF, Scalar(0), Scalar(10));
+
+    int rowIdx = 1;
+    int colIdx = 1;
+
+    // 1
+    float f1 = matF.at<float>(rowIdx, colIdx);
+
+    // 2
+    float* fData2 = (float*)matF.data;
+    float f2 = fData2[rowIdx*matF.step1() + colIdx];
+
+    // 3
+    float* fData3 = matF.ptr<float>(0);
+    float f3 = fData3[rowIdx*matF.step1() + colIdx];
+
+    // 4
+    float* fData4 = matF.ptr<float>(rowIdx);
+    float f4 = fData4[colIdx];
+
+    // 5
+    Mat1f mm(matF); // Or directly create like: Mat1f mm(3, 3);
+    float f5 = mm(rowIdx, colIdx);
+
+    // f1 == f2 == f3 == f4 == f5
+
+    return 0;
+}
+```
 
