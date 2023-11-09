@@ -61,8 +61,26 @@ TEST(vector, ctor) {
 TEST(vector, ctor_with_initializer_list) {
     // use the ctor:
     // constexpr vector(std::initializer_list<T> init,
-    std::vector<float> vec = std::vector<float>{5, 0.0f};
+    std::vector<float> vec{5, 0.0f};
+    // Same as
+    // std::vector<float> vec = std::vector<float>{5, 0.0f};
     EXPECT_EQ(2, vec.size());
+}
+
+// Call vector's ctor
+/**
+ *  @brief  Creates a %vector with copies of an exemplar element.
+ *  @param  __n  The number of elements to initially create.
+ *  @param  __value  An element to copy.
+ *  @param  __a  An allocator.
+ *
+ *  This constructor fills the %vector with @a __n copies of @a __value.
+ */
+// vector(size_type __n, const value_type& __value, const allocator_type& __a = allocator_type())
+TEST(vector, ctor_with_n_default_value) {
+    std::vector<float> vec(5, 0.0f);
+    EXPECT_EQ(5, vec.size());
+    EXPECT_THAT(vec, testing::ElementsAre(0.0f, 0.0f, 0.0f, 0.0f, 0.0f));
 }
 
 TEST(vector, get_index_of_maximum_element) {

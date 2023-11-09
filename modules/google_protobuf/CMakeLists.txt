@@ -86,6 +86,8 @@ set(TEST_SOURCES
 
     # Test Builtin-APIs
     test_builtin_repeated_field.cpp
+    test_builtin_repeated_field2.cpp
+    
     test_builtin_coded_stream.cpp
     test_builtin_wire_format_lite.cpp
     test_builtin_message_lite.cpp

@@ -62,3 +62,28 @@ message MoreInt32Message {
 message MoreSInt32Message {
   repeated sint32 data = 1;
 }
+
+message PackedMoreSInt32Message {
+   /*
+   - https://stackoverflow.com/questions/7174635/does-protobuf-net-have-built-in-compression-for-serialization
+
+   - https://protobuf.dev/programming-guides/encoding/#packed
+   Packed Repeated Fields
+   Starting in v2.1.0, repeated fields of a primitive type (any scalar type that is not string or bytes) can be declared as “packed”. 
+   In proto2 this is done using the field option [packed=true].
+   In proto3 it is the default.
+   Only repeated fields of primitive numeric types can be declared “packed”. These are types that would normally use the VARINT, I32, or I64 wire types.
+
+   - https://protobuf.dev/programming-guides/encoding/#cheat-sheet
+   varint     := int32 | int64 | uint32 | uint64 | bool | enum | sint32 | sint64;
+               encoded as varints (sintN are ZigZag-encoded first)
+
+   - https://protobuf.dev/programming-guides/proto2/#field-labels
+   New code should use the special option [packed = true] to get a more efficient encoding.
+
+   - https://protobuf.dev/programming-guides/proto3/#field-labels
+   In proto3, repeated fields of scalar numeric types use packed encoding by default
+   */
+  repeated sint32 data = 1 [packed = true];
+}
+
