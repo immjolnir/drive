@@ -57,7 +57,7 @@
     }
     ```
 
-# [std::iter_swap](https://en.cppreference.com/w/cpp/algorithm/iter_swap)
+## [std::iter_swap](https://en.cppreference.com/w/cpp/algorithm/iter_swap)
 Swaps the values of the elements the given iterators are pointing to.
 
 ```c++
@@ -76,3 +76,45 @@ constexpr void iter_swap(ForwardIt1 a, ForwardIt2 b) // constexpr since C++20
 ```
 
 See `iter_swap.cpp`
+
+## [iterator_tags](https://en.cppreference.com/w/cpp/iterator/iterator_tags)
+- Definition
+```c++
+//  * <iterator>
+
+struct input_iterator_tag {};
+struct output_iterator_tag {};
+struct forward_iterator_tag : public input_iterator_tag {};
+struct bidirectional_iterator_tag : public forward_iterator_tag {};
+struct random_access_iterator_tag : public bidirectional_iterator_tag {};
+struct contiguous_iterator_tag : public random_access_iterator_tag {};
+```
+
+- Inherit Graph
+```
+input_iterator_tag
+   |_ forward_iterator_tag
+          |_ bidirectional_iterator_tag
+               |_ random_access_iterator_tag
+                     |_ contiguous_iterator_tag
+
+output_iterator_tag
+```
+
+- Iterator_category
+
+__Iterator_category__ is an iterator tag function: it is used to determine the category to which an iterator belongs.
+Specifically, every iterator must belong to a type that is a model of the concept
+
+  - Output Iterator
+  - Input Iterator
+  - Forward Iterator
+  - Bidirectional Iterator
+    - Increment and decrement are inverses of each other:
+       - If a is incrementable and bool(a == b), then bool(--(++a) == b).
+       - If a is decrementable and bool(a == b), then bool(++(--a) == b).
+  - Random Access Iterator
+
+- Examples
+  - modules/basis/iterator/iterator_category_part1.cpp
+  - modules/basis/iterator/iterator_category_part2.cpp

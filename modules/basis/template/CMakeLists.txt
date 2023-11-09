@@ -6,6 +6,8 @@ add_library(${PROJECT_NAME}
 
 set(ALL_FILES
     test_extern_template.cpp
+    test_compile_branch_template.cpp
+    # test_partial_specialization.cpp
 )
 
 foreach(f ${ALL_FILES})
