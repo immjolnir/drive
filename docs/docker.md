@@ -234,3 +234,59 @@ Set the right group at line
 SocketGroup=docker
 Then run systemctl daemon-reload and reboot
 
+## docker run
+
+
+```
+$ docker help run
+
+Usage:  docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
+
+Run a command in a new container
+
+Options:
+  --add-host list                  Add a custom host-to-IP mapping (host:ip)
+
+  -u, --user string                    Username or UID (format: <name|uid>[:<group|gid>])
+
+  -v, --volume list                    Bind mount a volume
+  -w, --workdir string                 Working directory inside the container
+
+```
+
+- `--add-host myserver:10.50.10.13`: 这样docker container 就可以直接访问 myserver 了。 相当于修改了  `/etc/hosts`.
+
+For example:
+
+```
+docker run -t --rm --init --runtime=nvidia --cap-add=SYS_PTRACE --ipc=private --shm-size=4g \
+--add-host yourserver_name:your_ip \
+-u 126:133 \
+-w /home/jenkins/workspace/PR-34666 \
+-v /home/jenkins/workspace/PR-34666:/home/jenkins/workspace/PR-34666:rw,z \
+-v /home/jenkins/.ccache:/home/jenkins/.ccache:rw,z \
+-v /home/jenkins/.ssh:/home/jenkins/.ssh:ro  \
+-e _=/usr/bin/java  \
+-e CCACHE_COMPRESS=1  \
+-e CCACHE_DIR=/home/jenkins/.ccache  \
+-e CCACHE_MAXSIZE=30G  \
+-e CCACHE_NOHASHDIR=1  \
+-e CUDA_CACHE_DISABLE=0  \
+-e CUDA_CACHE_MAXSIZE=1073741824  \
+-e CUDA_FORCE_PTX_JIT=0  \
+-e DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/126/bus  \
+-e HOME=/home/jenkins  \
+-e LANG=en_US.UTF-8  \
+-e PIP_NO_CACHE_DIR=off  \
+-e PIP_PROGRESS_BAR=off  \
+-e PWD=/home/jenkins/workspace/PR-34666  \
+-e SHELL=/bin/bash  \
+-e SHLVL=0  \
+-e USER=jenkins  \
+-e XDG_RUNTIME_DIR=/run/user/126  \
+-e XDG_SESSION_CLASS=user  \
+-e XDG_SESSION_ID=5  \
+-e XDG_SESSION_TYPE=tty \
+your_docker_image \
+/bin/bash -xe /home/jenkins/workspace/PR-34666@tmp/run_the_cmds_in_docker.sh
+```

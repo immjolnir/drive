@@ -18,7 +18,7 @@ lc:
 	make -C build
 
 algos:
-	cmake -B build -S . -D ENABLE_ALGOS=ON
+	cmake -B build -S . -D ENABLE_ALGOS=ON -D ARCHETYPE_DEVELOPMENT_BUILD=ON
 	make -C build
 
 json:

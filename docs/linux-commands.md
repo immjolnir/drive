@@ -119,3 +119,50 @@ dpkg: warning: overriding problem because --force enabled:
 dpkg: warning: trying to overwrite '/opt/test/lib/python/control/__init__.py', which is also in package test-drive 1.0.12284
 dpkg: warning: overriding problem because --force enabled:
 ```
+
+# Linux中的重定向，大于号＞，小于号＜
+
+```
+$ run.sh > log.txt 2>&1
+
+$ cat < log.txt
+```
+
+- `>`: Write log.txt as stdout
+
+- `<`: Read the file log.txt as stdin
+
+
+For instance:
+```
+$ strace cat < a.txt
+execve("/usr/bin/cat", ["cat"], 0x7ffddc900bf0 /* 82 vars */) = 0
+brk(NULL)                               = 0x557a668b5000
+arch_prctl(0x3001 /* ARCH_??? */, 0x7fffd1176520) = -1 EINVAL (Invalid argument)
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f3aac6e0000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=118513, ...}, AT_EMPTY_PATH) = 0
+mmap(NULL, 118513, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f3aac6c3000
+
+...
+
+newfstatat(1, "", {st_mode=S_IFCHR|0620, st_rdev=makedev(0x88, 0x5), ...}, AT_EMPTY_PATH) = 0
+newfstatat(0, "", {st_mode=S_IFREG|0664, st_size=6, ...}, AT_EMPTY_PATH) = 0
+fadvise64(0, 0, 0, POSIX_FADV_SEQUENTIAL) = 0
+mmap(NULL, 139264, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f3aabbfe000
+read(0, "A\nB\nC\n", 131072)            = 6 # 这里就是从 stdin(0) 中读取
+write(1, "A\nB\nC\n", 6A                    # 这里是往 stdout(1) 中写入
+B
+C
+)                = 6
+read(0, "", 131072)                     = 0
+munmap(0x7f3aabbfe000, 139264)          = 0
+close(0)                                = 0
+close(1)                                = 0
+close(2)                                = 0
+```
+- find out the system calls that are being made using `strace`
+- source code to linux's `cat` command: https://github.com/coreutils/coreutils/blob/master/src/cat.c#L213
+
+

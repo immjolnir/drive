@@ -14,3 +14,16 @@ std::ostream& operator<<(std::ostream& s, const std::forward_list<T>& v) {
 }
 ```
 - modules/basis/forward_list.cpp
+
+#include <ranges>
+
+static constexpr std::map<int, int> EDGES = {{0, 2}, {1, 4}, {1, 5}, {2, 3}, {2, 7}, {4, 8}, {5, 8}};
+    // https://stackoverflow.com/questions/110157/how-to-retrieve-all-keys-or-values-from-a-stdmap-and-put-them-into-
+    // a-vector
+    auto ks = std::views::keys(EDGES);  // since c++20
+    auto begin = ks.begin();
+    for (; begin != ks.end(); ++begin) {
+        auto from = *begin;
+        auto to = EDGES[from];
+        uf.union_them(from, to);
+    }

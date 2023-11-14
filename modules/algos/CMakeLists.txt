@@ -4,7 +4,7 @@ add_header()
 
 set(TEST_FILES
     kdtree/kdtree_test.cpp
-    disjoint_set/test_union_find_set.cpp
+    disjoint_set/test_uf.cpp
 )
 
 set(KDTREE_FILES
