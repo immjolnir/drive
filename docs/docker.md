@@ -1,5 +1,13 @@
 # Docker
 
+## Essential Commands
+- docker system df -v: to see the detailed space usage information.
+- docker image ls: list images
+- docker container ls -a:  list containers
+- docker system prune: removes lots of redundant objects: all stopped containers, unused networks, dangling images, and build cache.
+- docker run --privileged --pid=host docker/desktop-reclaim-space
+- docker container prune: This will remove all stopped containers.  
+
 - Show docker disk usage
 ```
 $ docker system  df
