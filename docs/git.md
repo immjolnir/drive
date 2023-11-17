@@ -112,3 +112,59 @@ The same warning applies to this method as to the others mentioned: you are rewr
 
 Preferably, you should only do this in repositories that haven't been published / shared, yet. In any other case you should use it with extreme care - and only if you're aware of the side effects!
 
+## Git Tagging
+
+- git fetch --tags: get the all tags from `origin` remote.
+
+- git fetch upstream --tags: get the all tags from `upstream` remote.
+
+- git fetch tag_name: get the specific `tag_name`
+
+- git fetch -all
+
+- `git ls-remote --tags upstream`: list the tags on remote repository. Supposing the remote reference name is `upstream`.
+- `git tag`: list the tags on local repository
+
+```
+$ git pull upstream 1.6.5608
+
+$ git checkout -t -b upstream/1.6.5608
+Branch 'upstream/1.6.5608' set up to track local branch 'master'.
+Switched to a new branch 'upstream/1.6.5608'
+
+# or
+$ git co -t upstream/acc-test-20231113
+Branch 'acc-test-20231113' set up to track remote branch 'acc-test-20231113' from 'upstream'.
+Switched to a new branch 'acc-test-20231113'
+```
+- A function add the tag
+```
+add_tag_for_repo() {
+    repo=${1}
+    tag_name=${2}
+
+    echo "add tag for ${repo}"
+    git tag ${tag_name}
+    upstream=`git remote |grep upstream`
+    if [ "${upstream}" != "upstream" ]; then
+        echo "add plusai upstream"
+        git remote add upstream your_repo/${repo}
+    fi
+    git push upstream ${tag_name}
+}
+```
+这个 tag name总是会给当前commit 打上tag. 如下示意图
+
+```
+user2:              push new commit
+                            |
+                            v
+repo main/time line -----t0-t1-t2----------> time
+                         ^\
+                         | \           
+user1:            c lone |  \          
+                             \
+                              tag
+```
+即 tag命令没有指定commit id时，默认使用当前的local 的latest commit id. 
+所以，即便 user1 是它t2时刻执行 push tag 的命令在 user2提交新commit之后，这个tag仍然指向t0时刻的commit id. 即这个tag里不会包含user2的commit.
