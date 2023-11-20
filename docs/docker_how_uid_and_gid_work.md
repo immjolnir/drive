@@ -277,6 +277,64 @@ volumnes:
 ## "I have no name!" issue in MacOS
 - https://github.com/databio/bulker
 - https://github.com/tarampampam/laravel-roadrunner-in-docker/pull/29/files
+- https://github.com/ansible/awx/blob/devel/tools/docker-compose/entrypoint.sh
+- https://forums.docker.com/t/error-i-have-no-name-occurs-when-trying-to-run-sudo-docker-run-volume/117963/3
+
+
+Regarding the “I have no name!” username prompt: a container uses an isolated filesystem. It is not aware of any existing users of your host system.
+
+You have two options here:
+- To make the container aware of the host’s users, you can use `-v /etc/passwd:/etc/passwd:ro` to mount it read only into the container (less favored approach, except there are reasons like with the postgres image)
+
+- You create a user while creating the image: add `RUN useradd -u {your UID} -g {your GID} -m {whatever username you want to see instead of "I have no username!"}` to your `Dockerfile`. Then set the `USER {whatever username you want to see instead of "I have no username!"}` instruction in the Dockerfile (after useradd). `-u` will modify the first user declared in a USER instruction.
+
+## can't enable prompt color in bash terminal
+https://askubuntu.com/questions/688422/cant-enable-prompt-color-in-bash-terminal
+
+## Running a Docker container as a non-root user
+
+Fortunately, docker run gives us a way to do this: the `--user` parameter. We're going to use it to specify the user ID (UID) and group ID (GID) that Docker should use. This works because Docker containers all share the same kernel, and therefore the same list of UIDs and GIDs, even if the associated usernames are not known to the containers (more on that later).
+
+To run our asset build, we could use a command something like this:
+```
+docker container run --rm -it \
+  -v $(app):/app \                          # Mount the source code
+  --workdir /app \                          # Set the working dir
+  --user 1000:1000 \                        # Run as the given user
+  my-docker/my-build-environment:latest \   # Our build env image
+  make assets                               # ... and the command!
 ```
 
+This will tell Docker to run its processes with user ID 1000 and group ID 1000. That will mean that any files created by that process also belong to the user with ID 1000.
+
+But I just want to be me!
+But what if we don’t know the current user’s ID? Is there some way to automatically discover that?
+
+There is: id is a program for finding out exactly this information. We can use it with the -u switch to get the UID, and the -g switch to get the GID. So instead of setting `--user 1000:1000`, we could use subshells to set
+`--user $(id -u):$(id -g)`. That way, we can always use the current user's UID and GID.
+
+docker-compose
+We often like to run our tests and things using docker-compose, so that we can spin up any required services as needed - databases and so on. So wouldn't it be nice if we could do this with docker-compose as well?
+
+Unfortunately, we can’t use subshells in a compose file — it’s not a supported part of the format. Lucky for us, we can insert environment variables. So if we have a docker-compose.yml like this:
 ```
+# This is an abbreviated example docker-compose.yml
+version: '3.3'
+services:
+  rspec:
+    image: my-docker/my-build-environment:latest
+    environment:
+      - RAILS_ENV=test
+    command: ["make", "assets"]
+    # THIS BIT!!!1!
+    user: ${CURRENT_UID}
+    volumes:
+      - .:/app
+```
+
+We could use a little bash to set that variable and start docker-compose:
+```
+CURRENT_UID=$(id -u):$(id -g) docker-compose up
+```
+
+Our Dockerised script will create files as if it were the host user!

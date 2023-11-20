@@ -55,6 +55,11 @@ pb:
 	make -C build
 	make -C build test
 
+gtest:
+	cmake -B build -S . -D ENABLE_GTEST=ON -D DEVELOPMENT_BUILD=ON
+	make -C build
+	make -C build test
+
 opencv:
 	cmake -B build -S . -D ENABLE_MODULE_LEARN_OPENCV=ON -D BUILD_TESTING=ON -D DEVELOPMENT_BUILD=ON 
 	make -C build

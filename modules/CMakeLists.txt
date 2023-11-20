@@ -30,6 +30,11 @@ if (ENABLE_PROTOBUFF)
     list(APPEND MODULES google_protobuf)
 endif()
 
+if (ENABLE_GTEST)
+    list(APPEND MODULES google_gtest)
+endif()
+
+
 if (ENABLE_3D)
     list(APPEND MODULES three_dimensions)
 endif()
