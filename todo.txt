@@ -1,0 +1,19 @@
+
+rtklib: 
+https://www.rtklib.com
+
+- https://gitee.com/zhangson502/kalman_filter_simulator
+
+- https://github.com/liuchangji/kalman-filter-in-single-object-tracking 
+
+- https://github.com/ZhangPHEngr/Kalman-in-MO
+
+- https://github.com/chrislgarry/Apollo-11
+
+- http://www.ibiblio.org/apollo/
+
+- https://github.com/chrislgarry/Apollo-11/blob/master/Comanche055/ALARM_AND_ABORT.agc
+
+- https://github.com/chrislgarry/Apollo-11
+
+Paper: Products and Convolutions of Guassian Probability Density Functions, P.A Bromiley.
