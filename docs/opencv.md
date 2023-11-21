@@ -199,3 +199,32 @@ int main()
 }
 ```
 
+
+## Draw rectangle in OpenCV
+
+The `cv::rectangle` function that accepts two `cv::Point`'s takes both the top left and the bottom right corner of a rectangle (pt1 and pt2 respectively in the documentation). If that rectangle is used with the `cv::rectangle` function that accepts a `cv::Rect`, then you will get the same result.
+
+```c++
+// just some valid rectangle arguments
+int x = 0;
+int y = 0;
+int width = 10;
+int height = 20;
+// our rectangle...
+cv::Rect rect(x, y, width, height);
+// and its top left corner...
+cv::Point pt1(x, y);
+// and its bottom right corner.
+cv::Point pt2(x + width, y + height);
+
+// These two calls...
+cv::rectangle(img, pt1, pt2, cv::Scalar(0, 255, 0));
+// essentially do the same thing
+cv::rectangle(img, rect, cv::Scalar(0, 255, 0))
+```
+- https://docs.opencv.org/2.4/modules/core/doc/drawing_functions.html?highlight=rectangle#rectangle
+
+- https://docs.opencv.org/4.x/dc/da5/tutorial_py_drawing_functions.html
+
+
+

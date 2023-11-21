@@ -64,7 +64,14 @@ class PROTOBUF_EXPORT MessageLite {
   // required fields.
   PROTOBUF_ATTRIBUTE_REINITIALIZES bool ParsePartialFromArray(const void* data,
                                                               int size);
-                                                            
+
+    // Parse a protocol buffer from a C++ istream.  If successful, the entire
+  // input will be consumed.
+  PROTOBUF_ATTRIBUTE_REINITIALIZES bool ParseFromIstream(std::istream* input);
+  // Like ParseFromIstream(), but accepts messages that are missing
+  // required fields.
+  PROTOBUF_ATTRIBUTE_REINITIALIZES bool ParsePartialFromIstream( std::istream* input);
+
 
   // Serialization ---------------------------------------------------
   // Methods for serializing in protocol buffer format.  Most of these

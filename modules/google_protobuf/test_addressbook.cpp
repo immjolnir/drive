@@ -1,10 +1,11 @@
 #include "proto/tutorial/addressbook.pb.h"
 
 #include <gtest/gtest.h>
+#include <fstream>
 
-TEST(Addressbook, write_and_read) {
+TEST(Addressbook, setter_and_getter) {
     proto::tutorial::Person person;
-    person.set_name("Scott");
+    person.set_name("Scott");  // single optional field
     person.set_id(1);
     person.set_email("scott@gmail.com");
 
@@ -12,14 +13,14 @@ TEST(Addressbook, write_and_read) {
     proto::tutorial::Person::PhoneNumber phone1;
     phone1.set_number("abc");
     phone1.set_type(::proto::tutorial::Person_PhoneType_MOBILE);  // ::proto::tutorial::Person_PhoneType
-    phones->Add(std::move(phone1));
+    phones->Add(std::move(phone1));                               // repeated field
 
     auto phone2 = person.add_phones();
     phone2->set_number("123");
     phone2->set_type(::proto::tutorial::Person_PhoneType_WORK);  // ::proto::tutorial::Person_PhoneType
 
     proto::tutorial::AddressBook address_book;
-    address_book.mutable_people()->Add(std::move(person));
+    address_book.mutable_people()->Add(std::move(person));  // repeated Person
 
     EXPECT_EQ(1, address_book.people_size());
     EXPECT_EQ("Scott", address_book.people(0).name());
