@@ -54,7 +54,8 @@ set(STRING_FILES
 
     # C++ Specifiers
     qualifiers.cpp
-    type_casting.cpp
+    type_casting0.cpp
+    type_casting1.cpp
     type_conversion_dynamic_cast.cpp
 
     # io

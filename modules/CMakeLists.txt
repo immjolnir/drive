@@ -39,6 +39,10 @@ if (ENABLE_3D)
     list(APPEND MODULES three_dimensions)
 endif()
 
+if (ENABLE_ROS)
+    list(APPEND MODULES ros)
+endif()
+
 if (ENABLE_MYTEST)
     list(APPEND MODULES mytest)
 endif()

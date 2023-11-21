@@ -50,6 +50,11 @@ mytest:
 	make -C build
 	make -C build test
 
+ros:
+	cmake -B build -S . -D ENABLE_ROS=ON
+	make -C build
+	make -C build test
+
 pb:
 	cmake -B build -S . -D ENABLE_PROTOBUFF=ON -D DEVELOPMENT_BUILD=ON 
 	make -C build

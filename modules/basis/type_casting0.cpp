@@ -4,9 +4,13 @@
 #include <cstddef>
 #include <cstring>
 
-/*
+/**
+ * 4 types casting operations
+ * 
  * const_cast
  * dynamic_cast
+ * static_cast
+ * reinterpret_cast
  *
  */
 
