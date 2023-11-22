@@ -91,6 +91,8 @@ set(TEST_SOURCES
     test_builtin_coded_stream.cpp
     test_builtin_wire_format_lite.cpp
     test_builtin_message_lite.cpp
+    test_builtin_reflection.cpp
+    test_builtin_dynamic_message.cpp
 )
 set(ALL_TESTS
     ${TEST_SOURCES}

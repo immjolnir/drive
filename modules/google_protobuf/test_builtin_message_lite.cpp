@@ -1,15 +1,48 @@
 #include "proto/tutorial/addressbook.pb.h"
 
+#include <google/protobuf/text_format.h>  // human-readable format
+
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 
 #include <iterator>
 #include <numeric>
 
-struct Person : public ::testing::Test {
+struct PersonTestSuite : public ::testing::Test {
+    // Per-test-suite set-up
+    // Called before the first test in this test suite
+    // Can be omitted if not needed
+    static void SetUpTestSuite() {
+        person.set_name("Obama");
+        person.set_id(1234);
+        person.set_email("1234@qq.com");
 
-    static 
+        proto::tutorial::Person::PhoneNumber* phone1 = person.add_phones();
+        phone1->set_number("110");
+        phone1->set_type(proto::tutorial::Person::MOBILE);
+
+        proto::tutorial::Person::PhoneNumber* phone2 = person.add_phones();
+        phone2->set_number("119");
+        phone2->set_type(proto::tutorial::Person::HOME);
+    }
+
+    // You can define per-test set-up logic as usual.
+    void SetUp() override { std::cout << "SetUp()" << std::endl; }
+
+    // You can define per-test tear-down logic as usual.
+    void TearDown() override { std::cout << "TearDown()" << std::endl; }
+
+    // Per-test-suite tear-down
+    // Called after the last test case in this test suite
+    // Can be omitted if not needed
+    static void TearDownTestSuite() {}
+
+    // Some expensive resource shared by all tests.
+    // Declaration
+    static proto::tutorial::Person person;
 };
+
+proto::tutorial::Person PersonTestSuite::person{};  // definition or initialization
 
 /*
 * src/google/protobuf/message_lite.h
@@ -30,22 +63,20 @@ PROTOBUF_ATTRIBUTE_REINITIALIZES bool ParsePartialFromIstream(std::istream* inpu
 But
  对于 protobuf 3, 我们已经不再使用 required 字段，以防止影响后续的更新了。
  那么 ParsePartialFromIstream 还有什么其他的用处吗？
+
+
+  // Computes the serialized size of the message.
+  // This recursively calls ByteSizeLong() on all embedded messages.
+  // ByteSizeLong() is generally linear in the number of fields defined for the proto.
+  virtual size_t ByteSizeLong() const = 0;
 */
-TEST(message_lite, SerializeToOstream_ParseFromIstream) {
+
+TEST_F(PersonTestSuite, SerializeToOstream_ParseFromIstream) {
+    size_t size = person.ByteSizeLong();
+    EXPECT_EQ(39, size);
+
     std::stringstream ss;  // derived from both std::ostream and std::istream
 
-    proto::tutorial::Person person;
-    person.set_name("Obama");
-    person.set_id(1234);
-    person.set_email("1234@qq.com");
-
-    proto::tutorial::Person::PhoneNumber* phone1 = person.add_phones();
-    phone1->set_number("110");
-    phone1->set_type(proto::tutorial::Person::MOBILE);
-
-    proto::tutorial::Person::PhoneNumber* phone2 = person.add_phones();
-    phone2->set_number("119");
-    phone2->set_type(proto::tutorial::Person::HOME);
     // 1. SerializeToOstream
     {
         /*
@@ -64,7 +95,6 @@ TEST(message_lite, SerializeToOstream_ParseFromIstream) {
 
         std::string res = ss.str();
         EXPECT_EQ(39, res.size());
-        EXPECT_EQ(39, person.ByteSizeLong());
     }
 
     // 2. ParseFromIstream
@@ -91,6 +121,8 @@ TEST(message_lite, SerializeToOstream_ParseFromIstream) {
 }
 
 /*
+https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/message_lite.h#L383
+https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/message_lite.cc#L524C19-L524C36
 
 // Serialize the message and store it in the given string.  All required fields must be set.
 bool SerializeToString(std::string* output) const;
@@ -108,23 +140,79 @@ bool ParseFromString(ConstStringParam data);
 // Like ParseFromString(), but accepts messages that are missing required fields.
 bool ParsePartialFromString(ConstStringParam data);
 */
-TEST(message_lite, SerializeToString_ParseFromString) {
-    proto::tutorial::Person person;
-    person.set_name("Obama");
-    person.set_id(1234);
-    person.set_email("1234@qq.com");
+TEST_F(PersonTestSuite, SerializeToString_ParseFromString) {
+    size_t size = person.ByteSizeLong();
+    EXPECT_EQ(39, size);
 
-    proto::tutorial::Person::PhoneNumber* phone1 = person.add_phones();
-    phone1->set_number("110");
-    phone1->set_type(proto::tutorial::Person::MOBILE);
+    std::string msg;
 
-    proto::tutorial::Person::PhoneNumber* phone2 = person.add_phones();
-    phone2->set_number("119");
-    phone2->set_type(proto::tutorial::Person::HOME);
+    // Serialize
+    {
+        EXPECT_TRUE(person.SerializeToString(&msg));
+        EXPECT_EQ(39, msg.size());
+    }
+
+    // Deserialize(Parse)
+    {
+        proto::tutorial::Person result;
+        EXPECT_TRUE(result.ParseFromString(msg));
+        EXPECT_EQ("Obama", result.name());
+        EXPECT_EQ(1234, result.id());
+        EXPECT_EQ("1234@qq.com", result.email());
+
+        EXPECT_EQ(2, result.phones_size());
+        auto phone1 = result.phones(0);
+        EXPECT_EQ("110", phone1.number());
+
+        auto phone2 = result.phones(1);
+        EXPECT_EQ("119", phone2.number());
+    }
 }
 
 /*
+## [TextFormat](https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/text_format.h)
 
+// convert a protobuf buffer object to a human-readable string.
+static bool PrintToString(const Message& message, std::string* output);
+
+
+// convert a human-readable string into a protocol buffer object.
+`static bool ParseFromString(absl::string_view input, Message* output);`
+
+> Note:
+output will be cleared prior to printing, and will be left empty even if printing fails.
+Returns false if printing fails.
+*/
+
+TEST_F(PersonTestSuite, human_readable_TextFormat) {
+    std::string text;
+
+    {  // Serialize
+        EXPECT_TRUE(google::protobuf::TextFormat::PrintToString(person, &text));
+        std::string expected =
+          "name: \"Obama\"\nid: 1234\nemail: \"1234@qq.com\"\nphones {\n  number: \"110\"\n}\nphones {\n  number: "
+          "\"119\"\n  type: HOME\n}\n";
+        EXPECT_EQ(expected, text);
+    }
+
+    {  // Deserialize(Parse)
+        proto::tutorial::Person result;
+
+        EXPECT_TRUE(google::protobuf::TextFormat::ParseFromString(text, &result));
+        EXPECT_EQ("Obama", result.name());
+        EXPECT_EQ(1234, result.id());
+        EXPECT_EQ("1234@qq.com", result.email());
+
+        EXPECT_EQ(2, result.phones_size());
+        auto phone1 = result.phones(0);
+        EXPECT_EQ("110", phone1.number());
+
+        auto phone2 = result.phones(1);
+        EXPECT_EQ("119", phone2.number());
+    }
+}
+
+/*
 // Serialize the message and store it in the given byte array.  All required fields must be set.
 bool SerializeToArray(void* data, int size) const;
 
@@ -137,43 +225,34 @@ bool ParseFromArray(const void* data, int size);
 // Like ParseFromArray(), but accepts messages that are missing required fields.
   bool ParsePartialFromArray(const void* data, int size);
 */
-TEST(message_lite, SerializeToArray_ParseFromArray) {
-    proto::tutorial::Person person;
-    person.set_name("Obama");
-    person.set_id(1234);
-    person.set_email("1234@qq.com");
+TEST_F(PersonTestSuite, SerializeToArray_ParseFromArray) {
+    size_t size = person.ByteSizeLong();
+    EXPECT_EQ(39, size);
 
-    proto::tutorial::Person::PhoneNumber* phone1 = person.add_phones();
-    phone1->set_number("110");
-    phone1->set_type(proto::tutorial::Person::MOBILE);
+    unsigned char byte_array[size];
 
-    proto::tutorial::Person::PhoneNumber* phone2 = person.add_phones();
-    phone2->set_number("119");
-    phone2->set_type(proto::tutorial::Person::HOME);
+    {
+        // Serialize
+        EXPECT_TRUE(person.SerializeToArray(byte_array, size));
+    }
+
+    // Deserialize(Parse)
+    {
+        proto::tutorial::Person result;
+        EXPECT_TRUE(result.ParseFromArray(byte_array, size));
+        EXPECT_EQ("Obama", result.name());
+        EXPECT_EQ(1234, result.id());
+        EXPECT_EQ("1234@qq.com", result.email());
+
+        EXPECT_EQ(2, result.phones_size());
+        auto phone1 = result.phones(0);
+        EXPECT_EQ("110", phone1.number());
+
+        auto phone2 = result.phones(1);
+        EXPECT_EQ("119", phone2.number());
+    }
 }
 
-/*
-
-    // Computes the serialized size of the message.  This recursively calls
-  // ByteSizeLong() on all embedded messages.
-  //
-  // ByteSizeLong() is generally linear in the number of fields defined for the
-  // proto.
-  virtual size_t ByteSizeLong() const = 0;
-
-*/
-// SerializeToString
-/**
-https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/message_lite.h#L383
-
-    // Serialize the message and store it in the given string.  All required fields must be set.
-  bool SerializeToString(std::string* output) const;
-
-    // Like SerializeToString(), but allows missing required fields.
-  bool SerializePartialToString(std::string* output) const;
-
- https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/message_lite.cc#L524C19-L524C36
-*/
 #define INT_MAX 128
 
 namespace pb {
@@ -302,17 +381,3 @@ TEST(message_lite, SerializeToString) {
     message_lite.SerializeToString(&out);
     EXPECT_EQ(message_lite.data(), out);
 }
-
-//
-/*
-    // Parses a protocol buffer contained in a string. Returns true on success.
-    // This function takes a string in the (non-human-readable) binary wire
-    // format, matching the encoding output by MessageLite::SerializeToString().
-    // If you'd like to convert a human-readable string into a protocol buffer
-    // object, see google::protobuf::TextFormat::ParseFromString().
-  ABSL_ATTRIBUTE_REINITIALIZES bool ParseFromString(absl::string_view data);
-
-    // Like ParseFromString(), but accepts messages that are missing required fields.
-  ABSL_ATTRIBUTE_REINITIALIZES bool ParsePartialFromString(absl::string_view data);
-*/
-TEST(message_lite, ParseFromString) {}
