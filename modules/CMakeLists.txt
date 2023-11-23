@@ -34,9 +34,12 @@ if (ENABLE_GTEST)
     list(APPEND MODULES google_gtest)
 endif()
 
-
 if (ENABLE_3D)
     list(APPEND MODULES three_dimensions)
+endif()
+
+if (ENABLE_MM)
+    list(APPEND MODULES memory_management)
 endif()
 
 if (ENABLE_ROS)

@@ -17,3 +17,23 @@ https://www.rtklib.com
 - https://github.com/chrislgarry/Apollo-11
 
 Paper: Products and Convolutions of Guassian Probability Density Functions, P.A Bromiley.
+
+----
+grep --color=auto --exclude-dir=.bzr --exclude-dir=CVS --exclude-dir=.git --exclude-dir=.hg --exclude-dir=.svn --exclude-dir=.idea --exclude-dir=.tox sublime
+
+## EASTL
+- https://zhuanlan.zhihu.com/p/597024196
+- https://www.zhihu.com/question/67814982
+
+主要有三点:
+
+实现了更为高效的eastl::allocator替换std::allocator
+保持了和STL同样的接口/算法/容器, 对容器的能力进行了提升(新增了一些方法)
+扩展了一些自己的容器和算法
+
+STL就是学习数据结构和算法的宝贝.
+
+- https://www.epubit.com/bookDetails?id=UB83621ee35e98f
+
+- https://www.epubit.com/bookDetails?id=UB831721e9d193a
+

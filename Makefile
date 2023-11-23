@@ -45,6 +45,11 @@ mytest:
 	cmake -B build -S . -D ENABLE_MYTEST=ON
 	make -C build
 
+mm:
+	cmake -B build -S . -D ENABLE_MM=ON
+	make -C build
+	make -C build test
+
 3d:
 	cmake -B build -S . -D ENABLE_3D=ON
 	make -C build
