@@ -1,5 +1,91 @@
 # Descripter
 
+- src/google/protobuf/descriptor.proto
+
+- https://github.com/protocolbuffers/protobuf/issues/7623
+
+Steps to reproduce the behavior:
+
+- create comments.proto:
+```
+syntax = "proto3";
+package testing;
+message MessageWithComments {
+    // Leading field comment.
+    string foo = 1;
+}
+```
+
+- Write a FileDescriptorSet for it:
+```
+$ protoc --descriptor_set_out temp comments.proto
+```
+
+- Text-format it:
+```
+protoc < temp --decode=google.protobuf.FileDescriptorSet google/protobuf/descriptor.proto
+```
+
+- What did you expect to see
+
+SourceCodeInfo with comments:
+```
+file {
+  name: "comments.proto"
+  package: "testing"
+  message_type {
+    name: "MessageWithComments"
+    field {
+      name: "foo"
+      number: 1
+      label: LABEL_OPTIONAL
+      type: TYPE_STRING
+      json_name: "foo"
+    }
+  }
+  source_code_info {
+    …
+    location {
+      path: 4
+      path: 0
+      path: 2
+      path: 0
+      span: 4
+      span: 4
+      span: 19
+      leading_comments: " Leading field comment.\n"
+    }
+    …
+  }
+  syntax: "proto3"
+}
+```
+
+- What did you see instead?
+```
+$ protoc < temp --decode=google.protobuf.FileDescriptorSet google/protobuf/descriptor.proto
+file {
+  name: "comments.proto"
+  package: "testing"
+  message_type {
+    name: "MessageWithComments"
+    field {
+      name: "foo"
+      number: 1
+      label: LABEL_OPTIONAL
+      type: TYPE_STRING
+      json_name: "foo"
+    }
+  }
+  syntax: "proto3"
+}
+```
+Writing a protoc plugin, wanted to use `--descriptor_set_out` to generate data for unit tests.
+
+- https://gist.github.com/johnllao/5ffbe24a021891e7d887
+
+- https://clement-jean.github.io/packed_vs_unpacked_repeated_fields/
+
 ## src/google/protobuf/descriptor.h
 
 - FieldDescriptor

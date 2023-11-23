@@ -16,6 +16,7 @@ src/google/protobuf/wire_format_unittest.cc
 #include <google/protobuf/wire_format_lite.h>
 
 #include "proto/builtin/unittest.pb.h"
+#include "proto/builtin/unittest_v3.pb.h"
 
 #include <fstream>
 
@@ -666,8 +667,46 @@ TEST(RepeatedVarint, packed_is_true_more_repeated_data) {
         packed_varint_msg.SerializeToString(&serialized);
         EXPECT_EQ(12, serialized.length());
         EXPECT_THAT(std::vector<unsigned char>(serialized.begin(), serialized.end()),
-                    testing::ElementsAre(0xA, 0x0A, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
-                                         0x02));  // Why? 既然知道10(0xA)个元素了，不能把剩下连续的9个0x02给省略掉吗？
+                    // Why? 既然知道10(0xA)个元素了，不能把剩下连续的9个0x02给省略掉吗？
+                    testing::ElementsAre(0xA, 0xA, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02));
+    }
+}
+
+// Test proto3
+TEST(RepeatedVarint, v3_packed_is_true_more_repeated_data) {
+    static const std::vector<int> vec(10, 1);
+    EXPECT_EQ(10, vec.size());
+
+    // repeated int32 data = 1;
+    {
+        proto::unittest_v3::MoreInt32Message varint_msg;
+
+        google::protobuf::RepeatedField<int>* data = varint_msg.mutable_data();
+        data->Reserve(vec.size());
+        data->Add(vec.begin(), vec.end());
+
+        std::string serialized;
+        varint_msg.SerializeToString(&serialized);
+        EXPECT_EQ(12, serialized.length());
+        EXPECT_THAT(std::vector<unsigned char>(serialized.begin(), serialized.end()),
+                    // 在 proto3里, repeated field 默认开启了 [packed=true], 所以这里不再是 很多个 <key, value> pairs.
+                    testing::ElementsAre(0xA, 0xA, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01));
+    }
+
+    // repeated sint32 data = 1;
+    {
+        proto::unittest_v3::MoreSInt32Message varint_msg;
+
+        google::protobuf::RepeatedField<int>* data = varint_msg.mutable_data();
+        data->Reserve(vec.size());
+        data->Add(vec.begin(), vec.end());
+
+        std::string serialized;
+        varint_msg.SerializeToString(&serialized);
+        EXPECT_EQ(12, serialized.length());
+        EXPECT_THAT(std::vector<unsigned char>(serialized.begin(), serialized.end()),
+                    // 在 proto3里, repeated field 默认开启了 [packed=true], 所以这里不再是 很多个 <key, value> pairs.
+                    testing::ElementsAre(0xA, 0xA, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02));
     }
 }
 

@@ -20,6 +20,8 @@ set(PROTO_FILES
     proto/tutorial/addressbook.proto
     proto/tutorial/obstacle.proto
     proto/builtin/unittest.proto # copy from proto repo
+
+    proto/builtin/unittest_v3.proto # Test Proto3's new feature
 )
 
 # https://github.com/protocolbuffers/protobuf/issues/1743

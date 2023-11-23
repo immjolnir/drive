@@ -1,0 +1,22 @@
+// Copy from src/google/protobuf/unittest.proto
+
+syntax = "proto3";
+package proto.unittest_v3;
+
+message Int32Message {
+    // optional int32 data = 1; // No `optional` in proto3.
+    int32 data = 1;
+}
+
+message Sint32Message {
+    sint32 data = 1;
+}
+
+// [packed = true] is auto enabled in proto3.
+message MoreInt32Message {
+  repeated int32 data = 1;
+}
+
+message MoreSInt32Message {
+  repeated sint32 data = 1;
+}
