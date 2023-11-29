@@ -405,3 +405,19 @@ void MatToVector(const Mat& in, vector<float>& out) {
     else
     //do stuff in case they are equal
 ```
+  - https://stackoverflow.com/questions/9905093/how-to-check-whether-two-matrices-are-identical-in-opencv
+The problem of using cv::countNonZero is that this function only works for one-channel images.
+
+```c++
+bool isEqual(cv::Mat firstImage, cv::Mat secondImage){
+    cv::Mat dst;
+    std::vector<cv::Mat>channels;
+    int count = 0;
+    cv::bitwise_xor(firstImage, secondImage, dst);
+    cv::split(dst, channels);
+    for (int ch = 0; ch<dst.channels();ch++){
+        count += cv::countNonZero(channels[ch]);
+    }
+    return count == 0 ? true : false;
+}
+```

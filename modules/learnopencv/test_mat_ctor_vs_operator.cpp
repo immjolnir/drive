@@ -14,7 +14,9 @@ sub-array, use Mat::clone().
     - 修改 它构造的对象，会影响到 m.
 
   - Mat operator() (const Rect &roi) const
-    - 修改 它构造的对象，不会会影响到 m.
+    - 修改 它构造的对象，会影响到 m.
+
+Note: 得到roi后，不能对齐进行重新赋值
 
 https://docs.opencv.org/4.x/d3/d63/classcv_1_1Mat.html
 
@@ -61,7 +63,7 @@ TEST(mat, modify_a_rect_of_mat) {
     EXPECT_EQ(0, cv::countNonZero(dst));
 }
 
-TEST(mat, modify_a_rect_of_mat2_with_mat_assignment_operator) {
+TEST(mat, mat_assignment_operator_not_work) {
     cv::Mat m = cv::Mat::zeros(5, 5, CV_16SC1);
 
     //  Rect_(_Tp _x, _Tp _y, _Tp _width, _Tp _height);
@@ -72,24 +74,21 @@ TEST(mat, modify_a_rect_of_mat2_with_mat_assignment_operator) {
     std::vector<short> vec{1, 2, 3, 4, 5, 6};
     // 	Mat (int rows, int cols, int type, void *data, size_t step=AUTO_STEP)
     int rows = height, cols = width;
-    roi = cv::Mat(rows, cols, 3, vec.data());
+    roi = cv::Mat(rows, cols, 3, vec.data());  // 对 roi 重新赋值了
 
-    std::cout << "modify_a_rect_of_mat2: \n" << m << std::endl;
-    std::cout << "modify_a_rect_of_mat2: roi: \n" << roi << std::endl;
+    std::cout << "mat_assignment_operator_not_work: \n" << m << std::endl;
+    std::cout << "mat_assignment_operator_not_work: roi: \n" << roi << std::endl;
     /*
-    modify_a_rect_of_mat:
+    mat_assignment_operator_not_work:
     [0, 0, 0, 0, 0;
-     0, 0, 0, 0, 0;
-     0, 0, 0, 0, 0;
-     0, 0, 0, 0, 0;
-     0, 0, 0, 0, 0]
-    modify_a_rect_of_mat: roi:
+    0, 0, 0, 0, 0;
+    0, 0, 0, 0, 0;
+    0, 0, 0, 0, 0;
+    0, 0, 0, 0, 0]
+    mat_assignment_operator_not_work: roi:
     [1, 2, 3;
     4, 5, 6]
 
- 上面的方式只能修改 roi，并不能直接修改 m. why?
-
- but
     // roi.setTo(0); // Set all pixel to 0 on both src and roi
  really?
     */
@@ -98,7 +97,7 @@ TEST(mat, modify_a_rect_of_mat2_with_mat_assignment_operator) {
     EXPECT_EQ(6, cv::countNonZero(dst));
 }
 
-TEST(mat, modify_a_rect_of_mat3_with_mat_ctor) {
+TEST(mat, mat_ctor_not_work) {
     cv::Mat m = cv::Mat::zeros(5, 5, CV_16SC1);
 
     //  Rect_(_Tp _x, _Tp _y, _Tp _width, _Tp _height);
@@ -110,21 +109,50 @@ TEST(mat, modify_a_rect_of_mat3_with_mat_ctor) {
     std::vector<short> vec{1, 2, 3, 4, 5, 6};
     // 	Mat (int rows, int cols, int type, void *data, size_t step=AUTO_STEP)
     int rows = height, cols = width;
-    cv::Mat rect_m(rows, cols, 3, vec.data());
-    rect_m.copyTo(roi);
+    roi = cv::Mat(rows, cols, 3, vec.data());  // 对 roi 重新赋值了
 
-    std::cout << "modify_a_rect_of_mat3: \n" << m << std::endl;
-    std::cout << "modify_a_rect_of_mat3: roi: \n" << roi << std::endl;
+    std::cout << "mat_ctor_not_work: \n" << m << std::endl;
+    std::cout << "mat_ctor_not_work: roi: \n" << roi << std::endl;
     /*
-    Yes, it works!
+    mat_ctor_not_work:
+    [0, 0, 0, 0, 0;
+     0, 0, 0, 0, 0;
+     0, 0, 0, 0, 0;
+     0, 0, 0, 0, 0;
+     0, 0, 0, 0, 0]
+    mat_ctor_not_work: roi:
+    [1, 2, 3;
+     4, 5, 6]
+     */
+    cv::Mat dst;
+    cv::bitwise_xor(m(rect), roi, dst);
+    EXPECT_EQ(6, cv::countNonZero(dst));
+}
 
-    modify_a_rect_of_mat3:
+TEST(mat, mat_assignment_operator_work_for_no_reassign_roi) {
+    cv::Mat m = cv::Mat::zeros(5, 5, CV_16SC1);
+
+    //  Rect_(_Tp _x, _Tp _y, _Tp _width, _Tp _height);
+    int width = 3, height = 2;
+    cv::Rect rect(2, 1, width, height);
+    cv::Mat roi = m(rect);
+
+    std::vector<short> vec{1, 2, 3, 4, 5, 6};
+    // 	Mat (int rows, int cols, int type, void *data, size_t step=AUTO_STEP)
+    int rows = height, cols = width;
+    cv::Mat rect_m(rows, cols, 3, vec.data());
+    rect_m.copyTo(roi);  // 对 roi 没有重新赋值了
+
+    std::cout << "mat_assignment_operator_work_for_no_reassign_roi: \n" << m << std::endl;
+    std::cout << "mat_assignment_operator_work_for_no_reassign_roi: roi: \n" << roi << std::endl;
+    /*
+    mat_assignment_operator_work_for_no_reassign_roi:
     [0, 0, 0, 0, 0;
     0, 0, 1, 2, 3;
     0, 0, 4, 5, 6;
     0, 0, 0, 0, 0;
     0, 0, 0, 0, 0]
-    modify_a_rect_of_mat3: roi:
+    mat_assignment_operator_work_for_no_reassign_roi: roi:
     [1, 2, 3;
     4, 5, 6]
     */
@@ -133,7 +161,44 @@ TEST(mat, modify_a_rect_of_mat3_with_mat_ctor) {
     EXPECT_EQ(0, cv::countNonZero(dst));
 }
 
-TEST(mat, modify_a_rect_of_mat4) {
+TEST(mat, mat_ctor_work_for_noreassign_roi) {
+    cv::Mat m = cv::Mat::zeros(5, 5, CV_16SC1);
+
+    //  Rect_(_Tp _x, _Tp _y, _Tp _width, _Tp _height);
+    int width = 3, height = 2;
+    cv::Rect rect(2, 1, width, height);
+    // cv::Mat roi = m(rect);
+    cv::Mat roi(m, rect);  // use cv::Mat constructor
+
+    std::vector<short> vec{1, 2, 3, 4, 5, 6};
+    // 	Mat (int rows, int cols, int type, void *data, size_t step=AUTO_STEP)
+    int rows = height, cols = width;
+    // It will detach the roi from m.
+    // roi = cv::Mat(rows, cols, 3, vec.data());
+    cv::Mat rect_m(rows, cols, 3, vec.data());
+    rect_m.copyTo(roi);  // 对 roi 没有重新赋值了
+
+    std::cout << "mat_ctor_work_for_noreassign_roi: \n" << m << std::endl;
+    std::cout << "mat_ctor_work_for_noreassign_roi: roi: \n" << roi << std::endl;
+    /*
+    Yes, it works!
+
+    mat_ctor_work_for_noreassign_roi:
+    [0, 0, 0, 0, 0;
+     0, 0, 1, 2, 3;
+     0, 0, 4, 5, 6;
+     0, 0, 0, 0, 0;
+     0, 0, 0, 0, 0]
+    mat_ctor_work_for_noreassign_roi: roi:
+    [1, 2, 3;
+     4, 5, 6]
+    */
+    cv::Mat dst;
+    cv::bitwise_xor(m(rect), roi, dst);
+    EXPECT_EQ(0, cv::countNonZero(dst));
+}
+
+TEST(mat, general_method) {
     cv::Mat m = cv::Mat::zeros(5, 5, CV_16SC1);
 
     //  Rect_(_Tp _x, _Tp _y, _Tp _width, _Tp _height);
@@ -152,20 +217,19 @@ TEST(mat, modify_a_rect_of_mat4) {
         *roi_it++ = e;
     }
 
-    std::cout << "modify_a_rect_of_mat4: \n" << m << std::endl;
-    std::cout << "modify_a_rect_of_mat4: roi: \n" << roi << std::endl;
+    std::cout << "general_method: \n" << m << std::endl;
+    std::cout << "general_method: roi: \n" << roi << std::endl;
     /*
     Yes, it also works but ugly.
-
-    modify_a_rect_of_mat4:
+    general_method:
     [0, 0, 0, 0, 0;
-    0, 0, 1, 2, 3;
-    0, 0, 4, 5, 6;
-    0, 0, 0, 0, 0;
-    0, 0, 0, 0, 0]
-    modify_a_rect_of_mat4: roi:
+     0, 0, 1, 2, 3;
+     0, 0, 4, 5, 6;
+     0, 0, 0, 0, 0;
+     0, 0, 0, 0, 0]
+    general_method: roi:
     [1, 2, 3;
-    4, 5, 6]
+     4, 5, 6]
     */
     cv::Mat dst;
     cv::bitwise_xor(m(rect), roi, dst);

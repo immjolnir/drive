@@ -1,3 +1,4 @@
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <google/protobuf/repeated_field.h>
@@ -10,6 +11,18 @@ TEST(repeated_field, ctor_with_iterator_params) {
     google::protobuf::RepeatedField<int> repi(v.begin(), v.end());
     v.clear();                  // Clear the vector
     EXPECT_EQ(6, repi.size());  // Still be 6 for the ctor will copy all elements through iterator.
+}
+
+TEST(repeated_field, RepeatedField_to_Vector) {
+    google::protobuf::RepeatedField<int> repi;
+    repi.Add(1);
+    repi.Add(2);
+    repi.Add(3);
+    EXPECT_EQ(3, repi.size());
+
+    std::vector<int> vec(repi.begin(), repi.end());
+    EXPECT_EQ(3, vec.size());
+    EXPECT_THAT(vec, testing::ElementsAre(1, 2, 3));
 }
 
 TEST(repeated_field, ctor_with_iterator_params_better_performance) {
