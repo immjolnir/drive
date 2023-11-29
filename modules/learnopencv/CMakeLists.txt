@@ -26,6 +26,8 @@ endforeach()
 set(TEST_FILES
     test_storage_order_opencv_vs_eigen.cpp
     test_mat.cpp
+    test_mat_ctor_vs_operator.cpp
+    test_mat_vs_vector.cpp
 )
 
 foreach(file ${TEST_FILES})

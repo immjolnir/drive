@@ -227,4 +227,181 @@ cv::rectangle(img, rect, cv::Scalar(0, 255, 0))
 - https://docs.opencv.org/4.x/dc/da5/tutorial_py_drawing_functions.html
 
 
+## waitKey
 
+```
+int cv::waitKey	(	int 	delay = 0	)	
+```
+The function waitKey waits for a key event infinitely (when delay≤0 ) or for delay milliseconds, when it is positive. 
+
+
+## cv::Mat
+- Deep copy
+```
+Mat a=b.clone(); 
+```
+
+- Shadow copy
+```
+Mat a = b;
+```
+When you assign one matrix to another, the counter of references of smart pointer to matrix data increased by one, when you release matrix (it can be done implicitly when leave code block) it decreases by one. When it becomes equal zero the allocated memory deallocated.
+
+Take a look at c++11 std::shared_ptr effectively works in the same way, by using a reference counter cv::Mat cleverly remembers every time the pointer is referenced, once the count reaches 0 it is automatically released i.e. memory is deallocated and cv::Mat is no longer available. This is effectively a "shallow copy" and saves resources in allocating/deallocating large amounts of memory.
+
+On the other hand cv::Mat::clone will provide a "deep copy" that allocates a whole new block of memory for the matrix to reside in, this can be useful if you are making transformations to an image that you may want to undo however, more memory allocating/deallocating increases the amount of resources required.
+
+- https://docs.opencv.org/3.1.0/d3/d63/classcv_1_1Mat.html#afb01ff6b2231b72f55618bfb66a5326b
+```
+Mat cv::Mat::clone	(		)	const
+```
+Creates a full copy of the array and the underlying data.
+
+The method creates a full copy of the array. The original step[] is not taken into account. So, the array copy is a continuous array occupying total()*elemSize() bytes.
+
+
+## cv::Mat -> std::vector
+- https://answers.opencv.org/question/145214/convert-cvmat-to-stdvector-without-copying/
+
+Fastest way I know is this:
+```c++
+cv::Mat res(m, n, CV_32FC1);
+std::vector<float>vec(res.begin<float>(), res.end<float>());
+```
+
+or if you declare your vec before:
+```c++
+std::vector<float> vec;
+cv::Mat res(m, n, CV_32FC1);
+vec.reserve(m*n);
+vec.assign(res.begin<float>(), res.end<float>());
+```
+- https://stackoverflow.com/questions/26681713/convert-mat-to-array-vector-in-opencv
+
+
+## std::vector -> cv::Mat
+```c++
+Mat m(vec, false); // false(by default) -- do not copy data 
+```
+
+- Here is another possible solution assuming matrix have one column( you can reshape original Mat to one column Mat via reshape):
+```c++
+Mat matrix= Mat::zeros(20, 1, CV_32FC1);
+vector<float> vec;
+matrix.col(0).copyTo(vec);
+```
+
+- https://stackoverflow.com/questions/36722044/how-to-initialize-a-cvmat-using-a-vector-of-floats
+```c++
+#include <opencv2/highgui.hpp>
+#include <iostream>
+
+using namespace cv;
+using namespace std;
+
+int main(int argc, char* argv[])
+{
+    vector<float> vec{0.1,0.9,0.2,0.8,0.3,0.7,0.4,0.6,0.5,1};
+
+    Mat m1( vec ); 
+    imshow("m1",m1);
+    waitKey();
+
+    Mat m2( 1,vec.size(), CV_32FC1,vec.data());
+    imshow("m2",m2);
+    waitKey();
+
+    Mat1f m3( vec.size(), 1, vec.data());
+    imshow("m3",m3);
+    waitKey();
+
+    Mat1f m4( 1, vec.size(), vec.data());
+    imshow("m4",m4);
+    waitKey();
+
+    cout << "as seen below all Mat and vector use same data" << endl;
+    cout << vec[0] << endl;
+    m1 *= 2;
+    cout << vec[0] << endl;
+    m2 *= 2;
+    cout << vec[0] << endl;
+    m3 *= 2;
+    cout << vec[0] << endl;
+    m4 *= 2;
+    cout << vec[0] << endl;
+
+    return 0;
+}
+```
+
+- https://stackoverflow.com/questions/20980723/convert-mat-to-vector-float-and-vectorfloat-to-mat-in-opencv
+
+```c++
+
+// Generate some test data
+int r=3;
+int c=3;
+Mat M(r,c,CV_32FC1);
+for(int i=0;i<r*c;++i)
+{
+    M.at<float>(i)=i;
+}
+// print out matrix
+cout << M << endl;
+
+// Create vector from matrix data (data with data copying)
+vector<float> V;
+V.assign((float*)M.datastart, (float*)M.dataend);
+
+// print out vector
+cout << "Vector" << endl;
+for(int i=0;i<r*c;++i)
+{
+    cout << V[i] << endl;
+}
+
+// Create matrix from vector
+
+// Without copying data (only pointer assigned)
+//Mat M2=Mat(r,c,CV_32FC1,(float*)V.data());
+
+// With copying data
+Mat M2=Mat(r,c,CV_32FC1);
+memcpy(M2.data,V.data(),V.size()*sizeof(float));
+
+
+// Print out matrix created from vector
+cout << "Second matrix" << endl;
+cout << M2 <<endl;
+// wait for a key
+getchar();
+```
+or 
+```c++
+// Convert a 1-channel Mat<float> object to a vector. 
+void MatToVector(const Mat& in, vector<float>& out) {
+  if (in.isContinuous()) { 
+    out.assign((float*)in.datastart, (float*)in.dataend); 
+  } else { 
+    for (int i = 0; i < in.rows; ++i) { 
+      out.insert(out.end(), in.ptr<float>(i), in.ptr<float>(i) + in.cols); 
+    }
+  }
+  return;
+}
+```
+
+## cv::Mat(rect) vs cv::Mat operator()
+- modules/learnopencv/test_mat_ctor_vs_operator.cpp
+
+- Compare two cv::Mat objects
+  - https://stackoverflow.com/questions/25660020/compare-2-cvmat
+
+  If you need to check if 2 cv::Mat are equal, you can perform the XOR operator and check if the result is a cv::Mat full of zeros:
+```c++
+    cv::bitwise_xor(mat1, mat2, dst);
+    if(cv::countNonZero(dst) > 0) //check non-0 pixels
+    //do stuff in case cv::Mat are not the same
+    else
+    //do stuff in case they are equal
+```

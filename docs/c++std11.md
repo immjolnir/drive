@@ -26,3 +26,31 @@ Equivalent operation:
 
 - Example: modules/basis/iterator/iterator_category.cpp
 
+
+## `nullptr` definition
+- https://en.cppreference.com/w/cpp/types/nullptr_t
+
+`std::nullptr_t` is the type of the null pointer literal, `nullptr`.
+It is a distinct type that is not itself a pointer type or a pointer to member type.
+Its values are null pointer constants (see NULL), and may be implicitly converted to any pointer and pointer to member type.
+
+- https://en.cppreference.com/w/cpp/language/nullptr
+The keyword `nullptr` denotes the pointer literal. It is a prvalue of type `std::nullptr_t`.
+There exist implicit conversions from `nullptr` to null pointer value of any pointer type and any pointer to member type.
+Similar conversions exist for any null pointer constant, which includes values of type `std::nullptr_t` as well as the macro `NULL`.
+
+
+- libstdc++-v3/include/bits/c++config
+
+```
+namespace std
+{
+  typedef __SIZE_TYPE__     size_t;
+  typedef __PTRDIFF_TYPE__  ptrdiff_t;
+
+#if __cplusplus >= 201103L
+  typedef decltype(nullptr) nullptr_t;
+#endif
+}
+
+```

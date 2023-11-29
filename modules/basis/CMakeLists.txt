@@ -39,6 +39,7 @@ set(STRING_FILES
     sstream.cpp
     list.cpp
     forward_list.cpp
+    map.cpp
 
     # numeric library
     numeric.cpp
