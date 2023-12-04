@@ -16,6 +16,7 @@ set(STRING_FILES
     initial_values.cpp
 
     union.cpp
+    enum_anonymous_enum.cpp
 
     # Alignment
     trivial.cpp
