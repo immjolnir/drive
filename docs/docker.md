@@ -290,3 +290,17 @@ docker run -t --rm --init --runtime=nvidia --cap-add=SYS_PTRACE --ipc=private --
 your_docker_image \
 /bin/bash -xe /home/jenkins/workspace/PR-34666@tmp/run_the_cmds_in_docker.sh
 ```
+
+## Docker image with OpenCV with X11 forwarding for GUI
+
+```
+xhost +
+sudo docker run --rm -ti --net=host --ipc=host \
+   -e DISPLAY=$DISPLAY \
+   -v /tmp/.X11-unix:/tmp/.X11-unix \
+   opencv_gui ./sample/build/bin/opencvSample ./sample/docker.png
+```
+
+There is a lot of stuff going on there. Basically, the xhost + allows everybody to use your host x server; while the DISPLAY and X11 commands specify the Docker container to share the X11 socket and host display.
+
+The opencv_gui is the name of a sample Docker image which runs the opencvSample program.

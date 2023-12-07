@@ -168,3 +168,23 @@ user1:            c lone |  \
 ```
 即 tag命令没有指定commit id时，默认使用当前的local 的latest commit id. 
 所以，即便 user1 是它t2时刻执行 push tag 的命令在 user2提交新commit之后，这个tag仍然指向t0时刻的commit id. 即这个tag里不会包含user2的commit.
+
+## Git lfs
+
+- Enable lfs feature:
+
+Add `.gitattributes` next to large files:
+```
+   dir
+    |_ .gitattributes
+    |_ bigfile1
+    |_ bigfile2
+```
+
+- Content of `.gitattributes`:
+```
+bigfile1 filter=lfs diff=lfs merge=lfs -text
+bigfile2 filter=lfs diff=lfs merge=lfs -text
+```
+
+
