@@ -3,6 +3,7 @@ project(google_gtest CXX)
 set(TEST_FILES
     test_log_every_n.cpp
     test_suite.cpp
+    test_IEEE_754.cpp
 )
 
 foreach(f ${TEST_FILES})

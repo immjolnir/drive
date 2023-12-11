@@ -43,6 +43,7 @@ set(STRING_FILES
     map.cpp
 
     # numeric library
+    iota.cpp
     numeric.cpp
 
     # New API

@@ -3,7 +3,7 @@ project(drive CXX)
 
 option(ARCHETYPE_DEVELOPMENT_BUILD "Build tests, enable warnings, enable Werror, etc" ON)
 option(ENABLE_DOXYGEN "Generating documentation from annotated C++ sources" OFF)
-option(ENABLE_SANITIZER "Sanitizer: address, memory" ON)
+option(ENABLE_SANITIZER "Sanitizer: address, memory" OFF)
 
 
 # The building is awful and scared. the projects are disabled by default.
@@ -123,9 +123,34 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 endif()
 
-if(ARCHETYPE_DEVELOPMENT_BUILD)
+if(ARCHETYPE_DEVELOPMENT_BUILD) # This statement shoundn't work!
+    message(STATUS  "Stop here")
+endif()
+
+# https://stackoverflow.com/questions/35744647/disabling-cmake-option-has-no-effect
+# if (NEED_GUI MATCHES ON)
+# is the appropriate usage rather than
+# if (NEED_GUI)
+#
+# https://stackoverflow.com/questions/44719963/cmake-default-value-for-options-doesnt-work
+if(ARCHETYPE_DEVELOPMENT_BUILD MATCHES ON) # This statement work!
+    message(STATUS "Stop here 2")
+endif()
+
+# by default build debug version
+if(NOT DEFINED CMAKE_BUILD_TYPE)
+    message(STATUS "Fallback: set the CMAKE_BUILD_TYPE=Debug, why it does not work?")
     set(CMAKE_BUILD_TYPE Debug)
-endif(ARCHETYPE_DEVELOPMENT_BUILD)
+endif()
+
+message(STATUS ">>> (before) CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}") # why it is empty?
+set(CMAKE_BUILD_TYPE Debug) # use debug as default
+message(STATUS ">>> (after) CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}") # why it is empty?
+
+if (NOT CMAKE_BUILD_TYPE MATCHES Debug)
+    add_definitions(-DNDEBUG)
+    message(STATUS ">>> Success to set CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
+endif()
 
 include(${CMAKE_FILES}/CompilerWarnings.cmake)
 # These options should ideally be consistent across C++ repos.
@@ -140,7 +165,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20") # use c++20
 # https://github.com/rui314/mold#how-to-use
 # For GCC 12.1.0 or later: pass -fuse-ld=mold
 # lld, gold, mold
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=gold")
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=gold")
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 include(${CMAKE_FILES}/utility.cmake)

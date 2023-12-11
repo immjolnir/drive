@@ -1,74 +1,47 @@
 #include <gtest/gtest.h>
 
-#include <algorithm>
-#include <iomanip>
-#include <iostream>
-#include <list>
+#include <cmath>  // std::log10
 #include <numeric>
-#include <random>
-#include <vector>
 
-/* iota
-https://en.cppreference.com/w/cpp/algorithm/iota
-
-template< class ForwardIt, class T >
-void iota( ForwardIt first, ForwardIt last, T value );
-
-Fills the range [first, last) with sequentially increasing values, starting with value and repetitively evaluating
-++value. Equivalent operation:
-
-*(first)     = value;
-*(first + 1) = ++value;
-*(first + 2) = ++value;
-*(first + 3) = ++value;
-...
-
-iota vs std::fill
-
-* std::fill
-fill( ForwardIt first, ForwardIt last, const T& value );
-
-Assigns the given value to the elements in the range [first, last).
-
-    std::vector<int> v {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-    std::fill(v.begin(), v.end(), -1);
-
+/**
+ * Examples:
+ * digits: modules/google_gtest/IEEE_754.h
+ *
+ * digits10:
+     ::std::stringstream lhs_ss;
+    lhs_ss << std::setprecision(std::numeric_limits<RawType>::digits10 + 2) << lhs_value;
+ *
 */
+TEST(numeric, significant_decimal_digits_digits10) {
+    /*
+    https://en.cppreference.com/w/cpp/types/numeric_limits/digits10
+    float	FLT_DIG (6 for IEEE float)
+    double	DBL_DIG (15 for IEEE double)
+    long double	LDBL_DIG (18 for 80-bit Intel long double; 33 for IEEE quadruple)
+    */
+    EXPECT_EQ(6, std::numeric_limits<float>::digits10);
+    EXPECT_EQ(15, std::numeric_limits<double>::digits10);
+    EXPECT_EQ(18, std::numeric_limits<long double>::digits10);
+}
 
-class BigData  // inefficient to copy
-{
-    int data[1024]; /* some raw data */
-  public:
-    explicit BigData(int i = 0) { data[0] = i; /* ... */ }
+TEST(numeric, numeric_digits_vs_digits10_vs_max_digits10_int) {
+    EXPECT_EQ(31, std::numeric_limits<int>::digits);
+    EXPECT_EQ(9, std::numeric_limits<int>::digits10);
 
-    operator int() const { return data[0]; }
+    std::cout << "log10(2)=" << std::log10(2) << std::endl;
 
-    BigData& operator=(int i) {
-        data[0] = i;
-        return *this;
-    }
+    EXPECT_EQ(std::numeric_limits<int>::digits10, int(std::numeric_limits<int>::digits * log10(2)));
+    EXPECT_EQ(0, std::numeric_limits<int>::max_digits10);  // why 0?
+}
 
-    /* ... */
-};
+TEST(numeric, numeric_digits_vs_digits10_vs_max_digits10_float) {
+    EXPECT_EQ(24, std::numeric_limits<float>::digits);
+    EXPECT_EQ(6, std::numeric_limits<float>::digits10);
+    EXPECT_EQ(9, std::numeric_limits<float>::max_digits10);
+}
 
-TEST(numeric, iota) {
-    std::list<BigData> l(10);
-    std::iota(l.begin(), l.end(), -4);
-
-    std::vector<std::list<BigData>::iterator> v(l.size());
-    std::iota(v.begin(), v.end(), l.begin());
-    // Vector of iterators (to original data) is used to avoid expensive copying,
-    // and because std::shuffle (below) cannot be applied to a std::list directly.
-
-    std::shuffle(v.begin(), v.end(), std::mt19937{std::random_device{}()});
-
-    std::cout << "Original contents of the list l:\t";
-    for (auto const& n : l) std::cout << std::setw(2) << n << ' ';
-    std::cout << '\n';
-
-    std::cout << "Contents of l, viewed via shuffled v:\t";
-    for (auto const i : v) std::cout << std::setw(2) << *i << ' ';
-    std::cout << '\n';
-
-    EXPECT_NE(v[0], l.begin());
+TEST(numeric, numeric_digits_vs_digits10_vs_max_digits10_double) {
+    EXPECT_EQ(53, std::numeric_limits<double>::digits);
+    EXPECT_EQ(15, std::numeric_limits<double>::digits10);
+    EXPECT_EQ(17, std::numeric_limits<double>::max_digits10);
 }
