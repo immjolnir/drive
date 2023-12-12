@@ -23,11 +23,13 @@ TEST(bithacks, detect_two_var_has_opposite_signs) {
     EXPECT_TRUE(if_opposite_signs(0, -1));
 }
 
-unsigned int get_abs(int v) {
+// unsigned int 与 int 不能混用
+int get_abs(int v) {
     // we want to find the absolute value of v
-    unsigned int r;  // the result goes here
+    int r;  // the result goes here
     int const mask = v >> sizeof(int) * CHAR_BIT - 1;
 
+    // error: conversion to 'unsigned int' from 'int' may change the sign of the result [-Werror=sign-conversion]
     // r = (v + mask) ^ mask; // Is the `v + mask` possibly overflow?
     // VS
     r = (v ^ mask) - mask;
@@ -36,12 +38,12 @@ unsigned int get_abs(int v) {
 
 TEST(bithacks, positive_case) {
     int i = -1;
-    unsigned int abs_i = get_abs(i);
+    int abs_i = get_abs(i);
     EXPECT_EQ(1, abs_i);
 }
 
 TEST(bithacks, positive_case2) {
     int i = 1;
-    unsigned int abs_i = get_abs(i);
+    int abs_i = get_abs(i);
     EXPECT_EQ(1, abs_i);
 }

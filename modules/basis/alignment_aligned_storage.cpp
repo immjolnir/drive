@@ -20,6 +20,10 @@ page boundary.
 As with any other uninitialized storage, the objects are created using placement new and destroyed with explicit
 destructor calls.
 */
+    // Disable "Warnings treated as errors"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wplacement-new="
+#pragma GCC diagnostic ignored "-Wsign-conversion"
 
 template <class T, std::size_t N>
 class StaticVector {
@@ -54,6 +58,7 @@ class StaticVector {
             std::destroy_at(std::launder(reinterpret_cast<T*>(&data[pos])));
     }
 };
+#pragma GCC diagnostic pop
 
 // It will override the gtest's main method.
 /*

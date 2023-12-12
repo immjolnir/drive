@@ -89,7 +89,7 @@ TEST(list, deleting) {
     std::list<int> my_list = {1, 2, 3, 4};
 
     // Removed msgs [0, n] (n inclusive)
-    auto removeOldMessages = [&my_list](uint8_t n) {
+    auto removeOldMessages = [&my_list](int n) {
         for (int i = 0; i <= n; ++i) {
             my_list.pop_front();  // remove the oldest element from head
         }

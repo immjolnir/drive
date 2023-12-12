@@ -7,6 +7,10 @@ struct alignas(8) SimpleChar {
     char c;
 };
 
+// Disable "Warnings treated as errors"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wplacement-new="
+
 int main() {
     char slab[10] = {'\0'};
 
@@ -22,6 +26,7 @@ int main() {
       |          ^~~~
     */
     // clang-format on
+
     SimpleChar* c1 = new (slab + 8) SimpleChar('b');
     std::cout << c0->c << std::endl;
     std::cout << c1->c << std::endl;
@@ -40,6 +45,7 @@ int main() {
 
     SimpleChar* c3 = new (slab + 80) SimpleChar('e');  // But how to detect the wrong usage?
     std::cout << c3->c << std::endl;                   // e
-
     return 0;
 }
+
+#pragma GCC diagnostic pop

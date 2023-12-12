@@ -11,6 +11,9 @@ int main() {
     char slab[10] = {'\0'};  // it must be a multiple of SimpleChar's size. Here should be 8, 16, 24,...
     // call to 'SimpleChar::SimpleChar(char)' too
     //
+// Disable "Warnings treated as errors"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wplacement-new="
     SimpleChar* c0 = new (slab) SimpleChar('a');
     std::cout << c0->c << std::endl;
 
@@ -23,4 +26,5 @@ int main() {
 
     SimpleChar* c3 = new (slab + 80) SimpleChar('e');  // But how to detect the wrong usage?
     std::cout << c3->c << std::endl;                   // e
+#pragma GCC diagnostic pop
 }

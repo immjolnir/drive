@@ -1,3 +1,7 @@
+// Disable "Warnings treated as errors"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wplacement-new="
+#pragma GCC diagnostic pop
 #include <gtest/gtest.h>
 
 // https://en.cppreference.com/w/cpp/memory/destroy
@@ -13,6 +17,10 @@ struct Tracer {
     ~Tracer() { std::cout << value << " destructed\n"; }
 };
 
+// Disable "Warnings treated as errors"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+
 TEST(new_api, destroy) {
     alignas(Tracer) unsigned char buffer[sizeof(Tracer) * 8];
 
@@ -27,3 +35,5 @@ TEST(new_api, destroy) {
     // https://en.cppreference.com/w/cpp/memory/destroy_at
     // for (int i = 0; i < 8; ++i) std::destroy_at(ptr + i);
 }
+
+#pragma GCC diagnostic pop

@@ -87,8 +87,8 @@ TEST(string_split, strtok) {
 
 // Create custom split() function.
 void customSplit(const std::string& str, char separator, std::vector<std::string>& tokens) {
-    int startIndex = 0, endIndex = 0;
-    for (int i = 0; i <= str.size(); i++) {
+    size_t startIndex = 0, endIndex = 0;
+    for (size_t i = 0; i <= str.size(); i++) {
         // If we reached the end of the word or the end of the input.
         if (str[i] == separator || i == str.size()) {
             endIndex = i;
@@ -147,10 +147,15 @@ It is similar with find.
 */
 void find_str(std::string s, const std::string& del, std::vector<std::string>& res) {
     // Use find function to find 1st position of delimiter.
-    int end = s.find(del);
-    while (end != -1) {  // Loop until no delimiter is left in the string.
+    // std::string::size_type end = s.find(del);
+    // error: conversion from 'std::__cxx11::basic_string<char>::size_type' {aka 'long unsigned int'} to 'int' may
+    // change value [-Werror=conversion]
+    auto end = s.find(del);
+    ///  Value returned by various member functions when they fail.
+    //   static const size_type	npos = static_cast<size_type>(-1);
+    while (end != std::string::npos) {  // Loop until no delimiter is left in the string.
         res.emplace_back(s.substr(0, end));
-        s.erase(s.begin(), s.begin() + end + 1);
+        s.erase(s.begin(), s.begin() + static_cast<int>(end) + 1);
         end = s.find(del);
     }
     res.emplace_back(s.substr(0, end));

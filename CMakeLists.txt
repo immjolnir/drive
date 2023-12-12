@@ -158,6 +158,8 @@ include(${CMAKE_FILES}/CompilerWarnings.cmake)
 #set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # set_cxx_compiler_warnings()
+# error: conversion from 'double' to 'float' may change value [-Werror=float-conversion]
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wconversion -Wsign-conversion -Werror")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20") # use c++20
 
 # Changing the linker

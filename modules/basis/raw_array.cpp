@@ -45,8 +45,10 @@ TEST(raw_array, covert_to_vector_with_std_copy) {
 // structs or classes.
 TEST(raw_array, covert_to_vector_with_std_memcpy) {
     int arr[] = {1, 5, 7, 2, 4};
-    int size = sizeof(arr) / sizeof(arr[0]);
+    size_t size = sizeof(arr) / sizeof(arr[0]);
 
+    // error: conversion to 'std::vector<int>::size_type' {aka 'long unsigned int'} from 'int' may change the sign of
+    // the result
     std::vector<int> actual(size);
     // void* memcpy( void* dest, const void* src, std::size_t count );
     std::memcpy(&actual[0], arr, sizeof(arr));

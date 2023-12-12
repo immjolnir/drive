@@ -6,6 +6,10 @@ struct alignas(8) SimpleChar {
     char c;
 };
 
+// Disable "Warnings treated as errors"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wplacement-new="
+
 TEST(new_operator, quick_example) {
     // call to 'SimpleChar::SimpleChar(char)'
     SimpleChar* c0 = new SimpleChar('a');
@@ -45,3 +49,5 @@ TEST(replacement_new_operator, quick_example) {
     SimpleChar* c2 = new (slab + 80) SimpleChar('d');  // But how to detect it?
     EXPECT_EQ('d', c2->c);
 }
+
+#pragma GCC diagnostic pop

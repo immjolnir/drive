@@ -78,7 +78,8 @@ struct Select<false, T, U> {
 template <class P>
 class RefCounted {
   public:
-    int Count() const { return *pCount_; }
+    // error: conversion from 'uintptr_t' {aka 'long unsigned int'} to 'int' may change value [-Werror=conversion]
+    int Count() const { return *reinterpret_cast<int*>(pCount_); }
 
   protected:
     RefCounted() : pCount_(static_cast<uintptr_t*>(new uintptr_t)) {

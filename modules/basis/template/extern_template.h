@@ -19,7 +19,7 @@ namespace protobuf {
 //   is 32 bits in LP32, 64 bits in LP64, 64 bits in LLP64
 //   future changes intended: http://go/64BitStringPiece
 //
-typedef std::string::difference_type stringpiece_ssize_type;
+// typedef std::string::difference_type stringpiece_ssize_type;
 
 class StringPiece {
   public:
@@ -47,7 +47,7 @@ class StringPiece {
         length_ = str.size();
     }
 
-    StringPiece(const char* offset, stringpiece_ssize_type len) : ptr_(offset), length_(len) { assert(len >= 0); }
+    StringPiece(const char* offset, size_t len) : ptr_(offset), length_(len) { assert(len >= 0); }
 
     // data() may return a pointer to a buffer with embedded NULs, and the
     // returned buffer may or may not be null terminated.  Therefore it is
@@ -55,9 +55,9 @@ class StringPiece {
     // terminated string.
     const char* data() const { return ptr_; }
 
-    stringpiece_ssize_type size() const { return length_; }
+    size_t size() const { return length_; }
 
-    stringpiece_ssize_type length() const { return length_; }
+    size_t length() const { return length_; }
 
     bool empty() const { return length_ == 0; }
 
@@ -66,7 +66,7 @@ class StringPiece {
         length_ = 0;
     }
 
-    char operator[](stringpiece_ssize_type i) const {
+    char operator[](size_t i) const {
         assert(0 <= i);
         assert(i < length_);
         return ptr_[i];
@@ -90,14 +90,14 @@ class StringPiece {
 
   private:
     const char* ptr_;
-    stringpiece_ssize_type length_;
+    size_t length_;
 };
 
 // This large function is defined inline so that in a fairly common case where
 // one of the arguments is a literal, the compiler can elide a lot of the
 // following comparisons.
 inline bool operator==(StringPiece x, StringPiece y) {
-    stringpiece_ssize_type len = x.size();
+    size_t len = x.size();
     if (len != y.size()) {
         return false;
     }
@@ -108,7 +108,7 @@ inline bool operator==(StringPiece x, StringPiece y) {
 inline bool operator!=(StringPiece x, StringPiece y) { return !(x == y); }
 
 inline bool operator<(StringPiece x, StringPiece y) {
-    const stringpiece_ssize_type min_size = x.size() < y.size() ? x.size() : y.size();
+    const size_t min_size = x.size() < y.size() ? x.size() : y.size();
     const int r = memcmp(x.data(), y.data(), static_cast<size_t>(min_size));
     return (r < 0) || (r == 0 && x.size() < y.size());
 }

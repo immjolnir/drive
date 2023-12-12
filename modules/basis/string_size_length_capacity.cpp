@@ -40,7 +40,7 @@ auto generate_random_alphanumeric_string(std::size_t len) -> std::string {
       "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
       "abcdefghijklmnopqrstuvwxyz";
     auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-    std::mt19937 mt_rand(seed);
+    std::mt19937 mt_rand(static_cast<long unsigned int>(seed));
     // auto rng = mt_rand();
     std::uniform_int_distribution<> dist(1, strlen(chars) - 1);
     auto result = std::string(len, '\0');

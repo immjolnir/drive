@@ -7,4 +7,4 @@ warning: 'k' initialized and declared 'extern'
     5 | extern int k = 3;
       |            ^
 */
-extern int k = 1;
+extern int k;  // just declare it.

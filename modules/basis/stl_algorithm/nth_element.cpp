@@ -29,7 +29,7 @@ void printVec(const std::vector<int>& vec) {
 TEST(nth_element, quick_start) {
     std::vector<int> v{5, 10, 6, 4, 3, 2, 6, 7, 9, 3};
     printVec(v);
-    auto m = v.begin() + v.size() / 2;
+    auto m = v.begin() + static_cast<long int>(v.size()) / 2;
 
     EXPECT_EQ(2, *m);
     std::nth_element(v.begin(), m, v.end());

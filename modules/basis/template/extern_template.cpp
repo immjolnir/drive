@@ -6,7 +6,9 @@
 namespace google {
 namespace protobuf {
 std::ostream& operator<<(std::ostream& o, StringPiece piece) {
-    o.write(piece.data(), piece.size());
+    // conversion to 'std::streamsize' {aka 'long int'} from 'size_t' {aka 'long unsigned int'} may change the sign of
+    // the result [-Werror=sign-conversion]
+    o.write(piece.data(), static_cast<std::streamsize>(piece.size()));
     return o;
 }
 
@@ -19,12 +21,13 @@ inline bool ascii_isupper(char c) { return c >= 'A' && c <= 'Z'; }
 inline char ascii_tolower(char c) { return ascii_isupper(c) ? c + ('a' - 'A') : c; }
 
 static int memcasecmp(const char* s1, const char* s2, size_t len) {
-    const unsigned char* us1 = reinterpret_cast<const unsigned char*>(s1);
-    const unsigned char* us2 = reinterpret_cast<const unsigned char*>(s2);
+    // ASCII code is 1 ~ 127
+    const char* us1 = reinterpret_cast<const char*>(s1);
+    const char* us2 = reinterpret_cast<const char*>(s2);
 
     for (int i = 0; i < len; i++) {
-        const int diff = static_cast<int>(static_cast<unsigned char>(ascii_tolower(us1[i]))) -
-                         static_cast<int>(static_cast<unsigned char>(ascii_tolower(us2[i])));
+        const int diff = static_cast<int>(static_cast<char>(ascii_tolower(us1[i]))) -
+                         static_cast<int>(static_cast<char>(ascii_tolower(us2[i])));
         if (diff != 0) return diff;
     }
     return 0;

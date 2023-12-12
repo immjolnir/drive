@@ -90,7 +90,10 @@ TEST(vector, get_index_of_maximum_element) {
     EXPECT_EQ(5, vec.size());
     auto it = std::max_element(vec.begin(), vec.end());
     EXPECT_TRUE(it != vec.end());
-    int the_index = std::distance(vec.begin(), it);
+
+    // error: conversion from 'std::__iterator_traits<__gnu_cxx::__normal_iterator<float*, std::vector<float> >,
+    // void>::difference_type' {aka 'long int'} to 'int' may change value [-Werror=conversion]
+    long int the_index = std::distance(vec.begin(), it);
     EXPECT_EQ(1, the_index);
     EXPECT_NEAR(0.901856, *it, 1e-6);
 }
