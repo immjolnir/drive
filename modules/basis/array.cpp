@@ -8,7 +8,8 @@ using namespace std;
 // Please use std::array in c++.
 TEST(raw_array, sort_empty_str_array) {
     // uninitialized state, contains random values, for empty: { -2016213120, 0, 0, 32766, 79760280 }
-    std::array<int, 5> arr;
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+    std::array<int, 5> arr;  // left uninitialized
     EXPECT_EQ(5, arr.size());
     std::sort(arr.begin(), arr.end());
 

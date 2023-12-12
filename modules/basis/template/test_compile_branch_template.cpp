@@ -24,7 +24,9 @@ template <typename T>
 using foo_alt = foo<T>;
 
 TEST(template, substitution_is_not_fail) {
+    // error: unused variable 'b' [-Werror=unused-variable]
     // both of these fail:
+#pragma GCC diagnostic ignored "-Wunused-variable"
     bar<foo<int>> b;
     bar<foo_alt<int>> b2;
 

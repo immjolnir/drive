@@ -25,7 +25,7 @@ static int memcasecmp(const char* s1, const char* s2, size_t len) {
     const char* us1 = reinterpret_cast<const char*>(s1);
     const char* us2 = reinterpret_cast<const char*>(s2);
 
-    for (int i = 0; i < len; i++) {
+    for (size_t i = 0; i < len; i++) {
         const int diff = static_cast<int>(static_cast<char>(ascii_tolower(us1[i]))) -
                          static_cast<int>(static_cast<char>(ascii_tolower(us2[i])));
         if (diff != 0) return diff;

@@ -194,7 +194,7 @@ TEST(string, memory_layout) {
     // str0.data()=Hello world!
     // &str0.data()=0x7ffd8b2a58a0 它怎么跟 &str0 相差 16 bits(2bytes)?
     auto ptr = str0.data();
-    for (int i = 0; i < str0.size(); ++i) {
+    for (size_t i = 0; i < str0.size(); ++i) {
         std::cout << reinterpret_cast<void*>(ptr + i) << " stores " << ptr[i]
                   << "(ascii=" << reinterpret_cast<void*>(ptr[i]) << ")."
                   << "\n";

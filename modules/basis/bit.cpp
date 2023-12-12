@@ -27,7 +27,7 @@ TEST(bithacks, detect_two_var_has_opposite_signs) {
 int get_abs(int v) {
     // we want to find the absolute value of v
     int r;  // the result goes here
-    int const mask = v >> sizeof(int) * CHAR_BIT - 1;
+    int const mask = v >> (sizeof(int) * CHAR_BIT - 1);
 
     // error: conversion to 'unsigned int' from 'int' may change the sign of the result [-Werror=sign-conversion]
     // r = (v + mask) ^ mask; // Is the `v + mask` possibly overflow?

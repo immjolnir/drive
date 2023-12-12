@@ -158,9 +158,17 @@ include(${CMAKE_FILES}/CompilerWarnings.cmake)
 #set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # set_cxx_compiler_warnings()
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20") # use c++20
 # error: conversion from 'double' to 'float' may change value [-Werror=float-conversion]
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wconversion -Wsign-conversion -Werror")
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20") # use c++20
+# 开启额外的警告 这些选项分别启用所有基本警告和额外警告，帮助发现潜在的问题。
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+
+# 遵守严格标准,此选项要求GCC遵循ISO C/C++标准，并发出违反这些标准的警告
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
+
+#-march=target 和 -mtune=target：CPU架构优化 为特定的处理器架构进行优化编译和调整优化目标。
+#??
 
 # Changing the linker
 # https://stackoverflow.com/questions/1867745/cmake-use-a-custom-linker

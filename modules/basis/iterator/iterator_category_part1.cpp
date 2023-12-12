@@ -19,7 +19,11 @@ bool check_container_iterator(Iter iter) {
     return std::is_same_v<std::iterator_traits<Iter::iterator>::iterator_category, ExpectedType>;
 }
 */
+// Disable "Warnings treated as errors"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
+// error: unused parameter 'iter' [-Werror=unused-parameter]
 template <typename ExpectedType, typename Iter>
 bool check_container_iterator(Iter iter) {
     typedef typename std::iterator_traits<Iter>::iterator_category Category;
@@ -218,3 +222,4 @@ TEST(iterator_category, map) {
 }
 
 // So, I cannot found a container that is not the child of forward_iterator_tag.
+#pragma GCC diagnostic pop

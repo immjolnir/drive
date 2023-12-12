@@ -47,7 +47,10 @@ class StringPiece {
         length_ = str.size();
     }
 
-    StringPiece(const char* offset, size_t len) : ptr_(offset), length_(len) { assert(len >= 0); }
+    StringPiece(const char* offset, size_t len) : ptr_(offset), length_(len) {
+        // error: comparison of unsigned expression in '>= 0' is always true [-Werror=type-limits]
+        //  assert(len >= 0);
+    }
 
     // data() may return a pointer to a buffer with embedded NULs, and the
     // returned buffer may or may not be null terminated.  Therefore it is
@@ -67,7 +70,6 @@ class StringPiece {
     }
 
     char operator[](size_t i) const {
-        assert(0 <= i);
         assert(i < length_);
         return ptr_[i];
     }
