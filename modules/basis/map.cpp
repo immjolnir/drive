@@ -3,6 +3,8 @@
 
 #include <map>
 #include <unordered_map>
+#include <algorithm>
+#include <iterator>
 /*
 - map
   - map 内部实现了一个红黑树，该结构具有自动排序的功能，
@@ -98,4 +100,27 @@ TEST(std_map, map_traversal_since_std17) {
         vec.emplace_back(key);
     }
     EXPECT_THAT(vec, testing::ElementsAre(1, 2, 3));
+}
+
+TEST(std_map, init_with_vector_range_based_for_loop) {
+    std::vector<char> mykeys { 'a', 'b', 'c' };
+    std::map<char, int> myMap;
+    
+    for(auto c: mykeys)
+        myMap.emplace(c, 0);
+
+    for (auto p : myMap)
+        std::cout << p.first << ' ' << p.second << '\n';
+}
+
+TEST(std_map, init_with_vector_without_explicit_loop) {
+    std::vector<char> mykeys { 'a', 'b', 'c' };
+    std::map<char, int> myMap;
+    
+    std::transform( std::begin(mykeys), std::end(mykeys),
+                    std::inserter(myMap, myMap.end()),
+                    [] (char c) {return std::make_pair(c, 0);} );
+
+    for (auto p : myMap)
+        std::cout << p.first << ' ' << p.second << '\n';
 }

@@ -51,3 +51,50 @@ Using `FAIL() << ..` to test it.
         EXPECT_EQ(15, age);
     }
 ```
+- /usr/include/gtest/gtest_prod.h
+
+```c++
+// When you need to test the private or protected members of a class,
+// use the FRIEND_TEST macro to declare your tests as friends of the
+// class.  For example:
+//
+// class MyClass {
+//  private:
+//   void MyMethod();
+//   FRIEND_TEST(MyClassTest, MyMethod);
+// };
+//
+// class MyClassTest : public testing::Test {
+//   // ...
+// };
+//
+// TEST_F(MyClassTest, MyMethod) {
+//   // Can call MyClass::MyMethod() here.
+// }
+
+#define FRIEND_TEST(test_case_name, test_name)\
+friend class test_case_name##_##test_name##_Test
+```
+
+## Skip test
+- https://stackoverflow.com/questions/7208070/googletest-how-to-skip-a-test
+- https://google.github.io/googletest/advanced.html
+
+```c++
+TEST(SkipTest, DoesSkip) {
+  GTEST_SKIP() << "Skipping single test";
+  EXPECT_EQ(0, 1);  // Won't fail; it won't be executed
+}
+
+class SkipFixture : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    GTEST_SKIP() << "Skipping all tests for this fixture";
+  }
+};
+
+// Tests for SkipFixture won't be executed.
+TEST_F(SkipFixture, SkipsOneTest) {
+  EXPECT_EQ(5, 7);  // Won't fail
+}
+```

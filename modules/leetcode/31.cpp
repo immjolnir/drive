@@ -27,13 +27,13 @@ bool my_next_permutation(std::vector<int>& a) {
     }
 
     // 1. Found the lagest index k such that a[k] < a[k+1].
-    int k1 = a.size() - 1;  // a+1
-    int k;
+    size_t k1 = a.size() - 1;  // a+1
+    size_t k;
     while (k1 > 0) {
         k = k1 - 1;
         if (a[k] < a[k1]) {
             // 2. Find the largest l greater than k such that a[k] < a[l].
-            int l = a.size() - 1;
+            size_t l = a.size() - 1;
             while (l > 0) {
                 if (a[l] > a[k]) break;  // Found it;
                 --l;
@@ -44,8 +44,8 @@ bool my_next_permutation(std::vector<int>& a) {
             std::swap(a[k], a[l]);
 
             // 4. Reverse the squence from a[k+1] to the last.
-            int last = a.size() - 1;
-            int i = k + 1;
+            size_t last = a.size() - 1;
+            size_t i = k + 1;
             while (i < last) {
                 std::swap(a[i++], a[last--]);
             }
@@ -59,77 +59,76 @@ bool my_next_permutation(std::vector<int>& a) {
 
 // Solutions
 // https://www.joshuachou.ink/lc31.next_permutation/
-namespace std_internal
-{
+namespace std_internal {
 #if __cplusplus >= 202002L
 #define _GLIBCXX20_CONSTEXPR constexpr
 #else
 #define _GLIBCXX20_CONSTEXPR
 #endif
 
-    template <typename _BidirectionalIterator>
-    _GLIBCXX20_CONSTEXPR void __reverse(_BidirectionalIterator __first, _BidirectionalIterator __last) {
-        while (true)
-            if (__first == __last || __first == --__last)
-                return;
-            else {
-                std::iter_swap(__first, __last);
-                ++__first;
-            }
-    }
-
-    struct _Iter_less_iter {
-        template <typename _Iterator1, typename _Iterator2>
-        bool operator()(_Iterator1 __it1, _Iterator2 __it2) const {
-            return *__it1 < *__it2;
+template <typename _BidirectionalIterator>
+_GLIBCXX20_CONSTEXPR void __reverse(_BidirectionalIterator __first, _BidirectionalIterator __last) {
+    while (true)
+        if (__first == __last || __first == --__last)
+            return;
+        else {
+            std::iter_swap(__first, __last);
+            ++__first;
         }
-    };
+}
 
-    _GLIBCXX20_CONSTEXPR
-    inline _Iter_less_iter __iter_less_iter() { return _Iter_less_iter(); }
+struct _Iter_less_iter {
+    template <typename _Iterator1, typename _Iterator2>
+    bool operator()(_Iterator1 __it1, _Iterator2 __it2) const {
+        return *__it1 < *__it2;
+    }
+};
 
-    template <typename _BidirectionalIterator, typename _Compare>
-    _GLIBCXX20_CONSTEXPR bool next_permutation_impl(_BidirectionalIterator __first, _BidirectionalIterator __last,
-                                                    _Compare __comp) {
-        if (__first == __last) return false;  // empty container
-        _BidirectionalIterator __i = __first;
-        ++__i;
-        if (__i == __last) return false;  // only 1 element.
+_GLIBCXX20_CONSTEXPR
+inline _Iter_less_iter __iter_less_iter() { return _Iter_less_iter(); }
 
-        __i = __last;
+template <typename _BidirectionalIterator, typename _Compare>
+_GLIBCXX20_CONSTEXPR bool next_permutation_impl(_BidirectionalIterator __first, _BidirectionalIterator __last,
+                                                _Compare __comp) {
+    if (__first == __last) return false;  // empty container
+    _BidirectionalIterator __i = __first;
+    ++__i;
+    if (__i == __last) return false;  // only 1 element.
+
+    __i = __last;
+    --__i;
+
+    for (;;) {
+        _BidirectionalIterator __ii = __i;
         --__i;
-
-        for (;;) {
-            _BidirectionalIterator __ii = __i;
-            --__i;
-            if (__comp(__i, __ii)) {
-                // __ii is the k1 and the __i is the k
-                // 1. Find the largest index k such that a[k] < a[k+1].
-                _BidirectionalIterator __j = __last;
-                while (!__comp(__i, --__j)) {
-                    // __j is the l
-                    // 2. Find the largest index l greater than k such that a[k] < a[l].
-                }
-                // __i is the k, __j is the l.
-                // 3. Swap the evalue of a[k] with that of a[l]
-                std::iter_swap(__i, __j);
-                // 4. Reverse the sequence from a[k+1] up to and including the final element a[n].
-                __reverse(__ii, __last);
-                return true;
+        if (__comp(__i, __ii)) {
+            // __ii is the k1 and the __i is the k
+            // 1. Find the largest index k such that a[k] < a[k+1].
+            _BidirectionalIterator __j = __last;
+            while (!__comp(__i, --__j)) {
+                // __j is the l
+                // 2. Find the largest index l greater than k such that a[k] < a[l].
             }
+            // __i is the k, __j is the l.
+            // 3. Swap the evalue of a[k] with that of a[l]
+            std::iter_swap(__i, __j);
+            // 4. Reverse the sequence from a[k+1] up to and including the final element a[n].
+            __reverse(__ii, __last);
+            return true;
+        }
 
-            if (__i == __first) {
-                __reverse(__first, __last);  // No need to reverse again.
-                return false;
-            }
+        if (__i == __first) {
+            __reverse(__first, __last);  // No need to reverse again.
+            return false;
         }
     }
+}
 
-    template <typename _BidirectionalIterator>
-    _GLIBCXX20_CONSTEXPR inline bool next_permutation(_BidirectionalIterator __first, _BidirectionalIterator __last) {
-        // range checks
-        return next_permutation_impl(__first, __last, __iter_less_iter());
-    }
+template <typename _BidirectionalIterator>
+_GLIBCXX20_CONSTEXPR inline bool next_permutation(_BidirectionalIterator __first, _BidirectionalIterator __last) {
+    // range checks
+    return next_permutation_impl(__first, __last, __iter_less_iter());
+}
 }  // namespace std_internal
 
 TEST(permutation, std_next_permutation_print0) {
@@ -273,13 +272,13 @@ void solution(std::vector<int>& a) {
     }
 
     // 1. Found the lagest index k such that a[k] < a[k+1].
-    int k1 = a.size() - 1;  // a+1
-    int k;
+    size_t k1 = a.size() - 1;  // a+1
+    size_t k;
     while (k1 > 0) {
         k = k1 - 1;
         if (a[k] < a[k1]) {
             // 2. Find the largest l greater than k such that a[k] < a[l].
-            int l = a.size() - 1;
+            size_t l = a.size() - 1;
             while (l > 0) {
                 if (a[l] > a[k]) break;  // Found it;
                 --l;
@@ -290,8 +289,8 @@ void solution(std::vector<int>& a) {
             std::swap(a[k], a[l]);
 
             // 4. Reverse the squence from a[k+1] to the last.
-            int last = a.size() - 1;
-            int i = k + 1;
+            size_t last = a.size() - 1;
+            size_t i = k + 1;
             while (i < last) {
                 std::swap(a[i++], a[last--]);
             }

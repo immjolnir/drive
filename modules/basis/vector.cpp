@@ -128,7 +128,7 @@ TEST(vector, erase_duplicate_element_best_way) {
     EXPECT_THAT(unique_vec, testing::ElementsAre(1, 2, 3, 4, 5));
 }
 
-TEST(vector, back_insert_vector) {
+TEST(vector, merge_two_vectors_by_back_inserter) {
     std::vector<int> a{1, 2, 3}, b{4, 5};
     // Copy the contents of b into a.
     std::copy(b.begin(), b.end(), std::back_inserter(a));
@@ -136,14 +136,14 @@ TEST(vector, back_insert_vector) {
 }
 
 // constexpr iterator insert( const_iterator pos, InputIt first, InputIt last );
-TEST(vector, back_insert_vector2) {
+TEST(vector, merge_two_vectors_by_insert_method_append) {
     std::vector<int> a{1, 2, 3}, b{4, 5};
     // Copy the contents of b into a.
     a.insert(a.end(), b.begin(), b.end());
     EXPECT_THAT(a, testing::ElementsAre(1, 2, 3, 4, 5));
 }
 
-TEST(vector, front_insert_vector) {
+TEST(vector, merge_two_vectors_by_front_inserter) {
     // std::vector<int> a{1, 2, 3}, b{4, 5};
     // Copy the contents of b into a.
     // /usr/include/c++/11/bits/stl_iterator.h:794:20:
@@ -157,7 +157,7 @@ TEST(vector, front_insert_vector) {
     EXPECT_THAT(a, testing::ElementsAre(5, 4, 1, 2, 3));
 }
 
-TEST(vector, front_insert_vector2) {
+TEST(vector, merge_two_vectors_by_insert_method_push_front) {
     std::vector<int> a{1, 2, 3}, b{4, 5};
     a.insert(a.begin(), b.begin(), b.end());
     EXPECT_THAT(a, testing::ElementsAre(4, 5, 1, 2, 3));

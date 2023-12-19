@@ -41,11 +41,15 @@ TEST(boost_math, factorial) {
 // https://mathworld.wolfram.com/RisingFactorial.html
 // In mathematics, the falling factorial (sometimes called the descending factorial,[1] falling sequential product, or
 // lower factorial) is defined as the polynomial: x_n = x(x-1)(x-2)...(x-n+1)
+//  
+//  template <class RT>
+//  inline typename tools::promote_args<RT>::type
+//   falling_factorial(RT x, unsigned n)
 //
 TEST(boost_math, falling_factorial) {
-    int i = 2;
+    unsigned i = 2;
     double x = 8;
-
+    // error: conversion to 'unsigned int' from 'int' may change the sign of the result [-Werror=sign-conversion]
     EXPECT_EQ(56, boost::math::falling_factorial(x, i));  // 8*7
 }
 

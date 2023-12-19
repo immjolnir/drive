@@ -35,7 +35,9 @@ bool parse_bag_name(const std::string& bag_name, boost::posix_time::ptime& bag_t
 
 std::string getBagTimeFromName(const std::string& bag_name) {
     if (!bag_name.empty()) {
-        int pos = bag_name.find_last_of("/");
+        // error: conversion from 'std::__cxx11::basic_string<char>::size_type' {aka 'long unsigned int'} to 'int' may
+        // change value [-Werror=conversion]
+        size_t pos = bag_name.find_last_of("/");
         boost::posix_time::ptime bag_time_t;
         std::string vehicle, offset;
         if (parse_bag_name(bag_name.substr(pos + 1), bag_time_t, vehicle, offset)) {

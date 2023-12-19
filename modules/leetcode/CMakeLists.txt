@@ -4,6 +4,9 @@ add_header()
 
 set(TEST_FILES
     31.cpp
+    queen.cpp
+    queen2.cpp
+    EightQueen-1D.cpp
 )
 
 set(ALL_FILES
