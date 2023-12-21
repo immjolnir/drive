@@ -7,6 +7,7 @@ set(TEST_FILES
     queen.cpp
     queen2.cpp
     EightQueen-1D.cpp
+    695_Max_Area_of_Island.cpp
 )
 
 set(ALL_FILES

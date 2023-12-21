@@ -2,10 +2,6 @@ project(basis CXX)
 
 add_header()
 
-set(GTEST_EXAMPLES
-    gtest_handing_exception.cpp
-)
-
 set(EXCEPTION_EXAMPLES
     exception_stardardarized_example.cpp
     exception_throw_any_type.cpp
@@ -66,6 +62,8 @@ set(STRING_FILES
 
     # YAML-cpp
     yaml_cpp.cpp
+
+    calling_method_through_a_nullptr.cpp
 )
 
 set(BIT_FILES
@@ -81,7 +79,6 @@ set(HAS_MAIN_FILES
 )
 
 set(ALL_FILES
-    ${GTEST_EXAMPLES}
     ${STRING_FILES}
     ${EXCEPTION_EXAMPLES}
     ${HAS_MAIN_FILES}
