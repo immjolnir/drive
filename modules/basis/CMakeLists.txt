@@ -64,6 +64,7 @@ set(STRING_FILES
     yaml_cpp.cpp
 
     calling_method_through_a_nullptr.cpp
+    test_shared_ptr.cpp
 )
 
 set(BIT_FILES
@@ -76,14 +77,13 @@ set(HAS_MAIN_FILES
     variadic_template_v1.cpp
     filewriter_main.cpp
     float-issue-precision.cpp
+    random.cpp
 )
 
 set(ALL_FILES
     ${STRING_FILES}
     ${EXCEPTION_EXAMPLES}
-    ${HAS_MAIN_FILES}
     ${BIT_FILES}
-
 
     filesystem.cpp
 )
@@ -102,6 +102,13 @@ foreach(file ${ALL_FILES})
     )
 endforeach()
 
+foreach(file ${HAS_MAIN_FILES})
+    add_example(${file}
+        ${GTEST_LIBRARIES}
+        # /usr/include/c++/11/atomic:361: error: undefined reference to '__atomic_compare_exchange_16'
+        atomic
+    )
+endforeach()
 
 add_subdirectory(iterator)
 add_subdirectory(myio)

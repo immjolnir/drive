@@ -194,6 +194,19 @@ Untagged: stammerer:1.2.0
 Deleted: sha256:1eb76407844223656b4fb09f66d383b331ad427ed99f275603fa11a839e9d6e7
 ```
 
+- conflict: unable to delete xx (must be forced) - image is referenced in multiple repositories
+```
+$ docker rmi fa807ec41be3
+Error response from daemon: conflict: unable to delete fa807ec41be3 (must be forced) - image is referenced in multiple repositories
+
+# Remove the conflict tag:
+$ docker rmi rep:pkg:12802
+Untagged: rep:pkg:12802
+Untagged: rep:pkg@sha256:6c169b806961484d95a7f33d1d9e13a7408c3daffc9c35bb2635fcd8623f0339
+
+$ docker rmi fa807ec41be3
+```
+
 ## Alias a docker image
 ```
 docker tag stammerer:latest stammerer:myversion

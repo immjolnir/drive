@@ -29,6 +29,9 @@ asm:
 	cmake -B build -S . -D ENABLE_ASSEMBLER=ON
 	$(BUILD_COMMAND) -C build
 
+pattern:
+	cmake -B build -S . -D ENABLE_DESIGN_PATTERN=ON
+	$(BUILD_COMMAND) -C build
 lc:
 	cmake -B build -S . -D ENABLE_LEETCODE=ON
 	$(BUILD_COMMAND) -C build

@@ -99,6 +99,37 @@ function(add_example src)
     set_target_properties(${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${output_dir}")
 endfunction()
 
+include (CMakeParseArguments)
+# CMake中的函数不支持重载。
+# 在CMake中，函数名称必须是唯一的，如果定义了多个同名函数，只有最后一个会生效。
+# 与C++等编程语言中的函数重载不同，CMake函数不能通过参数数量或类型来区分不同的实现。
+# 因此，在CMake编程中，需要确保每个函数的名称都是独一无二的。
+function(add_example_args)
+    set(oneValueArgs Target Destination)
+    set(multiValueArgs Sources Libs)
+    cmake_parse_arguments(MY_BUILD "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    if (NOT "${MY_BUILD_Target}" STREQUAL "")
+        message(STATUS "Creating example ${MY_BUILD_Target}")
+        add_executable(${MY_BUILD_Target} ${MY_BUILD_Sources})
+        target_include_directories(${MY_BUILD_Target} BEFORE
+            PUBLIC
+                $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/modules>
+                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        )
+        target_link_libraries(${MY_BUILD_Target}
+            ${OpenCV_LIBS}
+            ${Boost_LIBRARIES}
+            ${GLOG_LIBRARIES}
+            ${YAML_CPP_LIBRARIES}
+            ${MY_BUILD_Libs}
+        )
+        # https://blog.csdn.net/MacKendy/article/details/122549819
+        set_target_properties(${MY_BUILD_Target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${MY_BUILD_Destination}")
+    else()
+        message(FATAL_ERROR "  Illegal usage")
+    endif()
+endfunction()
+
 # Add unit tests
 function(add_testcase unittest_file)
     get_filename_component(testcase ${unittest_file} NAME_WLE)

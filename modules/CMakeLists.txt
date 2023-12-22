@@ -82,6 +82,10 @@ if (ENABLE_ASSEMBLER)
     list(APPEND MODULES assembler)
 endif()
 
+if (ENABLE_DESIGN_PATTERN)
+    list(APPEND MODULES design_pattern)
+endif()
+
 
 foreach(m ${MODULES})
     add_subdirectory(${m})
