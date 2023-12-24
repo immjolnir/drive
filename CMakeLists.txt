@@ -164,6 +164,11 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wconversion -Wsign-conversion -Werror")
 # 开启额外的警告 这些选项分别启用所有基本警告和额外警告，帮助发现潜在的问题。
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
+# size_t i; double d;
+# double dd = i * d; cause such error:
+# error: conversion from 'size_t' {aka 'long unsigned int'} to 'double' may change value [-Werror=conversion]
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-conversion")
+
 # 遵守严格标准,此选项要求GCC遵循ISO C/C++标准，并发出违反这些标准的警告
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
 

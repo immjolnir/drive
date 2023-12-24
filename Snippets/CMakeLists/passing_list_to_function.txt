@@ -1,0 +1,172 @@
+# https://blog.csdn.net/BXD1314/article/details/89210222
+# $ cmake -P passing_list_to_function.txt
+#
+
+set(SRC)
+list(APPEND SRC a.cpp b.cpp)
+list(APPEND SRC c.cpp d.cpp)
+
+function(tst_arguments src_list)
+	message("src_list = "${src_list})
+endfunction()
+
+message("SRC = "${SRC})
+tst_arguments(${SRC})
+
+#
+# ==== output ====
+# SRC = a.cppb.cppc.cppd.cpp
+# src_list = a.cpp
+#
+# 很奇怪的是，这里的${SRC}在function外是完整的4个元素，而在function却只剩下了头一个元素（可能跟list的定长有关）。
+#  如果我们要传给function以n个源文件组成的list，这样显然不行。
+# 一种简单的解决方法是使用ARGV，ARGC配合，他们的含义如同C/C++中main的argv和argc，分别代表参数和参数个数
+
+
+function(tst_arguments src_list)
+    message(STATUS "-------------------------")
+	message("ARGC = "${ARGC})
+	message("ARGV = "${ARGV})
+
+    set(INDEX 0)
+	while(INDEX LESS ${ARGC})
+		message("ARG = "${ARGV${INDEX}})
+		math(EXPR INDEX "${INDEX} + 1")
+	endwhile()
+endfunction()
+
+tst_arguments(${SRC})
+
+# ==== output ====
+# ARGC = 4
+# ARGV = a.cppb.cppc.cppd.cpp
+# ARG = a.cpp
+# ARG = b.cpp
+# ARG = c.cpp
+# ARG = d.cpp
+
+#
+# 当然，你也可以使用cmake的foreach循环遍历参数。
+# 这招对付只有一个list的参数时十分有效，但是在出现多个参数的情况就很麻烦，如下：
+
+#
+#假设函数link_lib将src_list中的源文件链接成库，根据type制定是链接静态库还是动态库
+#
+function(link_lib src_list type)
+    message(STATUS "-------------------------")
+    message("ARGC = "${ARGC})
+	message("ARGV = "${ARGV})
+
+    #以下根据参数的实际情做了操作，手动处理，以保证正确获取src_list和type
+    set(INDEX 0)
+    math(EXPR MAX "${ARGC} - 1")
+    while(INDEX LESS ${MAX})
+		message("ARG = "${ARGV${INDEX}})
+        #do something to link
+        math(EXPR INDEX "${INDEX} + 1")
+    endwhile()
+	message("last ARG = "${ARGV${MAX}})
+endfunction()
+
+link_lib(${SRC} so)
+#
+# ==== output ====
+# ARGC = 5
+# ARGV = a.cppb.cppc.cppd.cppso
+
+# 原来，ARG把两个参数混在了一起，虽然后面我们使用while进行了特殊处理，
+# 但是这对于cmake的函数不具备普遍性，移植起来很麻烦。
+# 使用cmake的cmake_parse_arguments来解析函数参数，它有点像解析一个map键值对
+# 看下它的函数原型
+# include (CMakeParseArguments)  #必须包含这个cmake文件才能使用 cmake_parse_arguments
+# CMAKE_PARSE_ARGUMENTS(<prefix> <options> <one_value_keywords> <multi_value_keywords> args...)
+# <option> 是一个列表，里面可以包含一些感兴趣的keyword
+# <one_value_keywords>是一个单值参数的KeyWord列表
+# <multi_value_keywords>是一个多值参数的KeyWord列表（如list
+# 由于参数是由CMAKE_PARSE_ARGUMENTS来解析的，所以在函数声明中就不需要定义参数了
+
+function(tst_arguments)
+  message(STATUS "-------------------------")
+
+  CMAKE_PARSE_ARGUMENTS(
+    TEST "" "NAME;COMMAND;BASELINE"
+       "ARGSLIST"
+       ${ARGN}
+  )
+
+  message("TEST_DEFAULT_ARGS is ${TEST_DEFAULT_ARGS} from ${ARGN}")
+  message("TEST_NAME is ${TEST_NAME}")
+  message("TEST_COMMAND is ${TEST_COMMAND}")
+  message("TEST_ARGSLIST is ${TEST_ARGSLIST}")
+  message("TEST_BASELINE is ${TEST_BASELINE}")
+  if (NOT ${TEST_BASELINE} )
+      message("\tempty TEST_BASELINE")
+  endif()
+endfunction(tst_arguments)
+
+tst_arguments(
+    NAME
+      testiso
+    COMMAND
+      "RunMe"
+    ARGSLIST
+      ${SRC}
+    BASELINE
+      "/home/sakaue/iWork"
+)
+# Output
+# -- -------------------------
+# TEST_DEFAULT_ARGS is  from NAME;testiso;COMMAND;RunMe;ARGSLIST;a.cpp;b.cpp;c.cpp;d.cpp;BASELINE;/home/sakaue/iWork
+# TEST_NAME is testiso
+# TEST_COMMAND is RunMe
+# TEST_ARGSLIST is a.cpp;b.cpp;c.cpp;d.cpp
+# TEST_BASELINE is /home/sakaue/iWork
+
+tst_arguments(${SRC} so)
+# Output
+# TEST_DEFAULT_ARGS is  from a.cpp;b.cpp;c.cpp;d.cpp;so
+# TEST_NAME is
+# TEST_COMMAND is
+# TEST_ARGSLIST is
+# TEST_BASELINE is
+#
+
+# https://cmake.org/cmake/help/v3.0/module/CMakeParseArguments.html?highlight=cmake_parse_arguments
+function(MY_INSTALL)
+  message(STATUS "-------------------------")
+
+  set(options OPTIONAL FAST)
+  set(oneValueArgs DESTINATION RENAME)
+  set(multiValueArgs TARGETS CONFIGURATIONS)
+
+  cmake_parse_arguments(MY_INSTALL "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+  message("MY_INSTALL_OPTIONAL = ${MY_INSTALL_OPTIONAL}")
+  message("MY_INSTALL_FAST = ${MY_INSTALL_FAST}")
+
+  message("MY_INSTALL_TARGETS = ${MY_INSTALL_TARGETS}")
+  message("MY_INSTALL_RENAME = ${MY_INSTALL_RENAME}")
+
+  message("MY_INSTALL_DESTINATION = ${MY_INSTALL_DESTINATION}")
+  message("MY_INSTALL_CONFIGURATIONS = ${MY_INSTALL_CONFIGURATIONS}")
+
+  #if (DEFINED MY_INSTALL_RENAME AND MY_INSTALL_RENAME STREQUAL "" )
+  if (NOT "${MY_INSTALL_RENAME}" STREQUAL "" )
+      message(STATUS ">> MY_INSTALL_RENAME = ${MY_INSTALL_RENAME}")
+  else()
+      message(WARNING "not found MY_INSTALL_RENAME")
+  endif()
+
+  message(">>> ARGN=${ARGN}")
+  if ( NOT "${MY_INSTALL_CONFIGURATIONS}" STREQUAL "" )
+    list(LENGTH MY_INSTALL_CONFIGURATIONS len)
+    message(">> configurations length=${len}")
+  endif()
+endfunction()
+
+my_install(TARGETS foo bar DESTINATION bin OPTIONAL blub)
+
+my_install(TARGETS foo bar DESTINATION bin RENAME xx OPTIONAL blub)
+
+my_install(${SRC})
+my_install(CONFIGURATIONS ${SRC})
+

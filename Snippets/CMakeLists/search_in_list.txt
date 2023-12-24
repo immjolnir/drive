@@ -1,0 +1,41 @@
+
+# 在CMake中， list(FIND 命令用于在列表中查找指定的元素，并返回其索引位置。
+# 以下是一个使用 list(FIND的例子：
+# 假设我们有一个包含多个库名称的列表，我们想要检查这个列表是否包含特定的库：
+
+set(my_libs "libA;libB;libC")
+
+# 检查列表中是否包含 "libB"
+list(FIND my_libs "libB" found_index)
+if(${found_index} EQUAL -1)
+    message(STATUS "Library 'libB' not found in the list.")
+else()
+    message(STATUS "Library 'libB' found at index ${found_index} in the list.")
+endif()
+
+# 在这个例子中， list(FIND命令会在 my_libs列表中查找"libB"。
+# 如果找到，它将返回该元素的索引（从0开始计数）。
+# 如果没有找到，它将返回-1。
+# 然后我们使用 if语句来检查找到的索引是否为-1，从而确定库是否在列表中。
+
+# CMake中的 list(FIND命令只能进行精确匹配。
+# 它会在给定的列表中查找指定的元素，并返回该元素的第一个匹配项的索引。如果元素不存在于列表中，将会返回-1。
+# 例如，
+# 如果你有一个列表 my_list包含元素 "apple"、 "banana"和 "cherry"，
+# 然后使用 list(FIND my_list "app"进行查找，由于 "app"并非精确匹配任何元素，所以返回值会是-1。
+# 如果你想进行模糊匹配或模式匹配，你可能需要使用其他CMake命令或者编写自定义脚本来实现。
+
+LIST(APPEND my_list "apple")
+LIST(APPEND my_list "banana")
+LIST(APPEND my_list "cherry")
+
+list(LENGTH my_list n)
+message(STATUS "list size n=${n}")
+
+list(FIND my_list "app" found_index)
+if(${found_index} EQUAL -1)
+    message(STATUS "app not found in the list")
+else()
+    message(STATUS "app found at index ${found_index} in the list")
+endif()
+

@@ -29,6 +29,10 @@ asm:
 	cmake -B build -S . -D ENABLE_ASSEMBLER=ON
 	$(BUILD_COMMAND) -C build
 
+sparrow:
+	cmake -B build -S . -D ENABLE_SPARROW=ON
+	$(BUILD_COMMAND) -C build
+
 pattern:
 	cmake -B build -S . -D ENABLE_DESIGN_PATTERN=ON
 	$(BUILD_COMMAND) -C build

@@ -86,6 +86,9 @@ if (ENABLE_DESIGN_PATTERN)
     list(APPEND MODULES design_pattern)
 endif()
 
+if (ENABLE_SPARROW)
+    list(APPEND MODULES house_sparrow)
+endif()
 
 foreach(m ${MODULES})
     add_subdirectory(${m})

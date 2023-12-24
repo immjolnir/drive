@@ -1,0 +1,19 @@
+# https://gmd20.github.io/blog/CMake%E7%9A%84function-%E5%87%BD%E6%95%B0-%E5%A6%82%E4%BD%95%E4%BC%A0%E9%80%92%E5%92%8C%E8%BF%94%E5%9B%9Elist%E5%8F%82%E6%95%B0/
+
+set(source_list
+	../interface/aligned_malloc.h
+    ../interface/event_tracer.h
+    rw_lock.cc
+	rw_lock_generic.cc
+	aligned_malloc.cc
+)
+
+set(new_source_list)
+	foreach (source_name ${${source_list}})
+		if (NOT source_name MATCHES "(_mac\\.h$|_mac\\.cc$|_posix\\.cc$|_posix\\.h$)")
+			#message(STATUS "source_name =${source_name}")
+			list(APPEND new_source_list ${source_name})
+		endif()
+	endforeach()
+	set(${out_arg} ${new_source_list} PARENT_SCOPE)
+

@@ -1,0 +1,88 @@
+function(add_example src)
+    # https://cmake.org/cmake/help/latest/command/get_filename_component.html
+    get_filename_component(example ${src} NAME_WLE)
+    get_filename_component(output_dir ${src} DIRECTORY)
+    # string(REGEX REPLACE "([a-zA-Z0-9_ ]+)(\.cpp)" "\\1" example "${src}")
+    message(STATUS "Creating example ${example}")
+    #add_executable(${example} ${src})
+    message(STATUS "src = ${src}")
+
+    # set_target_warnings(${example})
+    #target_include_directories(${example} BEFORE
+    #    PUBLIC
+    #        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/modules>
+    #        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    #)
+    #set(additional_libs ${ARGN})
+    #target_link_libraries(${example}
+    #    ${OpenCV_LIBS}
+    #    ${Boost_LIBRARIES}
+    #    ${GLOG_LIBRARIES}
+    #    ${YAML_CPP_LIBRARIES}
+    #    ${additional_libs}
+    #)
+    message(STATUS "ARGN = ${ARGN}")
+
+    # https://blog.csdn.net/MacKendy/article/details/122549819
+    #set_target_properties(${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${output_dir}")
+    message(STATUS "output_dir = ${output_dir}")
+endfunction()
+
+include (CMakeParseArguments)
+# CMake中的函数不支持重载。
+# 在CMake中，函数名称必须是唯一的，如果定义了多个同名函数，只有最后一个会生效。
+# 与C++等编程语言中的函数重载不同，CMake函数不能通过参数数量或类型来区分不同的实现。
+# 因此，在CMake编程中，需要确保每个函数的名称都是独一无二的。
+function(add_example_args)
+    set(oneValueArgs Target Destination)
+    set(multiValueArgs Sources Libs)
+    cmake_parse_arguments(MY_BUILD "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    if (NOT "${MY_BUILD_Target}" STREQUAL "")
+        message(STATUS "0 Creating example ${MY_BUILD_Target}")
+        message(STATUS "0 ARGN = ${ARGN}")
+        message(STATUS "0 MY_BUILD_Target = ${MY_BUILD_Target}")
+        message(STATUS "0 MY_BUILD_Destination = ${MY_BUILD_Destination}")
+        message(STATUS "0 MY_BUILD_Sources = ${MY_BUILD_Sources}")
+        message(STATUS "0 MY_BUILD_Libs = ${MY_BUILD_Libs}")
+
+        list(LENGTH MY_BUILD_Sources n)
+        message(STATUS "0 n=${n}")
+    else()
+        message(FATAL_ERROR "  Illegal usage")
+    endif()
+endfunction()
+
+# Normal Cases
+add_example(holy/test_cmake.cpp)
+
+message(STATUS "-------------------")
+add_example(holy/test_cmake.cpp libgtest.so)
+
+
+# Special Cases
+message(STATUS "------- 3 ------------")
+add_example_args(
+    Target
+        my_executable_name
+    Destination
+        bin
+    Sources
+       holy/cmake.h
+       holy/cmake.cpp
+       holy/test_cmake.cpp
+    Libs
+        libgtest.so
+        libgflags.so
+    )
+
+message(STATUS "------- 4 ------------")
+add_example_args(
+    Sources
+       holy/cmake.h
+       holy/cmake.cpp
+       holy/test_cmake.cpp
+    Libs
+        libgtest.so
+        libgflags.so
+    )
+

@@ -80,8 +80,67 @@ TEST(shared_ptr, return_a_ptr_owns_newly_created_obj) {
 }
 
 // Can the shared_ptr break the Circular Reference?
+namespace tr0 {
+// std::weak_ptr + forward declaring?
+struct A;
+struct B;
+
+struct A {
+    A(const std::string& str) : name_(str) {}
+
+    void bindB(std::shared_ptr<B> obj) { ptr_ = obj; }
+
+    std::string name_;
+    std::shared_ptr<B> ptr_;
+};
+
+struct B {
+    B(const std::string& str) : name_(str) {}
+
+    void bindA(std::shared_ptr<A> obj) { ptr_ = obj; }
+
+    /*
+     * @return
+     * nullptr when ptr_ dosen't reference to A
+     */
+    std::shared_ptr<A> GetA() { return ptr_.lock(); }
+
+    std::string name_;
+    std::weak_ptr<A> ptr_;
+};
 
 TEST(shared_ptr, circular_reference_breaking) {
-    shared_ptr<Student> global = make_shared<Student>();
-    auto other(global);
+    auto a_ptr = std::make_shared<A>("A");
+    auto b_ptr = std::make_shared<B>("B");
+    a_ptr->bindB(b_ptr);
+    b_ptr->bindA(a_ptr);
+    EXPECT_EQ("A", a_ptr->name_);
+    EXPECT_EQ("B", a_ptr->ptr_->name_);
+
+    EXPECT_EQ("B", b_ptr->name_);
+    //  error: base operand of '->' has non-pointer type 'std::weak_ptr<tr0::A>'
+    // EXPECT_EQ("A", b_ptr->ptr_->name_);
+    EXPECT_TRUE(b_ptr->GetA() != nullptr);
 }
+
+TEST(shared_ptr, circular_reference_breaking2) {
+    std::shared_ptr<B> b_ptr;
+
+    {
+        auto a_ptr = std::make_shared<A>("A");
+        b_ptr = std::make_shared<B>("B");
+        a_ptr->bindB(b_ptr);
+        EXPECT_EQ("A", a_ptr->name_);
+        EXPECT_EQ("B", a_ptr->ptr_->name_);
+
+        b_ptr->bindA(a_ptr);
+        EXPECT_EQ("B", b_ptr->name_);
+        //  error: base operand of '->' has non-pointer type 'std::weak_ptr<tr0::A>'
+        // EXPECT_EQ("A", b_ptr->ptr_->name_);
+        EXPECT_TRUE(b_ptr->GetA() != nullptr);
+    }
+    EXPECT_EQ("B", b_ptr->name_);
+    EXPECT_FALSE(b_ptr->GetA() != nullptr);
+}
+
+}  // namespace tr0
