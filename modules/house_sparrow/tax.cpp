@@ -31,11 +31,41 @@ struct ExemptIncome : SocialInsurances {
     double exempt_fund_sum = 0;
 };
 
+template <typename Employee>
+class ProportionOfPayment {
+  public:
+    ProportionOfPayment(double income) : _income(income) {}
+
+    double endowment_insurance() const { return _income * Employee::endowment_insurance; };
+
+    double medical_insurance() const {
+        return _income * Employee::medical_insurance + Employee::medical_insurance_addition;
+    };
+
+    double unemployment_insurance() const { return _income * Employee::unemployment_insurance; };
+
+    double employment_injury_insurance() const { return _income * Employee::employment_injury_insurance; };
+
+    double maternity_insurance() const { return _income * Employee::maternity_insurance; };
+
+    double housing_provident_fund() const { return _income * Employee::housing_provident_fund; };
+
+    double sum() const {
+        return endowment_insurance() + medical_insurance() + unemployment_insurance() + employment_injury_insurance() +
+               maternity_insurance() + housing_provident_fund();
+    }
+
+  private:
+    double _income;
+};
+
 template <typename Payment>
-class MonthlyTaxPayer : public Payment {  // subject to a tax
+class MonthlyTaxPayer : public ProportionOfPayment<Payment> {  // subject to a tax
   public:
     MonthlyTaxPayer(double pretax_income_, double additional_fund_)
-      : Payment(pretax_income_), pretax_income(pretax_income_), additional_fund(additional_fund_) {}
+      : ProportionOfPayment<Payment>(pretax_income_),
+        pretax_income(pretax_income_),
+        additional_fund(additional_fund_) {}
 
     double pretax_income;
     double additional_fund;
@@ -171,68 +201,32 @@ class YearlyTaxPayer {
     std::vector<MonthlyIncome> actual_incomes;
 };
 
-struct ProportionOfPayment {
-    virtual double endowment_insurance() const = 0;
+struct BeijingEmployee {
+    static constexpr double endowment_insurance = 0.08;
+    static constexpr double medical_insurance = 0.02;
+    static constexpr double medical_insurance_addition = 3;
 
-    virtual double medical_insurance() const = 0;
-
-    virtual double unemployment_insurance() const = 0;
-
-    virtual double employment_injury_insurance() const = 0;
-
-    virtual double maternity_insurance() const = 0;
-
-    virtual double housing_provident_fund() const = 0;
-
-    double sum() const {
-        return endowment_insurance() + medical_insurance() + unemployment_insurance() + employment_injury_insurance() +
-               maternity_insurance() + housing_provident_fund();
-    }
+    static constexpr double unemployment_insurance = 0.002;
+    static constexpr double employment_injury_insurance = 0;
+    static constexpr double maternity_insurance = 0;
+    static constexpr double housing_provident_fund = 0.12;
 };
 
-class BeijingEmployee : public ProportionOfPayment {
-  public:
-    BeijingEmployee(double income) : _income(income) {}
+struct BeijingEmployer {
+    static constexpr double endowment_insurance = 0.19;
+    static constexpr double medical_insurance = 0.1;
 
-    double endowment_insurance() const override { return _income * 0.08; }
+    static constexpr double medical_insurance_addition = 0;
 
-    double medical_insurance() const override { return _income * 0.02 + 3; }
-
-    double unemployment_insurance() const override { return _income * 0.002; }
-
-    double employment_injury_insurance() const override { return 0; }
-
-    double maternity_insurance() const override { return 0; }
-
-    double housing_provident_fund() const override { return _income * 0.12; }
-
-  private:
-    double _income;
-};
-
-class BeijingEmployer : public ProportionOfPayment {
-  public:
-    BeijingEmployer(double income) : _income(income) {}
-
-    double endowment_insurance() const override { return _income * 0.19; }
-
-    double medical_insurance() const override { return _income * 0.1; }
-
-    double unemployment_insurance() const override { return _income * 0.008; }
-
-    double employment_injury_insurance() const override { return _income * 0.005; }
-
-    double maternity_insurance() const override { return _income * 0.008; }
-
-    double housing_provident_fund() const override { return _income * 0.12; }
-
-  private:
-    double _income;
+    static constexpr double unemployment_insurance = 0.008;
+    static constexpr double employment_injury_insurance = 0.005;
+    static constexpr double maternity_insurance = 0.008;
+    static constexpr double housing_provident_fund = 0.12;
 };
 
 TEST(Tax, beigjing_employee) {
     const double income = 10'000;  // 月薪1万
-    BeijingEmployee employee(income);
+    ProportionOfPayment<BeijingEmployee> employee(income);
     EXPECT_DOUBLE_EQ(800, employee.endowment_insurance());
     EXPECT_DOUBLE_EQ(203, employee.medical_insurance());
     EXPECT_DOUBLE_EQ(20, employee.unemployment_insurance());
@@ -244,7 +238,7 @@ TEST(Tax, beigjing_employee) {
 
 TEST(Tax, beigjing_employer) {
     const double income = 10'000;  // 月薪1万
-    BeijingEmployer employer(income);
+    ProportionOfPayment<BeijingEmployer> employer(income);
     EXPECT_DOUBLE_EQ(1900, employer.endowment_insurance());
     EXPECT_DOUBLE_EQ(1000, employer.medical_insurance());
     EXPECT_DOUBLE_EQ(80, employer.unemployment_insurance());
