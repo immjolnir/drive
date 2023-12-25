@@ -65,6 +65,12 @@ set(STRING_FILES
 
     calling_method_through_a_nullptr.cpp
     test_shared_ptr.cpp
+
+    # Type Traits
+    test_decltype_and_declvalue.cpp
+    
+    test_std_type_traits.cpp # API usage
+    test_type_traits.cpp
 )
 
 set(BIT_FILES
