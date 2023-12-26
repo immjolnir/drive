@@ -84,3 +84,32 @@ TEST(decltype_and_declval, concat_reverse_order2) {
     EXPECT_FALSE(has0);  // yes, 对于 默认不支持相互转换的类型，declvalue 就严格起来了。
 }
 }  // namespace decltype_and_declval
+
+namespace check_has_member_or_not {
+
+template <typename T>
+auto constexpr has_size_member(int) -> decltype(std::declval<T&>().size(), bool{}) {
+    // 这里的 decltype 应该就是 逗号表达式
+    return true;
+}
+
+template <typename>
+auto constexpr has_size_member(long) -> bool {
+    return false;
+}
+
+template <typename T>
+static constexpr bool has_size_member_v = has_size_member<T>(0);
+
+struct A {
+    size_t size() const;
+};
+
+struct B {};
+
+TEST(decltype_and_declval, has_size_member) {
+    EXPECT_TRUE(has_size_member_v<A>);
+    EXPECT_TRUE(!has_size_member_v<B>);  // B should not have a size member
+}
+
+}  // namespace check_has_member_or_not

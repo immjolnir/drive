@@ -125,5 +125,6 @@ add_subdirectory(optional_impl)
 
 add_subdirectory(stl_algorithm)
 add_subdirectory(template)
+add_subdirectory(advanced)
 
 add_footer()
