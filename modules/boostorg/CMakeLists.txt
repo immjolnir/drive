@@ -7,6 +7,8 @@ set(FILES
     #boost_serialization.cpp
     boost_pfr.cpp
     boost_algorithm_string.cpp
+
+    boost_bind.cpp
 )
 
 set(ALL_FILES

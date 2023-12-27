@@ -1,5 +1,124 @@
 Linux Commands
 
+# What is the best way to know if a .gz file has been corrupted or not?
+The best way to determine if a .gz file has been corrupted is to use a tool to check the file's integrity. One common tool for this is the gzip command-line utility, which can be used to check the integrity of a .gz file using the following command:
+
+gzip -t [filename.gz] 
+
+This command will perform a test on the compressed file and will return an error message if the file is corrupted. Another way to check if a .gz file is corrupted is to decompress it and compare the decompressed file with the original one. If the decompressed file is identical to the original one, the archive is not corrupted. You can use the command :
+
+gunzip [filename.gz]
+
+If the command execute successfully and the file is identical to the original one, then the archive is not corrupted.
+
+Another way is to use an online file verification tool like MD5 or SHA1 to create a hash of the file before compressing it and then compare the hash of the compressed file to the original one, if they match the file is not corrupted.
+
+It's worth noting that if the file is corrupted, it's possible that it can't be repaired, in that case, you should try to use another copy of the file.
+
+
+# How ping Works in Linux
+The Linux ping command is a simple utility used to check whether a network is available and if a host is reachable. With this command, you can test if a server is up and running. It also helps with troubleshooting various connectivity issues.
+
+The ping command allows you to:
+- Test your internet connection.
+- Check if a remote machine is online.
+- Analyze if there are network issues, such as dropped packages or high latency.
+
+When you try to “ping” a remote host, your machine starts sending __ICMP__ echo requests and waits for a response. If the connection is established, you receive an echo reply for every request.
+
+The output for the ping command contains the amount of time it takes for every packet to reach its destination and return.
+
+The terminal keeps printing the responses until interrupted. After every session, there are a few lines with ping statistics.
+```
+ping -c 3 ip
+```
+
+- ping “localhost” to Check Local Network
+If you encounter issues reaching a website or a remote machine, you can ping localhost to confirm you have a network connection. Use one of the three ways to check the local network interface:
+
+  - ping 0 – This is the quickest way to ping localhost. Once you type this command, the terminal resolves the IP address and provides a response.
+  - ping localhost – You can use the name to ping localhost. The name refers to your computer, and when we use this command, we say: “ping this computer.”
+  - ping 127.0.0.1 – Some people prefer using the IP address 127.0.0.1 to ping localhost.
+
+- Specify the Internet Protocol
+
+To request IPv6 or IPv4 address, add -6 or -4 after the ping command and before a hostname/IP.
+
+  - ping -6 hostname/IPv6
+  - ping -4 hostname/IPv4
+
+- Change Ping Packet Size
+In some scenarios, you may want to use -s to increase the packet size from the default value of 56 (84) bytes. The number in parenthesis represents the ping bytes sent including 28 bytes of the header packet.
+
+For example, to increase the packet size to 1000 bytes:
+
+ping -s 1000 google.com
+
+- Change Time Interval Between Ping Packets
+The default interval between each ping request is set to one second. You can increase or decrease that time using the -i switch. To decrease the ping interval, use values lower than 1.
+
+ping -i 0.5 google.com
+
+To increase the ping interval, enter any value higher than 1.
+
+- Flood a Network Using ping to Test Performance
+You can use ping flood to test your network performance under heavy load.
+
+Ping flood -f option requires root to execute. Otherwise, apply sudo to your ping command to flood a host. This command sends a large number of packets as soon as possible.
+
+sudo ping -f hostname-IP
+
+- Limit Number of Ping Packets
+To make the ping command automatically stop after it sends a certain number of packets, use -c and a number. This sets the desired amount of ping requests, as shown in this example:
+
+ping -c 2 google.com
+
+- Suppress Ping Output to Print only Summary Statistics
+If you do not want to clog your screen with information for every packet, use the -q switch to display the summary only.
+
+The -q option prints one line with the regular ping information and then provides the statistics at the end. The letter “q” in this command stands for “quiet” output.
+
+ping -c 10 -q google.com
+
+- Add Timestamp Before Each Line in ping Output
+If you want to note the time of day when you execute the ping command, add the -D option.
+
+ping -D google.com
+
+This prints a timestamp in UNIX format before each line.
+
+- Get an Audible Ping When a Host is Reachable
+When you use the -a switch, the system plays a sound when there is a response from a host.
+
+An audible ping is useful when you are troubleshooting network issues and do not want to look at the screen until there is a response.
+
+ping -a google.com
+
+The output looks the same as a regular ping command output.
+
+- Show Ping Version and Exit
+At any time, you can check the version of the ping tool on your system.
+
+Append -V to the ping command to display the version of this utility.
+
+ping -V google.com
+ping from iputils 20211215
+
+# date
+```bash
+#!/bin/bash
+
+dt=$(date '+%d/%m/%Y %H:%M:%S');
+echo "$dt"
+```
+
+- if you need milliseconds, use `date '+%F %T.%3N'`.
+- if you need microseconds, use `date '+%F %T.%6N'`.
+- if you need nanoseconds, use `date '+%F %T.%N'`. 
+
+`%F` is for date, it gives `YYYY-MM-DD`, you can use `%D` instead to get `MM-DD-YYYY`, `%T` is for time, `HH:MM:SS`.
+
+
 # find
 
 ## Find empty file/directory

@@ -34,5 +34,13 @@ foreach(file ${TEST_FILES})
     add_example(${file} ${GTEST_BOTH_LIBRARIES})
 endforeach()
 
+set(HAS_MAIN_FILES
+    applyColorMap.cpp
+    bgr2gray.cpp
+)
+
+foreach(file ${HAS_MAIN_FILES})
+    add_example(${file} ${GTEST_LIBRARIES})
+endforeach()
 
 add_footer()

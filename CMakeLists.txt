@@ -167,7 +167,12 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 # size_t i; double d;
 # double dd = i * d; cause such error:
 # error: conversion from 'size_t' {aka 'long unsigned int'} to 'double' may change value [-Werror=conversion]
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-conversion")
+# /usr/include/eigen3/Eigen/src/Core/arch/SSE/PacketMath.h:306:57: error: signed conversion from 'unsigned int' to 'int' changes value from '2147483648' to '-2147483648' [-Werror=sign-conversion]
+#   306 |   const Packet4f mask = _mm_castsi128_ps(_mm_setr_epi32(0x80000000,0x0,0x80000000,0x0));
+#       |                                                         ^~~~~~~~~~
+# /usr/include/eigen3/Eigen/src/Core/util/Memory.h:972:48: error: conversion to 'int' from 'unsigned int' may change the sign of the result [-Werror=sign-conversion]
+# 972 |       int ways        = (abcd[1] & 0xFFC00000) >> 22; // B[31:22]
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-conversion -Wno-unused-parameter -Wno-sign-conversion")
 
 # 遵守严格标准,此选项要求GCC遵循ISO C/C++标准，并发出违反这些标准的警告
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")

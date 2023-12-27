@@ -3,6 +3,7 @@
 using namespace cv;
 using namespace std;
 
+// error: unused parameter 'argc' [-Werror=unused-parameter]
 int main(int argc, const char* argv[]) {
     string tearser_image_file(argv[1]);
     Mat image = imread(tearser_image_file);

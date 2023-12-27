@@ -98,3 +98,30 @@ Online Quiz Creator from QuizWorks helps you create fun-to-play quizzes with adv
   - https://sourceware.org/elfutils/
   
 
+## SSH Web console
+
+- https://github.com/genshen/ssh-web-console.git
+可以通过网页访问服务器，即把服务器的 console 变成了 web page.
+
+- https://github.com/mafintosh/docker-browser-console.git
+通过web page 登陆某个container.
+
+- https://github.com/raonigabriel/web-terminal
+
+- https://github.com/tsl0922/ttyd
+Share your console on web
+
+- https://github.com/codetainerapp/codetainer.git
+
+- https://github.com/lirantal/dockly.git
+: Immersive terminal interface for managing docker containers and services
+
+- https://github.com/bluebrown/web-shell
+example web shell connected to a docker container
+  - https://stackoverflow.com/questions/72517548/how-to-connect-to-a-docker-container-from-web
+
+- https://github.com/apocas/dockerode
+
+- https://github.com/bitbull-team/docker-exec-web-console.git
+
+- https://github.com/xtermjs/xterm.js/

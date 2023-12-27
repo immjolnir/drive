@@ -91,3 +91,26 @@ TEST(boost_filesystem, list_file) {
         std::cout << f << std::endl;
     }
 }
+
+TEST(boost_filesystem, remove_unexist_file) {
+    std::string unexist_filename = "/x/y/z";
+    boost::filesystem::path filepath{unexist_filename};
+
+    EXPECT_EQ("/x/y/z", filepath.native());  // 删除一个不存在的文件，竟然是成功的. 难道，它只在乎最终状态?
+    boost::system::error_code err_code;
+    boost::filesystem::remove(filepath, err_code);
+    EXPECT_EQ(err_code, boost::system::errc::success);
+    EXPECT_EQ("Success", err_code.message());
+}
+
+
+TEST(boost_filesystem, remove_root_privilage_file) {
+    std::string unexist_filename = "/proc";
+    boost::filesystem::path filepath{unexist_filename};
+
+    EXPECT_EQ("/proc", filepath.native());  // 删除一个不存在的文件，竟然是成功的. 难道，它只在乎最终状态?
+    boost::system::error_code err_code;
+    boost::filesystem::remove(filepath, err_code);
+    EXPECT_EQ(err_code, boost::system::errc::permission_denied); // 13
+    EXPECT_EQ("Permission denied", err_code.message());
+}

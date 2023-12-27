@@ -8,6 +8,8 @@ set(TEST_FILES
     queen2.cpp
     EightQueen-1D.cpp
     695_Max_Area_of_Island.cpp
+
+    palindromic_string.cpp
 )
 
 set(ALL_FILES

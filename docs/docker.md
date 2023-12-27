@@ -1,5 +1,87 @@
 # Docker
 
+## How to SSH into a Docker Container
+This guide shows you how to SSH into a Docker container and presents four alternative methods of accessing the container's shell using the Docker command-line interface.
+
+### Method 1: Use SSH to Connect to a Docker Container
+
+The primary purpose of the SSH protocol is to enable a secure network connection to a remote server. Although Docker containers do not run full-fledged operating systems, they all have private IP addresses, so it is possible to use SSH to establish a local connection to their shell.
+
+- Step 1: Get IP Address of Container
+
+```
+$ docker ps
+CONTAINER ID   IMAGE                                          COMMAND                  CREATED          STATUS          PORTS                                       NAMES
+3913c9c7fbfb   nginxinc/nginx-unprivileged                    "/docker-entrypoint.…"   12 minutes ago   Up 12 minutes   127.0.0.1:8080->8080/tcp                    web-shell
+64cf4c7ab9ce   genshen/ssh-web-console                        "./ssh-web-console"      57 minutes ago   Up 57 minutes   0.0.0.0:2222->2222/tcp, :::2222->2222/tcp   intelligent_bell
+
+# Find the container's IP address with the following docker inspect command:
+# docker inspect -f "{{ .NetworkSettings.IPAddress }}" [container-name-or-id]
+
+$ docker inspect -f "{{ .NetworkSettings.IPAddress }}" 64cf4c7ab9ce
+172.17.0.2
+
+$ docker inspect -f "{{ .NetworkSettings.IPAddress }}" 3913c9c7fbfb
+172.17.0.3
+```
+
+Ping the address to make sure it is reachable:
+```
+ping –c 3 [ip-address]
+```
+
+
+- Step 2: SSH Into Docker Container
+Once you know the IP address of the container, type the following command:
+```
+ssh [username]@[ip-address]
+```
+The system prompts for the user password and connects to the container shell.
+
+### Method 2: Use docker exec Command
+docker exec executes a user-specified command inside a running container. If the user provides the path to a shell instead of a specific command, docker exec enables shell access to the container.
+
+The basic syntax for using docker exec to run a command inside a container is:
+
+docker exec [container-name] [command]
+
+For example, to see the contents of the /usr directory within the ssh-test container, type:
+
+docker exec ssh-test ls -la /usr
+
+### Method 3: Use docker attach Command
+The docker attach command links a local input, output, and error stream to a container.
+
+To create a container that supports attaching to the internal shell, use the -dit option (detached and interactive). For example, to create a container named attach-test using the Ubuntu image, run the command below:
+
+docker run --name attach-test -dit ubuntu
+
+
+When you finish working in the container, type Exit to stop the container and exit. If you want to leave the container running, exit by pressing Ctrl + P and Ctrl + Q in a sequence.
+
+### Method 4: Use docker run Command
+The docker run command creates and starts containers. To access a container's shell right after the container is created, use the -it (interactive) option and provide the path to a shell:
+
+docker run --name [container-name] -it [image-name] [shell]
+
+For example, to access the Bash shell in the container named run-test that uses the nginx image, type the command below:
+
+docker run --name run-test -it nginx /bin/bash
+
+Using the run command to start a shell prompt in a Docker container.
+When you exit the session, the container stops.
+
+### Method 5: Use Docker Compose
+Version 2 of Docker Compose supports the exec command and allows container shell prompt access to the services deployed through Docker Compose. To access a service's shell prompt, execute the following command from the directory that contains the deployment project files:
+
+docker compose exec [service] [shell]
+
+For example, to access the Bash shell in the php service container, type:
+
+docker compose exec php /bin/bash
+
+
+
 ## Essential Commands
 - docker system df -v: to see the detailed space usage information.
 - docker image ls: list images
@@ -221,6 +303,31 @@ container id ...
 b8a238692945
 
 $ docker commit b8a238692945 mjolnir/opencv:latest
+```
+
+## docker save
+Save one or more images to a tar archive (streamed to STDOUT by default)
+
+-  
+```
+docker save --output busybox.tar busybox
+
+docker save busybox > busybox.tar
+```
+
+- Save an image to a `tar.gz` file using `gzip`
+
+You can use `gzip` to save the image file and make the backup smaller.
+```
+$ docker save myimage:latest | gzip > myimage_latest.tar.gz
+```
+
+## docker load
+Load an image or repository from a tar archive (even if compressed with gzip, bzip2, xz or zstd) from a file or STDIN. It restores both images and tags.
+```
+ docker load < busybox.tar.gz
+ 
+ docker load --input fedora.tar
 ```
 
 
