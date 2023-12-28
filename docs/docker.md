@@ -1,5 +1,11 @@
 # Docker
 
+
+-`docker logs`: Fetch the logs of a container
+- `docker logs --follow` command will continue streaming the new output from the container's STDOUT and STDERR.
+
+- `docker cp CONTAINER:/path local_path`
+
 ## How to SSH into a Docker Container
 This guide shows you how to SSH into a Docker container and presents four alternative methods of accessing the container's shell using the Docker command-line interface.
 
