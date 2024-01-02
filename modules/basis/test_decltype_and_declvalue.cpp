@@ -2,6 +2,34 @@
 
 #include <type_traits>
 
+// Basics usage
+struct Default {
+    int foo() const { return 1; }
+};
+
+struct NonDefault {
+    NonDefault() = delete;
+
+    int foo() const { return 1; }
+};
+
+TEST(devlval, tutorial) {
+    bool same = std::is_same_v<decltype(Default().foo()), int>;
+    EXPECT_TRUE(same);
+
+    bool same_too = std::is_same_v<decltype(std::declval<Default>().foo()), int>;
+    EXPECT_TRUE(same_too);
+}
+
+TEST(devlval, tutorial2) {
+    // compilation error: use of deleted function 'NonDefault::NonDefault()'
+    // bool same = std::is_same_v<decltype(NonDefault().foo()), int>;
+    // EXPECT_TRUE(same);
+
+    bool same_too = std::is_same_v<decltype(std::declval<NonDefault>().foo()), int>;
+    EXPECT_TRUE(same_too);
+}
+
 namespace decltype_and_declval {
 
 typedef char yes_type;

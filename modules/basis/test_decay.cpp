@@ -26,16 +26,19 @@ TEST(decay, tutorial) {
     EXPECT_TRUE(same);
 }
 
+// cv限定符去除
 TEST(decay, tutorial2) {
     bool same = is_decay_equ<int&, int>;
     EXPECT_TRUE(same);
 }
 
+// cv限定符去除
 TEST(decay, tutorial3) {
     bool same = is_decay_equ<int&&, int>;
     EXPECT_TRUE(same);
 }
 
+// cv限定符去除
 TEST(decay, tutorial4) {
     bool same = is_decay_equ<const int&, int>;
     EXPECT_TRUE(same);
@@ -46,6 +49,7 @@ TEST(decay, tutorial5) {
     EXPECT_FALSE(same);
 }
 
+// 数组到指针
 TEST(decay, tutorial6) {
     bool same = is_decay_equ<int[2], int*>;
     EXPECT_TRUE(same);
@@ -66,6 +70,7 @@ TEST(decay, tutorial9) {
     EXPECT_TRUE(same);
 }
 
+// 函数到指针
 TEST(decay, tutorial10) {
     bool same = is_decay_equ<int(int), int (*)(int)>;
     EXPECT_TRUE(same);

@@ -2,6 +2,10 @@ project(house_sparrow CXX)
 
 set(ALL_FILES
     tax.cpp
+
+    # multithreading: worker vs pool?
+    # test_thread_worker.cpp
+    # test_thread_pool.cpp
 )
 
 foreach(f ${ALL_FILES})
