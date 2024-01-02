@@ -67,10 +67,11 @@ set(STRING_FILES
     test_shared_ptr.cpp
 
     # Type Traits
-    test_decltype_and_declvalue.cpp
-    
     test_std_type_traits.cpp # API usage
     test_type_traits.cpp
+    
+    test_decltype_and_declvalue.cpp
+    test_decay.cpp
 )
 
 set(BIT_FILES

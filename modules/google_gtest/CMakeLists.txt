@@ -6,6 +6,8 @@ set(TEST_FILES
     test_suite.cpp
     test_IEEE_754.cpp
     test_death.cpp
+
+    # test_matcher_impl.cpp
 )
 
 foreach(f ${TEST_FILES})

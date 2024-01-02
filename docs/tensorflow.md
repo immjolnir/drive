@@ -110,6 +110,68 @@ To avoid this, run the container by specifying your user's userid:
 $ docker run -u $(id -u):$(id -g) args...
 ```
 
+## 入门深度学习，应该从哪个网络结构开始？
+入门深度学习时，通常建议从较为基础和简单的网络结构开始，这样可以帮助新手更好地理解深度学习的基本概念和工作原理。以下是一些适合初学者的网络结构：
+
+- LeNet：
+  - LeNet是由Yann LeCun等人设计的一个早期的卷积神经网络（CNN），主要用于手写数字识别（如MNIST数据集）。
+  - LeNet展示了卷积层、池化层和全连接层的基本使用，是理解和学习CNN的基础。
+
+- Multilayer Perceptron (MLP)：
+  - 多层感知器是一个包含多个隐藏层的全连接神经网络，适用于处理结构化数据或者小规模的图像分类任务。
+  - MLP可以帮助理解反向传播、权重更新和激活函数等核心概念。
+
+- Simple Convolutional Neural Network (SCNN)：
+  - 如果觉得LeNet稍微复杂，可以先从一个更简单的卷积神经网络开始，例如只包含一两个卷积层和池化层的模型。
+  - shallow Residual Networks (ResNets)
+    - 虽然ResNets通常是用于解决深度网络训练困难（如梯度消失和爆炸问题）的复杂结构，但浅层的ResNet（如包含几个残差块）可以帮助初学者理解残差学习的概念。
+    - https://github.com/christianversloot/machine-learning-articles/blob/main/how-to-build-a-resnet-from-scratch-with-tensorflow-2-and-keras.md
+    
+在学习这些网络结构时，建议配合实际的编程实践，使用诸如 TensorFlow、PyTorch 或 Keras 等深度学习框架来实现和训练模型。
+同时，通过实验和调整模型参数，可以加深对深度学习中优化、正则化和超参数选择等重要议题的理解。
+随着对基础知识的掌握，再逐渐探索和学习更复杂的网络结构，如AlexNet、VGG、GoogLeNet、ResNet等。
+
+## 深度学习模型怎么一步一步debug？
+深度学习模型的调试是一个系统化的过程，以下是一些步骤和技巧来帮助你一步一步地调试深度学习模型：
+
+- 理解错误信息：
+  - 首先，查看模型运行时抛出的错误信息。这通常会提供关于问题性质的线索，例如数据类型不匹配、形状错误、NaN（Not a Number）值等。
+
+- 检查数据：
+  - 确保输入数据是正确的格式和类型，并且在预期的范围内。使用可视化工具（如matplotlib或TensorBoard）来检查数据分布和异常值。
+  - 检查数据预处理步骤，包括归一化、标准化、填充缺失值等。
+
+- 验证模型架构：
+  - 检查模型的层次结构和参数设置是否符合设计意图。确保层的输入和输出维度匹配，激活函数、损失函数和优化器选择适当。
+  - 使用打印语句或TensorFlow的 summary() 函数来查看模型的详细信息。
+
+- 逐步训练和监控：
+  - 在训练过程中定期检查模型的损失和精度变化。如果损失在训练初期就停滞不前或者波动剧烈，可能是学习率设置不当、权重初始化问题或者梯度爆炸/消失。
+  - 使用学习率衰减策略并监视训练和验证指标，以检测过拟合或欠拟合。
+
+- 检查权重和梯度：
+  - 可以通过检查权重矩阵和梯度的值来识别潜在问题，例如权重更新是否合理、是否存在梯度消失或爆炸。
+
+- 使用调试工具：
+  - 利用Python的pdb或IPython的debug模式进行断点调试，逐行执行代码并检查变量的状态。
+  - 使用TensorFlow的 tf.debugging 模块提供的函数，如 `assert_equal()`、`check_numerics()` 等，来检查中间结果。
+
+- 简化模型和问题：
+  - 如果模型复杂，尝试简化它以隔离问题。可以暂时移除一些层或单元，或者使用更简单的模型进行测试。
+  - 尝试在小规模数据集上重现问题，以便更快地进行迭代和调试。
+
+- 使用可视化工具：
+  - 利用TensorBoard等工具可视化训练过程中的损失曲线、权重分布、激活值等，以获得更深入的理解。
+
+- 阅读文档和社区资源：
+  - 如果遇到特定的错误或问题，查阅TensorFlow或其他深度学习框架的官方文档和社区论坛，看是否有其他人遇到过类似的问题并找到了解决方案。
+
+- 调整超参数：
+  - 超参数的选择对模型性能有很大影响。尝试调整学习率、批次大小、正则化参数等，看看是否能改善模型的表现。
+
+通过以上步骤和技巧，你可以系统地调试深度学习模型并定位问题所在。记住，调试是一个反复迭代和试验的过程，需要耐心和细致。
+
+
 ## Mean squared error 与  mean absolute error 有什么不同，分别适合什么情况？
 Mean squared error (MSE)和mean absolute error (MAE)是两种常见的用于评估模型预测准确性的度量方法。
 
@@ -186,4 +248,180 @@ Fast R-CNN是一种深度学习框架，用于对象检测。它利用了预训�
 ##
 - https://d2l.ai/chapter_convolutional-modern/vgg.html
 - https://www.kaggle.com/code/blurredmachine/vggnet-16-architecture-a-complete-guide
+- https://ai.huhuhang.com/intro
+- https://github.com/labex-labs/open-source-labs
+- https://huhuhang.com/post/machine-learning/tensorflow-2-0-03
+- https://www.heywhale.com/mw/project/5bea8e20954d6e001063c784
+- https://minghuiwu.gitbook.io/tfbook/
 
+## 学 tensorflow 还是 pytorch呢？
+选择学习TensorFlow还是PyTorch取决于你的具体需求和背景。
+
+TensorFlow是由Google开发的开源深度学习框架，它采用静态计算图模型。
+TensorFlow在训练大规模模型和生产环境部署方面表现出色，尤其是通过TensorFlow Lite和TensorFlow Serving等工具，它可以很好地适应从云到边缘的各种部署场景。
+
+PyTorch则是由Facebook开发的开源框架，它采用动态计算图模型。
+PyTorch以其直观的API、强大的调试工具和用户友好的环境而受到研究人员和快速开发项目的欢迎。
+PyTorch也提供了诸如 TorchServe、PyTorch Lite和PyTorch Edge等工具来简化模型部署过程。
+
+以下是一些考虑因素：
+• 如果你更关注大规模生产环境中的稳定性和性能优化，或者需要与现有的TensorFlow生态系统集成，那么TensorFlow可能是一个更好的选择。
+• 如果你是一名研究人员或是新手，希望有一个更直观、易于理解和调试的框架来进行实验和快速原型设计，那么PyTorch可能会更适合你。
+• 考虑社区支持和资源：两者都有活跃的社区和丰富的学习资源，但特定领域的教程和项目可能在一个框架中更为丰富。
+
+总的来说，两者都是非常优秀的深度学习框架，各有优缺点。根据你的具体应用场景、个人偏好和职业发展需求来决定学习哪一个或两者都学习。如果你还不确定，可以尝试先学习其中一个，然后再根据需要学习另一个。
+
+## 想快速入门 tensorflow, 应该从哪个模块开始？
+快速入门TensorFlow，以下是一个推荐的学习路径和模块顺序：
+- 基础知识理解：
+  - 理解张量（Tensor）：这是TensorFlow中的基本数据结构，它是N维数组。
+  - 学习数据流图（Data Flow Graph）：了解TensorFlow是如何构建和执行计算图的。
+
+- 安装和环境设置：
+  - 安装TensorFlow：根据你的操作系统和需求选择合适的版本（CPU或GPU）进行安装。
+  - 设置开发环境：熟悉Python编程语言和常用的开发工具如Jupyter Notebook或Google Colab。
+
+- TensorFlow基本操作：
+  - 创建和操作张量：使用TensorFlow API创建和修改张量。
+  - 执行基础数学运算：了解如何在TensorFlow中进行基本的数学运算。
+
+- 构建和运行简单的模型：
+  - 构建计算图：使用TensorFlow的API定义操作（Operations或Ops）和张量。
+  - 会话（Session）的使用：在TensorFlow 1.x中，你需要使用会话来运行计算图。在TensorFlow 2.x中，会话的概念已经被移除，操作可以直接运行。
+
+- 使用TensorFlow 2.x：
+  - Eager Execution：了解Eager Execution模式，它允许立即评估操作，使得调试更加方便。
+  - Keras API：学习如何使用Keras，这是一个高级API，可以简化模型的构建、训练和评估过程。
+
+- 实践案例：
+  - 线性回归模型：从一个简单的线性回归问题开始，理解如何定义模型、损失函数和优化器。
+  - 图像分类任务：尝试使用卷积神经网络（CNN）解决图像分类问题，这将帮助你理解如何处理和预处理图像数据。
+
+- 进阶主题：
+  - 模型保存和加载：学习如何保存训练好的模型以及在将来重新加载和使用它们。
+  - 超参数调整和模型调优：理解如何优化模型性能，包括学习率调整、正则化技术和早期停止等策略。
+
+以下是一些具体的资源和教程，可以帮助你快速入门TensorFlow：
+• 官方文档和教程：访问TensorFlow的官方文档和教程，这些通常是最准确和最新的学习资源。
+• "TensorFlow.org"上的教程和指南：这里提供了许多逐步的示例和教程。
+• "TensorFlow in 5 Minutes"系列视频：这些简短的视频介绍了TensorFlow的基本概念和操作。
+
+通过按照这个路径学习并实践，你应该能够快速入门TensorFlow并开始构建自己的深度学习模型。记得不断练习和实战，以便更好地理解和应用所学知识。
+
+## 想快速入门 tensorflow, 应该从哪个模型开始？
+快速入门TensorFlow，建议从一个简单的线性模型开始。以下是一个基本的步骤：
+
+导入TensorFlow库： python import tensorflow as tf
+准备数据：
+• 使用 TensorFlow 的 tf.data.Dataset API 或其他方法（如 NumPy）加载和预处理数据。
+
+定义模型：
+• 创建一个线性模型，这可以通过 tf.keras.layers.Dense•  层实现： 
+python model = tf.keras.Sequential([ tf.keras.layers.Dense(units=1, input_shape=[input_dim]) ])
+这里， input_dim 是输入数据的特征数量，units=1 表示输出层只有一个单元，适用于回归问题。
+
+编译模型：
+• 设置损失函数（如均方误差 mse• ）、优化器（如梯度下降 sgd• ）和评估指标（如均方根误差 rmse• ）： 
+python model.compile(optimizer='sgd', loss='mse', metrics=['rmse'])
+
+训练模型：
+• 使用准备好的数据对模型进行训练： python model.fit(x_train, y_train, epochs=epochs, validation_data=(x_val, y_val))
+这里，x_train 和 y_train 是训练数据，x_val 和 y_val 是验证数据，epochs 是训练轮数。
+
+评估和预测：
+• 使用训练好的模型对测试数据进行评估，并进行预测： python model.evaluate(x_test, y_test) predictions = model.predict(x_test)
+
+通过这个简单的线性模型，你可以理解TensorFlow的基本使用流程，包括模型定义、编译、训练、评估和预测。之后，你可以逐步尝试更复杂的模型，如神经网络、卷积神经网络（CNN）或循环神经网络（RNN），并学习如何使用TensorFlow中的高级API和功能。
+
+## How to read the source code?
+
+> Don’t read sources just to read the sources. Have a clear goal in mind, whether you are going to add some functionality or just to get deeper understanding of its inner workings.
+
+
+
+I can view this question in two lights : Understanding the library's organization, or understanding how a Tensorflow program have to be structured.
+
+Regarding the library structure, I will mention the core of main classes, without mentioning the low level dependencies
+
+- Tensors: they are not as complicated as they sound, they are multidimensional arrays, with some particular characteristics.
+
+- Operations: They are the various classes of mathematical, logical, and other types of functions able to modify the data structures.
+
+- Graph: contains all the operations and data elements.
+
+- Session: it is a class which represents the runtime wher the computing session can be executed, and also includes controls (methods) which control the operation flows.
+
+- Variables: Contains data elements that remain unchanged between operation. They are great for saving changing weights for example.
+
+- Placeholders: Here you can introduce Information to be processed.
+
+- Summaries: They write information
+
+
+## 如何通过阅读tensorflow源码学习深度学习？
+通过阅读TensorFlow源码来学习深度学习可以深入理解深度学习模型的内部工作机制以及框架的设计原理。以下是一些步骤和建议：
+
+- 基础知识准备：
+  - 确保你对深度学习基础概念有扎实的理解，包括神经网络、反向传播、优化算法（如梯度下降）等。
+  - 学习Python编程，因为TensorFlow是用Python编写的。
+  - 掌握基本的开源软件开发和版本控制工具，如Git，这将帮助你在TensorFlow的GitHub仓库中导航。
+
+- 熟悉TensorFlow API：
+  - 在阅读源码之前，先通过官方文档和教程熟悉TensorFlow的基本使用和API。理解如何构建、训练和评估模型。
+
+- 选择阅读起点：
+  - 根据你的兴趣和目标，选择一个具体的模块或功能开始阅读。例如，你可以从以下几个方面入手： 
+    - tf.keras• ：这是TensorFlow中的高级API，用于构建和训练深度学习模型。
+    - tensorflow/core• ：这个目录包含了TensorFlow的核心实现，包括图计算、会话管理、运算符（ops）等。
+    - tensorflow/python• ：这个目录包含了TensorFlow的Python接口和各种功能的实现。
+
+- 阅读代码和文档：
+  - 使用阅读代码的工具（如VS Code、PyCharm等）打开TensorFlow的源码，开始逐行或逐模块地阅读。
+  - 配合阅读相关的代码注释和文档，这些通常会提供关于代码功能和设计决策的信息。
+  - 查阅相关的技术论文和设计文档，如《TensorFlow: Large-Scale Machine Learning on Heterogeneous Distributed Systems》，以理解系统架构和设计原则。
+
+- 实践与调试：
+  - 在阅读源码的同时，尝试编写自己的小型示例或修改现有代码来实践所学的知识。
+  - 使用调试工具步进执行代码，观察变量的变化和函数的调用流程，这有助于理解代码的运行机制。
+
+- 参与社区：
+  - 加入TensorFlow的社区论坛或邮件列表，和其他开发者交流学习经验，提问并解答疑问。
+  - 参与TensorFlow的开源项目，提交问题报告、修复bug或贡献新功能，这将加深你对源码的理解并提升编程技能。
+
+- 持续学习与跟进：
+  - 深度学习和TensorFlow都在快速发展，所以要定期更新你的知识和技能。
+  - 关注TensorFlow的更新和版本变化，阅读相关的博客文章和技术分享。
+
+通过以上步骤，你可以逐步深入理解TensorFlow源码并提高在深度学习领域的专业知识。但是请注意，阅读源码是一个相对复杂和耗时的过程，需要耐心和持久的努力。
+
+## 使用调试工具步进执行代码，观察变量的变化和函数的调用流程, 具体怎么做呢？
+使用调试工具步进执行代码并观察变量的变化和函数的调用流程可以帮助你深入理解代码的执行过程。以下是一个基本的步骤指南：
+选择调试工具：
+• Python自带的pdb模块是一个基本的调试工具。
+• IDE如PyCharm、VSCode等也内置了强大的调试功能，它们通常提供更友好的图形界面。
+设置断点：
+• 在你想要开始调试的代码行或者你觉得可能存在问题的代码行处设置断点。在大多数调试工具中，你可以在代码行号旁边点击或使用快捷键来设置断点。
+
+启动调试会话：
+• 在IDE中，通常可以通过点击运行按钮旁边的调试按钮或者使用菜单选项来启动调试会话。
+• 如果使用pdb，你可以在命令行中添加 `import pdb; pdb.set_trace()` 来启动调试。
+
+步进执行代码：
+• 调试工具通常提供以下几种执行指令： 
+- `Step into (F11)`：进入当前行的函数或方法内部。
+- `Step over (F10)`：执行当前行，如果当前行是函数调用，则整个函数执行完毕后再停止。
+- `Step out (Shift+F11)`：从当前函数或方法返回到调用它的上一层代码。
+
+观察变量变化：
+• 在调试过程中，你可以查看当前作用域内的所有变量及其值。在大多数IDE中，这些变量会在一个专门的“变量视图”或“监视窗口”中列出。
+• 你也可以手动添加特定变量到监视列表中，以便跟踪其在执行过程中的变化。
+
+检查函数调用流程：
+• 调试工具通常会显示一个调用栈，它展示了当前执行点所在的函数以及它是如何被其他函数调用的。
+• 你可以通过查看调用栈来了解函数的调用顺序和层次关系。
+
+继续执行或停止调试：
+• 当你需要继续执行直到下一个断点或程序结束时，可以使用“继续执行”或相应的按钮（通常表示为“Resume”或“Continue”）。
+• 若要停止调试会话，可以使用“停止”或相应的按钮（通常表示为“Stop”或“Terminate”）。
+
+通过以上步骤，你可以逐步执行代码，观察变量的变化和函数的调用流程，从而深入理解代码的执行逻辑和潜在问题。
