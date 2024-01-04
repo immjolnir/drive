@@ -309,7 +309,7 @@ typename std::add_rvalue_reference<T>::type declval() noexcept;
 ```
 使用 std::declval() 时，即使类型 T 没有默认构造函数或者不能创建临时对象，编译器也能推导出 T 类型的右值引用。
 
-- 应用场景：
+应用场景：
   - 在类型推导的过程中模拟临时对象的创建，尤其在 SFINAE （Substitution Failure Is Not An Error）技巧中，配合 decltype 用于编写更复杂的类型检查逻辑。
   - 在编译时期测试两个类型是否具有特定的操作符重载，比如比较、转换等。
   - 在库设计中，常常与 std::decltype 联合使用以推断模板函数的返回类型或其他复杂类型关系。
@@ -375,4 +375,49 @@ make_pair(T1&& x, T2&& y)
 ```
 Note: this is not the actual C++11 make_pair implementation - the C++11 make_pair also unwraps std::reference_wrappers.
 
+## std::invoke_result
+`std::invoke_result`（在C++17中引入，前身为std::result_of，但在C++17后被弃用）是一个模板类型别名，用于推导特定可调用对象或函数指针/成员函数指针对特定参数类型的调用结果类型。
 
+它的原理是基于编译时的元编程技术，分析给定的可调用对象加上一组参数类型时产生的返回值类型。
+原理：
+```c++
+template< class Callable, class... Args > class invoke_result;(since C++17)
+```
+
+`Callable` 是一个可调用对象（如函数、函数指针、lambda 表达式、成员函数指针等），`Args...` 则是传递给该可调用对象的参数类型。
+编译器会根据这些信息来推断当使用指定参数类型调用该可调用对象时产生的结果类型。
+
+应用场景：
+- 类型推断：在编写泛型代码时，可能需要知道某个可调用对象在特定参数下的返回类型，以便定义其他依赖于此返回类型的模板。
+```c++
+template <typename Func, typename Arg> 
+using func_return_type = std::invoke_result_t<Func, Arg>;
+
+void foo(func_return_type<int (*)(const std::string&), const std::string&> result) { 
+   // 此处推断出函数接受一个字符串并返回整数的函数指针调用结果类型
+}
+```
+
+- 静态断言：在编译期间验证某个可调用对象对给定参数集是否具有预期的返回类型。
+```c++
+static_assert(std::is_same_v<std::invoke_result_t<decltype(some_func), int>, bool>, "some_func(int) should return a bool");
+```
+
+- SFINAE（Substitution Failure Is Not An Error）技术：
+在模板元编程中，它常被用于实现类型选择和特化，通过检查 `std::invoke_result` 的结果类型决定是否应该启用某个模板实例。
+
+- 适配库设计：
+例如，在设计支持多种可调用实体（包括函数、成员函数、函数对象等）的泛型算法或容器时，`std::invoke_result` 能够帮助库作者确保其组件可以正确处理不同种类的可调用对象及其返回类型。
+
+在C++开源项目中，std::invoke_result（或其别名 `std::invoke_result_t`）主要用于模板元编程以推导函数调用表达式的结果类型。虽然没有提供具体的代码片段或项目名称，但这一特性广泛应用于泛型编程、函数对象适配、类型安全检查以及STL容器和算法的实现中。
+
+例如，在处理回调函数、函数指针、成员函数指针或可调用对象时，编译器需要知道这些可调用实体的返回类型以便进行类型推导。
+`std::invoke_result` 就是为此目的设计的，它在很多依赖于动态调用行为的地方都会出现。
+
+一些可能应用 `std::invoke_result` 的具体场景包括：
+- 定制化traits类1. ：编写自己的traits类来推断某个可调用对象在特定参数下的返回类型。
+- 完美转发适配2. ：在设计接受可调用对象及其参数并能完美转发它们到某个执行上下文的模板函数时，可能需要用它来确保返回类型的一致性。
+- 编译期断言3. ：验证一个给定的可调用对象与期望的签名相匹配。
+- 容器和算法4. ：在C++标准库内部，特别是在对函数对象的处理上，可能会使用 std::invoke_result5. 来处理各种不同类型的可调用实体。
+
+由于“std::invoke_result”是C++17引入的标准库功能，因此查看任何现代C++17及以后版本的开源项目，特别是那些涉及泛型编程和函数对象操作的部分，都有可能找到它的实际应用。不过，具体的项目实例需根据实际情况去查阅相关源码。
