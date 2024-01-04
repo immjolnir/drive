@@ -188,3 +188,17 @@ bigfile2 filter=lfs diff=lfs merge=lfs -text
 ```
 
 
+## git 默认是区分文件名大小写
+- core.ignoreCase
+
+If true, this option enables various workarounds to enable Git to work better on filesystems that are not case sensitive, like FAT.
+For example, if a directory listing finds "makefile" when Git expects "Makefile", Git will assume it is really the same file, and continue to remember it as "Makefile".
+
+The default is false, except git-clone[1] or git-init[1] will probe and set core.ignoreCase true if appropriate when the repository is created.
+
+If you want to enable it, use:
+```
+git config core.ignorecase true
+```
+
+
