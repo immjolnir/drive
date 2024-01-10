@@ -1,0 +1,4 @@
+# 
+
+$ rsync -avzPW src dest
+

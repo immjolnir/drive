@@ -108,4 +108,154 @@ All the data information of files on a storage drive is stored in the file syste
 总的来说，文件系统是通过抽象逻辑视图（即用户看到的目录结构和文件）和物理磁盘存储之间的映射关系，配合高效的资源管理和数据访问机制，为用户提供了一种方便、灵活、可靠的数据存储服务。
 
 
+## ext4, ntfs, exfat等哪种文件格式更安全？
+在不同的应用场景和操作系统下，文件系统的安全性表现各有优势：
 
+- ext4：它是Linux系统中最常用的文件系统格式，提供了日志记录功能，能够有效减少因意外中断导致的数据丢失风险。从数据安全角度来看，ext4具备相对稳定的数据校验机制，在Linux环境下较少出现数据丢失或损坏的情况。
+
+- ntfs：是Windows NT系列操作系统默认的文件系统，支持权限管理、事务处理及磁盘配额等功能，增强了文件安全性。然而，其复杂的结构可能导致在非Windows系统中使用时存在一定的兼容性和稳定性问题。
+
+- exFAT：由微软公司设计，主要针对闪存设备（如USB驱动器和SD卡），它跨越了不同操作系统平台（Windows、Mac OS X、Linux等）之间的文件共享障碍。exFAT在设计上没有日志文件系统那样的错误恢复能力，但比起早期的FAT32格式，它的数据完整性更高，不过它在数据安全性方面并不像NTFS那样提供完整的文件权限和加密功能。
+
+总的来说，如果只考虑单一操作系统内部且强调数据安全和稳定性，ext4和ntfs都有各自的安全特性；而在跨平台兼容性与通用场景下，exFAT虽不如前两者在原生系统中的安全防护全面，但能满足基本的安全需求。每种文件格式的安全性还取决于用户的使用习惯和实际操作环境，比如定期备份、避免突然断电等也会直接影响到数据安全。
+
+## 如何给 exFAT添加上 ext4的日志记录功能？
+
+exFAT文件系统并未内建日志记录功能，它是微软设计的跨平台文件系统，主要用于闪存存储设备（如SD卡、USB驱动器），以支持大容量文件和在不同操作系统之间轻松交换数据。
+而ext4是Linux系统下的文件系统，其日志记录机制（journaling）是ext系列文件系统为了提高文件系统的稳定性和可靠性而设计的核心功能之一。
+
+由于exFAT与ext4的设计原则和结构完全不同，因此无法直接给exFAT添加ext4的日志记录功能。
+每种文件系统都有其独特的数据管理方式和错误恢复机制，exFAT不具备像ext4那样的日志式文件系统特性。
+若需类似日志保护的数据安全功能，可以考虑在支持exFAT的平台上使用具有日志记录功能的文件系统，比如在Linux环境中使用ext4或其他有日志功能的文件系统。
+
+## exFat如何能在Linux上使用的？实现原理是什么？
+exFAT文件系统在Linux上使用，可以通过以下几种方式实现：
+安装官方或第三方驱动程序：
+• 自从2019年微软公开了exFAT的部分技术规格并授权给了Linux内核社区，许多现代Linux发行版已经将exFAT支持直接集成到了内核中。用户可以直接通过更新到支持exFAT的内核版本或者安装相关软件包来获得exFAT支持。例如，在Ubuntu等发行版中可以安装 exfat-utils• 和 fuse-exfat• 包。
+
+使用FUSE（Filesystem in Userspace）实现：
+• 在较早时期，Linux支持exFAT主要是通过FUSE实现的，这是一个让用户态程序提供文件系统服务的机制。通过安装如fuse-exfat• 这样的FUSE模块，可以让Linux系统挂载exFAT格式的分区。
+
+编译自定义驱动：
+• 对于一些特定环境下的嵌入式Linux系统，可能需要手动下载源代码编译exFAT驱动，比如基于relan/exfat或dorimanx/exfat-nofuse项目提供的开源实现进行交叉编译，并按照相应指南进行安装和配置。
+
+实现原理大致如下：
+• FUSE方式实现时，exFAT驱动是一个运行在用户空间的应用程序，它接收到内核对文件系统操作的请求后，将这些请求转换为对exFAT文件系统的具体操作，然后将结果返回给内核，这样就可以透明地在Linux下访问exFAT分区。
+• 内核原生支持时，exFAT驱动是作为内核模块存在的，可以直接处理与exFAT相关的磁盘I/O操作，无需借助用户空间程序，性能通常更高且集成度更好。
+
+无论是哪种方式，核心都是为了实现在Linux操作系统下对exFAT文件系统的读写、创建、删除等基本文件系统操作功能，从而解决不同操作系统间的数据交换问题。
+
+
+## 还有哪些具有日志功能的文件系统？
+具有日志功能的文件系统（Journaling File Systems）主要包括以下几种：
+
+- ext3/4：ext3是Linux内核中第一个广泛应用的日志文件系统，其继任者ext4也保留了日志记录特性，并在性能和扩展性上进行了优化。
+
+- XFS：高性能64位日志文件系统，由SGI开发并在Linux系统中广泛使用，能够支持大容量存储且具备很高的稳定性和数据完整性。
+
+- JFS (IBM Journaled File System)：由IBM公司开发，旨在提供一种高度可靠且可扩展的日志文件系统，被多种操作系统支持，包括AIX、Linux等。
+
+- ReiserFS：原名Reiser3，也是一种日志文件系统，适用于Linux系统，在处理大量小文件时有优秀表现。
+
+- Btrfs (B-tree file system)：它是一个现代的复制写入日志文件系统，设计目标是在Linux上提供高级的错误检测和恢复能力，以及先进的特性如数据校验、快照和自动伸缩。
+
+- ZFS：尽管ZFS最初为Solaris操作系统设计，但现在也在多个其他平台可用，包括Linux。ZFS不仅是一种日志文件系统，还提供了存储池管理、数据校验、冗余等多种高级存储功能。
+
+这些日志文件系统通过维护事务日志来确保在系统崩溃或电源故障的情况下能快速并完整地恢复文件系统的状态，从而保护用户数据免受意外损害。
+
+## 如何实现自己的一套可以跨平台的文件系统？
+实现一套跨平台的文件系统是一个相当复杂且工程量巨大的任务，需要对操作系统的工作原理有深入理解，并考虑到不同平台上硬件架构、内核接口和用户需求的差异。以下是一些关键步骤和考虑点：
+
+- 设计抽象层：
+• 为了实现跨平台，首先需要设计一个能够与不同操作系统底层文件系统API进行交互的抽象层。该层将提供一组通用的接口定义，屏蔽各操作系统的差异性。
+
+- 兼容多种文件系统结构：
+• 跨平台文件系统可能不直接取代宿主机上的原生文件系统，而是构建在现有文件系统之上，所以要确保对各种已有文件系统（如NTFS、ext4、APFS等）的良好适应性。
+
+- 遵循标准或创建中间格式：
+• 可以选择遵循已有的跨平台标准，如POSIX规范，或者开发一种中间数据格式，使得不同平台上的程序都能理解和操作这种格式的数据。
+
+- 实现核心功能：
+• 实现文件元数据管理（如inode、目录结构等）、文件内容存储、缓存机制、日志记录（可选，用于提高稳定性）等功能。
+
+- 容错及恢复能力：
+• 对于分布式或网络文件系统来说，还需要设计复制、冗余和故障切换机制以保证高可用性和数据一致性。
+
+- 性能优化：
+• 文件系统的性能对于用户体验至关重要，因此要在设计时就考虑到如何优化读写操作、目录搜索以及I/O调度等问题。
+
+- 编译和移植：
+• 代码需要以平台无关的方式编写，通常使用C/C++这样的低级语言，并针对目标平台进行编译和适配。
+
+- 测试验证：
+• 在多种不同的操作系统环境下进行全面的功能测试和性能测试，确保文件系统在不同环境下的表现符合预期。
+
+- 遵循许可证要求：
+• 开发过程中需要注意版权和许可证问题，确保新文件系统可以合法地在各个支持的平台上分发和使用。
+
+- 维护和更新：
+• 随着时间推移和技术发展，跨平台文件系统需要不断迭代升级以适应新的硬件特性和软件环境变化。
+
+实际上，已有许多开源或商业的跨平台文件系统方案，例如FUSE（Filesystem in Userspace）允许开发者在用户态编写文件系统模块，从而实现跨平台；还有像Samba这样的服务，可以在非Windows系统上模拟出CIFS（Common Internet File System）共享，实现在不同操作系统之间共享文件资源。
+
+## Default cluster size for NTFS, FAT, and exFAT
+- https://support.microsoft.com/en-us/topic/default-cluster-size-for-ntfs-fat-and-exfat-9772e6f1-e31a-00d7-e18f-73169155af95
+
+All file systems that are used by Windows organize your hard disk based on `cluster size` (also known as allocation unit size). `Cluster size` represents the __smallest__ amount of disk space that can be used to hold a file. When file sizes do not come out to an even multiple of the `cluster size`, additional space must be used to hold the file (up to the next multiple of the `cluster size`). On the typical hard disk partition, the average amount of space that is lost in this manner can be calculated by using the equation (`cluster size`)/2 * (number of files).
+
+If no `cluster size` is specified when you format a partition, defaults are selected based on the size of the partition.
+
+- Default cluster sizes for exFAT
+The following table describes the default cluster sizes for exFAT.
+
+| Volume size  | Default cluster size  |
+|--------------|---------------|
+| 7 MB–256 MB  | 4 KB  |
+| 256 MB–32 GB | 32 KB  |
+| 32 GB–256 TB | 128 KB  |
+| > 256 TB     | NOT Support  |
+
+就是说，当我使用的disk 分区大于 32GB时，文件的最小分配单元就是128KB， 比如空文件(至少有几个字符)，空目录. 但它不支持link.
+```
+$ ln -s empty empty.1
+ln: failed to create symbolic link 'empty.1': Operation not permitted
+```
+- Default cluster sizes for FAT32
+| Volume size  | Default cluster size  |
+|--------------|---------------|
+| 8GB–16GB     | 8 KB  |
+| 16GB–32GB    | 16 KB  |
+| 32GB–2TB     | 32 KB  |
+
+
+# cmd
+- list disk
+```
+sudo fdisk -l
+Disk /dev/sda: 1.82 TiB, 2000398934016 bytes, 3907029168 sectors
+Disk model: Portable SSD T5
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 33553920 bytes
+Disklabel type: gpt
+Disk identifier: 5C7C2069-F7CE-4FEA-A7F0-E67FD0658C69
+
+Device          Start        End    Sectors   Size Type
+/dev/sda1       65535 1953205139 1953139605 931.3G Linux filesystem
+/dev/sda2  1953205140 2929807709  976602570 465.7G Microsoft basic data
+/dev/sda3  2929807710 3907000094  977192385   466G Linux filesystem
+GPT PMBR size mismatch (4294967294 != 7814037167) will be corrected by write.
+
+
+Disk /dev/sdb: 3.64 TiB, 4000787030016 bytes, 7814037168 sectors
+Disk model: PSSD T9
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 2097152 bytes
+Disklabel type: gpt
+Disk identifier: 4302C1F3-E8B6-4C00-AD1A-53F7673899ED
+
+Device      Start        End    Sectors  Size Type
+/dev/sdb1      40     409639     409600  200M EFI System
+/dev/sdb2  411648 7814035455 7813623808  3.6T Microsoft basic data
+```

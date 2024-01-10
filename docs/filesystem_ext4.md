@@ -69,3 +69,18 @@ ext4文件系统的实现代码位于Linux内核源码中。具体而言，在Li
 • SQLite 尽管主要用于嵌入式环境，但其内部也同样设计了WAL模式以提高性能和保证事务完整性。
 
 通过WAL机制，这些数据库系统能够在发生意外故障时快速恢复，并且能够提高写入操作的并发性能，因为它允许多个事务同时在其各自的日志部分进行写入而不需要立即同步到磁盘上的数据文件。
+
+
+## Very it
+```
+$ echo "abc" > empty
+
+$ mkdir empty-dir
+
+$ du -sh empty
+4.0K	empty
+
+$ du -sh empty-dir/
+4.0K	empty-dir/
+```
+
